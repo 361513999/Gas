@@ -8,4 +8,10 @@
     <color name="no_color">#00000000</color>
     <color name="blue_n">#0084ff</color>
     <color name="login_line">#83B7E7</color>
+    <color name="grey">#ADADAD</color>
+    <color name="grey_l">#666666</color>
+    <color name="font_normal">#333333</color>
+    <color name="font_light">#666666</color>
+    <color name="org_n">#FFCB3D</color>
+    <color name="org_p">#F9DD91</color>
 </resources>

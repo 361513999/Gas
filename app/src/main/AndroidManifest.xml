@@ -37,11 +37,17 @@
     <activity android:name=".ui.CommonLineActivity">
 
     </activity>
-        <activity android:name=".ui.LoginActivity">
+        <activity android:name=".ui.HomeActivity">
+
+        </activity>
+        <activity android:name=".ui.SettingActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+        </activity>
+        <activity android:name=".ui.LoginActivity">
+
         </activity>
     </application>
 
