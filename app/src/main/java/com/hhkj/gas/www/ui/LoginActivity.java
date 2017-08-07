@@ -66,6 +66,7 @@ public class LoginActivity extends BaseActivity{
         P.c(U.VISTER(U.BASE_URL)+U.LOGIN);
         loginCall.execute(loginCallback);
     }
+    //数据返回
     private StringCallback loginCallback = new StringCallback() {
         @Override
         public void onError(Call call, Exception e, int id) {
