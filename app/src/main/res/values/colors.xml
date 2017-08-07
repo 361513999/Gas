@@ -5,4 +5,7 @@
     <color name="colorAccent">#FF4081</color>
     <color name="white">#FFFFFF</color>
     <color name="line_bg">#ededed</color>
+    <color name="no_color">#00000000</color>
+    <color name="blue_n">#0084ff</color>
+    <color name="login_line">#83B7E7</color>
 </resources>

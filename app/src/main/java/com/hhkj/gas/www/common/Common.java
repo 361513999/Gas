@@ -7,6 +7,7 @@ import android.os.Environment;
  */
 
 public class Common {
+    public static final String config = "CONFIG";
     public static String BASE_DIR = Environment
             .getExternalStorageDirectory().getAbsolutePath();
     public static String DIR = "/GAS_CACHE/";

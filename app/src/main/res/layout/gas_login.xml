@@ -1,18 +1,153 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:background="@mipmap/bg_enter"
     android:layout_height="match_parent">
-        <EditText
-            android:id="@+id/user"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        <EditText
-            android:id="@+id/pass"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-            <Button
+
+
+       <LinearLayout
+           android:layout_width="match_parent"
+           android:layout_height="0dp"
+           android:gravity="center"
+           android:layout_weight="359">
+           <com.hhkj.gas.www.widget.CircleImageView
+               android:layout_width="120dp"
+               android:layout_height="120dp"
+               android:src="@mipmap/logo"
+               app:civ_border_width="2dp"
+               app:civ_border_color="@color/no_color" />
+
+       </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="266"
+        android:orientation="horizontal">
+        <View
+            android:layout_width="0dp"
+            android:layout_weight="86"
+            android:layout_height="match_parent"/>
+        <LinearLayout
+            android:layout_weight="352"
+            android:layout_width="0dp"
+            android:orientation="vertical"
+            android:layout_height="match_parent">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:orientation="vertical"
+                android:gravity="bottom"
+                android:layout_marginBottom="20dp"
+                android:layout_weight="1">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_height="wrap_content">
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginRight="8dp"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginBottom="4dp"
+                        android:background="@mipmap/icon_accounts"/>
+                    <EditText
+                        android:id="@+id/user"
+                        android:background="@color/no_color"
+                        android:textSize="18sp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/login_line"/>
+
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:gravity="top"
+                android:layout_marginTop="20dp"
+                android:orientation="vertical"
+                android:layout_weight="1">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_height="wrap_content">
+                    <ImageView
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginRight="8dp"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginBottom="4dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@mipmap/icon_password"/>
+                    <EditText
+                        android:id="@+id/pass"
+                        android:background="@color/no_color"
+                        android:layout_width="match_parent"
+                        android:inputType="textPassword"
+                        android:textSize="18sp"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/login_line"/>
+
+
+            </LinearLayout>
+
+        </LinearLayout>
+        <View
+            android:layout_width="0dp"
+            android:layout_weight="86"
+            android:layout_height="match_parent"/>
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="304">
+        <View
+            android:layout_width="0dp"
+            android:layout_weight="86"
+            android:layout_height="match_parent"/>
+        <LinearLayout
+            android:layout_weight="352"
+            android:layout_width="0dp"
+            android:orientation="vertical"
+            android:layout_height="match_parent">
+            <TextView
                 android:id="@+id/login"
-                android:text="login"
+                android:text="登录"
+                android:gravity="center"
+                android:textSize="16sp"
+                android:layout_marginTop="20dp"
+                android:paddingBottom="12dp"
+                android:background="@mipmap/btn_enter"
                 android:layout_width="wrap_content"
+                android:textColor="@color/blue_n"
                 android:layout_height="wrap_content" />
+
+            </LinearLayout>
+        <View
+            android:layout_width="0dp"
+            android:layout_weight="86"
+            android:layout_height="match_parent"/>
+
+
+    </LinearLayout>
+
+
+
 </LinearLayout>

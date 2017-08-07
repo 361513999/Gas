@@ -28,7 +28,7 @@ import android.view.WindowManager;
 public class BaseApplication extends Application {
 	private static final boolean DEVELOPER_MODE = true;
 	public static BaseApplication application;
-	protected boolean isNeedCaughtExeption = true;// 是否捕获未知异常
+	protected boolean isNeedCaughtExeption = false;// 是否捕获未知异常
 	private MyUncaughtExceptionHandler uncaughtExceptionHandler;
 	private String packgeName;
 	@Override
