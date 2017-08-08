@@ -2,8 +2,8 @@
 <!-- 微博列表界面tab栏关注 按钮 -->
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:drawable="@mipmap/icon_more_bottom" android:state_pressed="true"/>
-    <item android:drawable="@mipmap/icon_more_bottom" android:state_checked="true"/>
-    <item android:drawable="@mipmap/icon_more_top"/>
+    <item android:drawable="@mipmap/icon_more_top" android:state_pressed="true"/>
+    <item android:drawable="@mipmap/icon_more_top" android:state_checked="true"/>
+    <item android:drawable="@mipmap/icon_more_bottom"/>
 
 </selector>
