@@ -27,4 +27,30 @@
         <attr name="civ_border_overlay" format="boolean" />
         <attr name="civ_fill_color" format="color" />
     </declare-styleable>
+
+
+    <style name="_category_radiobtn">
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:paddingTop">8dip</item>
+        <item name="android:paddingBottom">4dip</item>
+        <item name="android:paddingRight">8dp</item>
+        <item name="android:drawableRight">@drawable/_list_radio_right_btn</item>
+        <item name="android:textColor">@color/_radiobtn_text</item>
+        <item name="android:button">@null</item>
+    </style>
+
+    <style name="nav_btn">
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/nav_top_text</item>
+        <item name="android:button">@null</item>
+    </style>
+
 </resources>

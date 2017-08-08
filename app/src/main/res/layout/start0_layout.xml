@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:background="@color/white"
+    android:layout_height="match_parent">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/title_heigh"
+        >
+        <TextView
+            android:id="@+id/back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="12dp"
+            android:background="@drawable/back_act"/>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_height="wrap_content">
+            <RadioGroup
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:background="@mipmap/nav_wire"
+                android:padding="0.5dp"
+                android:layout_height="wrap_content">
+                <RadioButton
+                    android:id="@+id/nav_0"
+                    style="@style/nav_btn"
+                    android:background="@drawable/nav_left_btn"
+                    android:text="预约类任务" />
+
+                <RadioButton
+                    android:id="@+id/nav_1"
+                    style="@style/nav_btn"
+                    android:background="@drawable/nav_right_btn"
+                    android:text="计划类任务" />
+            </RadioGroup>
+
+        </LinearLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="12dp"
+            android:background="@mipmap/icon_seach"/>
+    </RelativeLayout>
+    <View
+        android:layout_width="match_parent"
+        android:background="@mipmap/line_gray"
+        android:layout_height="1dp"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_height="match_parent">
+
+        <RadioGroup
+            android:id="@+id/market_group"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:orientation="horizontal" >
+
+            <RadioButton
+                android:id="@+id/market_group_item0"
+                style="@style/_category_radiobtn"
+                android:text="一键领取" />
+
+            <RadioButton
+                android:id="@+id/market_group_item1"
+                style="@style/_category_radiobtn"
+                android:drawableLeft="@mipmap/icon_tieku"
+                android:text="小区名" />
+
+            <RadioButton
+                android:id="@+id/market_group_item2"
+                style="@style/_category_radiobtn"
+                android:drawableLeft="@mipmap/icon_tieku"
+                android:text="时间" />
+            <RadioButton
+                android:id="@+id/market_group_item3"
+                style="@style/_category_radiobtn"
+                android:drawableLeft="@mipmap/icon_tieku"
+                android:text="排序" />
+        </RadioGroup>
+        <View
+            android:layout_width="match_parent"
+            android:background="@mipmap/line_gray"
+            android:layout_height="1dp"/>
+    </LinearLayout>
+</LinearLayout>

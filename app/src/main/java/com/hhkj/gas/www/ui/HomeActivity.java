@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import com.hhkj.gas.www.R;
 import com.hhkj.gas.www.base.AppManager;
@@ -31,6 +32,7 @@ public class HomeActivity extends BaseActivity {
         return super.onKeyDown(keyCode, event);
     }
     private ImageView setting_btn;
+    private LinearLayout start0,start1,start2;
     @Override
     public void init() {
         setting_btn = (ImageView) findViewById(R.id.setting_btn);
@@ -39,6 +41,15 @@ public class HomeActivity extends BaseActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(HomeActivity.this,SettingActivity.class);
                 startActivity(intent);
+
+            }
+        });
+        start0 = (LinearLayout) findViewById(R.id.start0);
+        start1 = (LinearLayout) findViewById(R.id.start1);
+        start2 = (LinearLayout) findViewById(R.id.start2);
+        start0.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
             }
         });

@@ -51,7 +51,7 @@ public class LoginActivity extends BaseActivity{
             if (mLeakActivityRef.get() != null){
                 switch (msg.what){
                     case 0:
-                        NewToast.makeText(LoginActivity.this,(String)msg.obj,2000).show();
+                        NewToast.makeText(LoginActivity.this,(String)msg.obj,Common.TTIME).show();
                         break;
                     case 1:
                         Intent intent = new Intent(LoginActivity.this,HomeActivity.class);

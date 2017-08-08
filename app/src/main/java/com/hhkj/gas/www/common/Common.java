@@ -7,6 +7,7 @@ import android.os.Environment;
  */
 
 public class Common {
+    public static final int TTIME = 500;
     public static final String config = "CONFIG";
     public static String BASE_DIR = Environment
             .getExternalStorageDirectory().getAbsolutePath();
