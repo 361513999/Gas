@@ -38,7 +38,7 @@
                             android:layout_width="wrap_content"
                             android:text="未领取"
                             android:layout_marginTop="6dp"
-                            android:textSize="10sp"
+                            android:textSize="12sp"
                             android:layout_gravity="center_horizontal"
                             android:textColor="@color/font_light"
                             android:layout_height="wrap_content" />
@@ -51,30 +51,35 @@
                         android:layout_marginBottom="10dp"
                         android:layout_height="match_parent">
                         <TextView
+                            android:id="@+id/item0"
                             android:layout_width="match_parent"
                             android:layout_height="0dp"
                             android:text="@string/nor_item_txt0"
                             style="@style/nor_item_txt"
                             android:layout_weight="1"/>
                         <TextView
+                            android:id="@+id/item1"
                             android:layout_width="match_parent"
                             android:layout_height="0dp"
                             style="@style/nor_item_txt"
                             android:text="@string/nor_item_txt1"
                             android:layout_weight="1"/>
                         <TextView
+                            android:id="@+id/item2"
                             android:layout_width="match_parent"
                             android:layout_height="0dp"
                             style="@style/nor_item_txt"
                             android:text="@string/nor_item_txt2"
                             android:layout_weight="1"/>
                         <TextView
+                            android:id="@+id/item3"
                             android:layout_width="match_parent"
                             android:layout_height="0dp"
                             style="@style/nor_item_txt"
                             android:text="@string/nor_item_txt3"
                             android:layout_weight="1"/>
                         <TextView
+                            android:id="@+id/item4"
                             android:layout_width="match_parent"
                             android:layout_height="0dp"
                             style="@style/nor_item_txt"

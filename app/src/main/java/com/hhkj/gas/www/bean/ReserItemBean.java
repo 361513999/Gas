@@ -12,6 +12,15 @@ public class ReserItemBean implements Serializable{
     private String tel;
     private String add;
     private String time;
+    private boolean isOpen;
+
+    public boolean isOpen() {
+        return isOpen;
+    }
+
+    public void setOpen(boolean open) {
+        isOpen = open;
+    }
 
     public String getNo() {
         return no;

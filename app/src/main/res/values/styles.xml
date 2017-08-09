@@ -56,7 +56,8 @@
         <style name="nor_item_txt">
             <item name="android:textColor">@color/font_normal</item>
             <item name="android:layout_gravity">center_vertical</item>
-            <item name="android:textSize">13sp</item>
+            <item name="android:textSize">14sp</item>
             <item name="android:gravity">center_vertical</item>
         </style>
+
 </resources>

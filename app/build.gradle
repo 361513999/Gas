@@ -5,7 +5,7 @@ android {
     buildToolsVersion "25.0.2"
     defaultConfig {
         applicationId "com.hhkj.gas.www"
-        minSdkVersion 15
+        minSdkVersion 18
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
@@ -29,4 +29,5 @@ dependencies {
     compile files('libs/okhttp-3.4.1.jar')
     compile files('libs/okio-1.9.0.jar')
     compile files('libs/universal-image-loader-1.9.5.jar')
+    compile files('libs/nineoldandroids-2.4.0.jar')
 }
