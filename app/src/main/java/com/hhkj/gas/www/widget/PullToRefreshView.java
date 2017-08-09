@@ -21,6 +21,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.hhkj.gas.www.R;
+import com.hhkj.gas.www.common.TimeUtil;
 
 
 public class PullToRefreshView extends LinearLayout {
@@ -537,7 +538,7 @@ public class PullToRefreshView extends LinearLayout {
 		mHeaderTextView.setText(R.string.pull_to_refresh_pull_label);
 		mHeaderProgressBar.setVisibility(View.GONE);
 		mHeaderState = PULL_TO_REFRESH;
-		setLastUpdated("最近更新:" + new Date().toLocaleString());
+		setLastUpdated("最近更新:" + TimeUtil.getTime(new Date().getTime()));
 	}
 
 	/**

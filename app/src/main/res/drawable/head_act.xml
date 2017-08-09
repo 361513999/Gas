@@ -3,12 +3,12 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!-- 点中时的 -->
-    <item android:drawable="@mipmap/nav_icon_back" android:state_pressed="true"/>
+    <item android:drawable="@mipmap/but_hit_assign" android:state_pressed="true"/>
     <!-- 有焦点时的 -->
-    <item android:drawable="@mipmap/nav_icon_back" android:state_focused="true"/>
+    <item android:drawable="@mipmap/but_hit_assign" android:state_focused="true"/>
     <!-- 选中时字体 -->
-    <item android:drawable="@mipmap/nav_icon_back" android:state_enabled="false"/>
+    <item android:drawable="@mipmap/but_hit_assign" android:state_enabled="false"/>
     <!-- 默认的 -->
-    <item android:drawable="@mipmap/nav_icon_back"/>
+    <item android:drawable="@mipmap/but_nor_assign"/>
 
 </selector>

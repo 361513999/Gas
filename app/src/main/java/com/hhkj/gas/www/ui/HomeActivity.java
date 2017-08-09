@@ -50,7 +50,8 @@ public class HomeActivity extends BaseActivity {
         start0.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                Intent intent = new Intent(HomeActivity.this,Start0Activity.class);
+                startActivity(intent);
             }
         });
     }

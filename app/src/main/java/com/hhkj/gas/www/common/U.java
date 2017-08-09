@@ -11,6 +11,7 @@ public class U {
     public static  String BASEIP = "106.14.212.85:8001";
     public static final String BASE_URL = "/DataService.svc/";
     public static final String LOGIN = "StaffLogin";
+    public static final String LIST = "Post";
     public static String VISTER(String url){
         SharedUtils sharedUtils = new SharedUtils(Common.config);
         String ip = sharedUtils.getStringValue("IP");

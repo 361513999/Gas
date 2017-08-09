@@ -6,10 +6,14 @@ import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.WindowManager;
 
+import com.hhkj.gas.www.common.Common;
+import com.hhkj.gas.www.common.SharedUtils;
+
 public abstract class BaseActivity extends Activity{
     /**
      * 返回键调用
      */
+    public SharedUtils sharedUtils;
     public void backActivity(){
         AppManager.getAppManager().finishActivity(this);
     }
@@ -17,7 +21,7 @@ public abstract class BaseActivity extends Activity{
     protected void onCreate(Bundle savedInstanceState) {
         // TODO Auto-generated method stub
         super.onCreate(savedInstanceState);
-
+        sharedUtils = new SharedUtils(Common.config);
         AppManager.getAppManager().addActivity(this);
     }
     @Override

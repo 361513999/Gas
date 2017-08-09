@@ -115,8 +115,9 @@ public class LoginActivity extends BaseActivity{
             try {
                 JSONObject jsonObject = new JSONObject( FileUtils.formatJson(response));
                 if(jsonObject.getBoolean("Success")){
-                    SharedUtils sharedUtils = new SharedUtils(Common.config);
+
                     sharedUtils.setStringValue("token",jsonObject.getString("Value"));
+                    sharedUtils.setBooleanValue("head",(jsonObject.getInt("Error")==0)?false:true);
                     handler.sendEmptyMessage(1);
                 }else{
                     Message msg = new Message();
