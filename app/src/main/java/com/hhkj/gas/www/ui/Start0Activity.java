@@ -22,6 +22,7 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.hhkj.gas.www.R;
+import com.hhkj.gas.www.adapter.AreasAdapter;
 import com.hhkj.gas.www.adapter.Start0Adapter;
 import com.hhkj.gas.www.base.AppManager;
 import com.hhkj.gas.www.base.BaseActivity;
@@ -29,6 +30,7 @@ import com.hhkj.gas.www.bean.ReserItemBean;
 import com.hhkj.gas.www.common.FileUtils;
 import com.hhkj.gas.www.common.P;
 import com.hhkj.gas.www.common.U;
+import com.hhkj.gas.www.widget.NewToast;
 import com.hhkj.gas.www.widget.PullToRefreshView;
 import com.zc.http.okhttp.OkHttpUtils;
 import com.zc.http.okhttp.callback.StringCallback;
@@ -41,8 +43,10 @@ import org.json.JSONObject;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
+import library.view.GregorianLunarCalendarView;
 import okhttp3.Call;
 import okhttp3.MediaType;
 
@@ -84,6 +88,8 @@ public class Start0Activity extends BaseActivity {
                 @Override
                 public void run() {
                     pull_to_refresh_list.onFooterRefreshComplete();
+                    loadList(CURRENT_PAGE+1);
+
                 }
             },runTime);
         }
@@ -92,8 +98,10 @@ public class Start0Activity extends BaseActivity {
     private TextView head_btn;
     private RadioGroup market_group;
     private RadioButton market_group_item0,market_group_item1,market_group_item2,market_group_item3;
+    private View drop;
     @Override
     public void init() {
+        drop = findViewById(R.id.drop);
         pull_to_refresh_list = (PullToRefreshView) findViewById(R.id.pull_to_refresh_list);
         pull_to_refresh_list.setOnHeaderRefreshListener(listHeadListener);
         pull_to_refresh_list.setOnFooterRefreshListener(listFootListener);
@@ -119,8 +127,9 @@ public class Start0Activity extends BaseActivity {
         nav_grp.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, @IdRes int i) {
-                CURRENT_PAGE = 0;
-                loadList();
+                ribs.clear();
+                CURRENT_PAGE = 1;
+                loadList(CURRENT_PAGE);
                 switch (i){
                     case R.id.nav_0:
 
@@ -144,8 +153,18 @@ public class Start0Activity extends BaseActivity {
             public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
                 switch (checkedId){
                     case R.id.market_group_item2:
-                        dataPop();
-                        showDataPop(market_group_item2);
+                        if(market_group_item2.isChecked()){
+                            //选中才打开
+                            dataPop();
+                            showDataPop(dataPopupWindow,drop);
+                        }
+                        break;
+                    case R.id.market_group_item1:
+                        if(market_group_item1.isChecked()){
+                            areaPop();
+                            showDataPop(areaPopupWindow,drop);
+                        }
+
                         break;
                 }
             }
@@ -153,7 +172,7 @@ public class Start0Activity extends BaseActivity {
 
 
 
-        loadList();
+      //  loadList(CURRENT_PAGE);
     }
 
 
@@ -161,7 +180,7 @@ public class Start0Activity extends BaseActivity {
     private int CURRENT_PAGE = 1;
     private final int SHOW_NUM = 8;
     private RequestCall requestCall;
-    private void loadList(){
+    private void loadList(int CURRENT_PAGE){
         int type = Integer.parseInt(getCheckedId());
         JSONObject jsonObject = new JSONObject();
         try {
@@ -203,7 +222,12 @@ public class Start0Activity extends BaseActivity {
                     String result = jsonObject.getString("Result");
                     JSONArray jsonArray = new JSONArray(result);
                     int len = jsonArray.length();
-                    ribs.clear();
+                    if(len<SHOW_NUM){
+                        startHandler.sendEmptyMessage(2);
+                    }else{
+                        CURRENT_PAGE = CURRENT_PAGE+1;
+                    }
+
                     for(int i=0;i<len;i++){
                         JSONObject object = jsonArray.getJSONObject(i);
                         ReserItemBean ib = new ReserItemBean();
@@ -222,6 +246,13 @@ public class Start0Activity extends BaseActivity {
                        }
 
                         ribs.add(ib);
+                        ribs.add(ib);
+                        ribs.add(ib);
+                        ribs.add(ib);
+                        ribs.add(ib);
+                        ribs.add(ib);
+                        ribs.add(ib);
+                        ribs.add(ib);
                     }
                     startHandler.sendEmptyMessage(1);
 
@@ -233,49 +264,114 @@ public class Start0Activity extends BaseActivity {
 
         }
     };
-    //---------
-    private LayoutInflater mLayoutInflater;
-    private View dataPop;
-    private PopupWindow dataPopupWindow;
+    /**
+     * 关于区域的pop
+     */
+
+
+    /**
+     * 关于时间的pop
+     */
+    private LayoutInflater dateInflater,areaInflater;
+    private View dataPop,areaPop;
+    private PopupWindow dataPopupWindow,areaPopupWindow;
+    private void areaPop(){
+        areaInflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+        areaPop = areaInflater.inflate(R.layout.area_list_layout,null);
+        areaPopupWindow = new PopupWindow(areaPop,LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.MATCH_PARENT);
+        areaPopupWindow.setAnimationStyle(android.R.style.TextAppearance_DeviceDefault_Widget_TextView_PopupMenu);
+        areaPopupWindow.update();
+        areaPopupWindow.setTouchable(true);
+        areaPopupWindow.setFocusable(true);
+        ListView area_list = (ListView) areaPop.findViewById(R.id.area_list);
+        AreasAdapter areasAdapter = new AreasAdapter(Start0Activity.this,null);
+        area_list.setAdapter(areasAdapter);
+
+    }
+
+
     private void dataPop(){
-        mLayoutInflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-        dataPop = mLayoutInflater.inflate(null, null);
+        dateInflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+        dataPop = dateInflater.inflate(R.layout.date_double_layout, null);
         dataPopupWindow = new PopupWindow(dataPop, LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout. LayoutParams.WRAP_CONTENT);
+                LinearLayout. LayoutParams.MATCH_PARENT);
         dataPopupWindow.setBackgroundDrawable(getResources().getDrawable(
-                R.color.font_light));
+                R.color.bcolor));
         //android.R.style.TextAppearance_DeviceDefault_Widget_TextView_PopupMenu)
-        dataPopupWindow.setAnimationStyle(R.style.picker);
+        dataPopupWindow.setAnimationStyle(android.R.style.TextAppearance_DeviceDefault_Widget_TextView_PopupMenu);
 
         dataPopupWindow.update();
         dataPopupWindow.setTouchable(true);
         dataPopupWindow.setFocusable(true);
+        final GregorianLunarCalendarView  mGLCView0 = (GregorianLunarCalendarView) dataPop.findViewById(R.id.calendar_view_start);
+        final GregorianLunarCalendarView  mGLCView1 = (GregorianLunarCalendarView) dataPop.findViewById(R.id.calendar_view_end);
+        mGLCView0.init();//init has no scroll effection, to today
+        mGLCView1.init();
+        dataPopupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+            @Override
+            public void onDismiss() {
 
+               // ((RadioButton)findViewById(market_group.getCheckedRadioButtonId())).setChecked(false);
+               // market_group_item2.setChecked(false);
+                market_group.clearCheck();
+            }
+        });
+        TextView sure = (TextView) dataPop.findViewById(R.id.sure);
+        TextView cancle = (TextView) dataPop.findViewById(R.id.cancle);
+        sure.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
+                GregorianLunarCalendarView.CalendarData calendarData0 = mGLCView0.getCalendarData();
+                Calendar calendar0 = calendarData0.getCalendar();
+                GregorianLunarCalendarView.CalendarData calendarData1 = mGLCView1.getCalendarData();
+                Calendar calendar1 = calendarData1.getCalendar();
+                //相同是0   第一个大于第二个是1   第一个小于第二个是-1
+                String showToast = calendar0.getTime().compareTo(calendar1.getTime())+"start : " + calendar0.get(Calendar.YEAR) + "-"
+                        + (calendar0.get(Calendar.MONTH) + 1) + "-"
+                        + calendar0.get(Calendar.DAY_OF_MONTH)+"---end"+calendar1.get(Calendar.YEAR) + "-"
+                        + (calendar1.get(Calendar.MONTH) + 1) + "-"
+                        + calendar1.get(Calendar.DAY_OF_MONTH);
 
-       // testy.setValue(11);
+                NewToast.makeText(Start0Activity.this,showToast,1000).show();
 
-//        DatePicker datePickerStart = (DatePicker) dataPop.findViewById(R.id.datePickerStart);
-//        DatePicker datePickerEnd = (DatePicker) dataPop.findViewById(R.id.datePickerEnd);
-//        resizePikcer(datePickerStart);
-//        setDatePickerDividerColor(datePickerEnd);
-//        resizePikcer(datePickerEnd);
-//        ViewHelper.setScaleX(datePickerStart,0.8f);
-//        ViewHelper.setScaleX(datePickerEnd,0.8f);
-
+            }
+        });
+        View diss = dataPop.findViewById(R.id.diss);
+        cancle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                disDataPop(dataPopupWindow,dataPop);
+            }
+        });
+        diss.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                disDataPop(dataPopupWindow,dataPop);
+            }
+        });
+    }
+    private void disDataPop(PopupWindow popupWindow,View v){
+        if(popupWindow!=null&&popupWindow.isShowing()){
+            popupWindow.dismiss();
+            popupWindow = null;
+            v = null;
+        }
     }
 
 
 
 
-    private void showDataPop(View view) {
-        if (!dataPopupWindow.isShowing()) {
+    private void showDataPop(PopupWindow popupWindow,View view) {
+        if (!popupWindow.isShowing()) {
             // mPopupWindow.showAsDropDown(view,0,0);
             // 第一个参数指定PopupWindow的锚点view，即依附在哪个view上。
             // 第二个参数指定起始点为parent的右下角，第三个参数设置以parent的右下角为原点，向左、上各偏移10像素。
             int[] location = new int[2];
+
             view.getLocationOnScreen(location);
-            dataPopupWindow.showAsDropDown(view);
+
+            popupWindow.showAsDropDown(view);
         }
     }
 
@@ -296,6 +392,9 @@ public class Start0Activity extends BaseActivity {
                 switch (msg.what){
                     case 1:
                         start0Adapter.updata(ribs);
+                        break;
+                    case 2:
+                        NewToast.makeText(Start0Activity.this,"最后一页",1000).show();
                         break;
                 }
             }

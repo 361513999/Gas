@@ -3,6 +3,7 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:background="@color/white"
     android:layout_height="match_parent">
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/title_heigh"
@@ -89,9 +90,11 @@
                 android:text="排序" />
         </RadioGroup>
         <View
+            android:id="@+id/drop"
             android:layout_width="match_parent"
             android:background="@mipmap/line_gray"
             android:layout_height="1dp"/>
+
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -117,8 +120,7 @@
                     android:divider="@color/no_color"
                     android:dividerHeight="6dp"
                     android:background="@color/no_color"
-                    android:cacheColorHint="@color/no_color">
-                </ListView>
+                    android:cacheColorHint="@color/no_color"/>
             </com.hhkj.gas.www.widget.PullToRefreshView>
 
         </LinearLayout>
