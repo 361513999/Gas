@@ -26,6 +26,7 @@ import com.hhkj.gas.www.adapter.AreasAdapter;
 import com.hhkj.gas.www.adapter.Start0Adapter;
 import com.hhkj.gas.www.base.AppManager;
 import com.hhkj.gas.www.base.BaseActivity;
+import com.hhkj.gas.www.bean.AreaBean;
 import com.hhkj.gas.www.bean.ReserItemBean;
 import com.hhkj.gas.www.common.FileUtils;
 import com.hhkj.gas.www.common.P;
@@ -40,6 +41,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -275,17 +277,80 @@ public class Start0Activity extends BaseActivity {
     private LayoutInflater dateInflater,areaInflater;
     private View dataPop,areaPop;
     private PopupWindow dataPopupWindow,areaPopupWindow;
+    private ListView area_list;
+    private AreasAdapter areasAdapter;
+    private ArrayList<AreaBean> rbs = new ArrayList<>();
     private void areaPop(){
         areaInflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
         areaPop = areaInflater.inflate(R.layout.area_list_layout,null);
         areaPopupWindow = new PopupWindow(areaPop,LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.MATCH_PARENT);
+        areaPopupWindow.setBackgroundDrawable(getResources().getDrawable(
+                R.color.bcolor));
         areaPopupWindow.setAnimationStyle(android.R.style.TextAppearance_DeviceDefault_Widget_TextView_PopupMenu);
         areaPopupWindow.update();
         areaPopupWindow.setTouchable(true);
         areaPopupWindow.setFocusable(true);
-        ListView area_list = (ListView) areaPop.findViewById(R.id.area_list);
-        AreasAdapter areasAdapter = new AreasAdapter(Start0Activity.this,null);
+        area_list = (ListView) areaPop.findViewById(R.id.area_list);
+        areasAdapter = new AreasAdapter(Start0Activity.this,rbs);
         area_list.setAdapter(areasAdapter);
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("toKen",sharedUtils.getStringValue("token"));
+            jsonObject.put("cls","Gas.AreaSet");
+            jsonObject.put("method","AreaList");
+            jsonObject.put("param","");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        areaPopupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+
+                // ((RadioButton)findViewById(market_group.getCheckedRadioButtonId())).setChecked(false);
+                // market_group_item2.setChecked(false);
+                market_group.clearCheck();
+            }
+        });
+        View diss = areaPop.findViewById(R.id.diss);
+        diss.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                disDataPop(areaPopupWindow,areaPop,new Object[]{area_list,areasAdapter});
+            }
+        });
+        OkHttpUtils.postString().url(U.VISTER(U.BASE_URL)+U.LIST).mediaType(MediaType.parse("application/json; charset=utf-8")).content(jsonObject.toString()).build().execute(new StringCallback() {
+            @Override
+            public void onError(Call call, Exception e, int id) {
+
+            }
+
+            @Override
+            public void onResponse(String response, int id) {
+
+
+                try {
+                    JSONObject jsonObject = new JSONObject(FileUtils.formatJson(response));
+                    if(jsonObject.getBoolean("Success")){
+                        //成功状态
+                        String result = jsonObject.getString("Result");
+                        JSONArray jsonArray = new JSONArray(result);
+                        int len = jsonArray.length();
+                        rbs.clear();
+                        for(int i=0;i<len;i++){
+                            JSONObject object = jsonArray.getJSONObject(i);
+                            AreaBean ab = new AreaBean();
+                            ab.setName(object.getString("AreaName"));
+                            ab.setId(object.getString("AreaCode"));
+                            rbs.add(ab);
+                        }
+                        startHandler.sendEmptyMessage(3);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
 
     }
 
@@ -341,21 +406,26 @@ public class Start0Activity extends BaseActivity {
         cancle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                disDataPop(dataPopupWindow,dataPop);
+                disDataPop(dataPopupWindow,dataPop,null);
             }
         });
         diss.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                disDataPop(dataPopupWindow,dataPop);
+                disDataPop(dataPopupWindow,dataPop,null);
             }
         });
     }
-    private void disDataPop(PopupWindow popupWindow,View v){
+    private void disDataPop(PopupWindow popupWindow,View v,Object[] objs){
         if(popupWindow!=null&&popupWindow.isShowing()){
             popupWindow.dismiss();
             popupWindow = null;
             v = null;
+            if(objs!=null){
+                for(int i=0;i<objs.length;i++){
+                    objs[i] = null;
+                }
+            }
         }
     }
 
@@ -395,6 +465,9 @@ public class Start0Activity extends BaseActivity {
                         break;
                     case 2:
                         NewToast.makeText(Start0Activity.this,"最后一页",1000).show();
+                        break;
+                    case 3:
+                        areasAdapter.updata(rbs);
                         break;
                 }
             }

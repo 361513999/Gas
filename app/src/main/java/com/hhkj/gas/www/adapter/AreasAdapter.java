@@ -31,8 +31,7 @@ public class AreasAdapter extends BaseAdapter {
     }
     @Override
     public int getCount() {
-        return  20;
-//        return rbs.size();
+        return rbs.size();
     }
 
     @Override
@@ -61,9 +60,8 @@ public class AreasAdapter extends BaseAdapter {
             viewHolder = (ViewHolder) convertView.getTag(R.mipmap.ic_launcher
                     + position);
         }
-       // AreaBean it = rbs.get(position);
-//        viewHolder.txt.setText(it.getName());
-        viewHolder.txt.setText("测试");
+        AreaBean it = rbs.get(position);
+        viewHolder.txt.setText(it.getName());
         return  convertView;
     }
 }

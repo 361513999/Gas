@@ -24,11 +24,12 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Environment;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 public class BaseApplication extends Application {
 	private static final boolean DEVELOPER_MODE = true;
 	public static BaseApplication application;
-	protected boolean isNeedCaughtExeption = false;// 是否捕获未知异常
+	protected boolean isNeedCaughtExeption = true;// 是否捕获未知异常
 	private MyUncaughtExceptionHandler uncaughtExceptionHandler;
 	private String packgeName;
 	@Override
@@ -135,6 +136,7 @@ public class BaseApplication extends Application {
 		}
 		printWriter.close();
 		String sb = writer.toString();
+	    P.c("日志"+sb);
 		try {
 			DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
 			String time = formatter.format(new Date());
