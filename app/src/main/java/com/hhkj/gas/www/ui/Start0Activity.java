@@ -269,17 +269,22 @@ public class Start0Activity extends BaseActivity {
         P.c(U.VISTER(U.BASE_URL)+U.LIST);
         requestCall.execute(stringCallback);
     }
-    private StringCallback stringCallback = new StringCallback() {
-        @Override
-        public void onError(Call call, Exception e, int id) {
+    private void closeLoad(){
+        if(loadView!=null){
             loadView.cancle();
             loadView = null;
         }
 
+    }
+    private StringCallback stringCallback = new StringCallback() {
+        @Override
+        public void onError(Call call, Exception e, int id) {
+            closeLoad();
+        }
+
         @Override
         public void onResponse(String response, int id) {
-            loadView.cancle();
-            loadView = null;
+            closeLoad();
             try {
                 P.c(FileUtils.formatJson(response));
             } catch (JSONException e) {
