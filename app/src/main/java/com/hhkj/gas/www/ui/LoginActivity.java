@@ -17,6 +17,7 @@ import com.hhkj.gas.www.common.FileUtils;
 import com.hhkj.gas.www.common.P;
 import com.hhkj.gas.www.common.SharedUtils;
 import com.hhkj.gas.www.common.U;
+import com.hhkj.gas.www.widget.LoadView;
 import com.hhkj.gas.www.widget.NewToast;
 import com.zc.http.okhttp.OkHttpUtils;
 import com.zc.http.okhttp.callback.StringCallback;
@@ -38,6 +39,7 @@ import okhttp3.MediaType;
 
 public class LoginActivity extends BaseActivity{
     private LoginHandler handler;
+    private LoadView loadView;
     private class LoginHandler extends Handler {
         WeakReference<LoginActivity> mLeakActivityRef;
 
@@ -66,6 +68,7 @@ public class LoginActivity extends BaseActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.gas_login);
+
         handler = new LoginHandler(LoginActivity.this);
     }
     private EditText user,pass;
@@ -85,6 +88,10 @@ public class LoginActivity extends BaseActivity{
     }
     private RequestCall loginCall;
     private void login(){
+        if(loadView==null){
+            loadView = new LoadView(LoginActivity.this);
+            loadView.showSheet();
+        }
         String userValue = user.getText().toString().trim();
         String passValue = pass.getText().toString().trim();
         JSONObject object = new JSONObject();
@@ -98,15 +105,22 @@ public class LoginActivity extends BaseActivity{
         P.c(U.VISTER(U.BASE_URL)+U.LOGIN);
         loginCall.execute(loginCallback);
     }
+    private void closeLoad(){
+        if(loadView!=null){
+            loadView.cancle();
+            loadView = null;
+        }
+    }
     //数据返回
     private StringCallback loginCallback = new StringCallback() {
         @Override
         public void onError(Call call, Exception e, int id) {
-
+                closeLoad();
         }
 
         @Override
         public void onResponse(String response, int id) {
+            closeLoad();
             try {
                 P.c(FileUtils.formatJson(response));
             } catch (JSONException e) {
@@ -118,6 +132,9 @@ public class LoginActivity extends BaseActivity{
 
                     sharedUtils.setStringValue("token",jsonObject.getString("Value"));
                     sharedUtils.setBooleanValue("head",(jsonObject.getInt("Error")==0)?false:true);
+                    String result = jsonObject.getString("Result");
+                    JSONObject obj = new JSONObject(result);
+                    sharedUtils.setStringValue("userid",obj.getString("Id"));
                     handler.sendEmptyMessage(1);
                 }else{
                     Message msg = new Message();

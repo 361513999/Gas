@@ -1,31 +1,22 @@
 package com.hhkj.gas.www.ui;
 
-import android.content.res.Resources;
-import android.graphics.Paint;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.IdRes;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.DatePicker;
-import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.NumberPicker;
 import android.widget.PopupWindow;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
-
 import com.hhkj.gas.www.R;
 import com.hhkj.gas.www.adapter.AreasAdapter;
-import com.hhkj.gas.www.adapter.Start0Adapter;
+import com.hhkj.gas.www.adapter.Start2Adapter;
 import com.hhkj.gas.www.base.AppManager;
 import com.hhkj.gas.www.base.BaseActivity;
 import com.hhkj.gas.www.bean.AreaBean;
@@ -46,12 +37,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
 import java.lang.ref.WeakReference;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 
 import library.view.GregorianLunarCalendarView;
 import okhttp3.Call;
@@ -61,20 +49,20 @@ import okhttp3.MediaType;
  * Created by Administrator on 2017/8/8/008.
  */
 
-public class Start0Activity extends BaseActivity {
+public class Start2Activity extends BaseActivity {
     private StartHandler startHandler;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-         setContentView(R.layout.start0_layout);
-        startHandler = new StartHandler(Start0Activity.this);
+         setContentView(R.layout.start2_layout);
+        startHandler = new StartHandler(Start2Activity.this);
     }
     private LoadView loadView;
     private RadioGroup nav_grp;
     private RadioButton nav_0,nav_1;
     private ListView gas_list;
     private TextView back;
-    private Start0Adapter start0Adapter;
+    private Start2Adapter start2Adapter;
     private PullToRefreshView pull_to_refresh_list;
     private PullToRefreshView.OnHeaderRefreshListener listHeadListener = new PullToRefreshView.OnHeaderRefreshListener(){
 
@@ -103,69 +91,53 @@ public class Start0Activity extends BaseActivity {
         }
     };
     private final int runTime = 400;
-    private TextView head_btn;
     private RadioGroup market_group;
-    private RadioButton market_group_item0,market_group_item1,market_group_item2,market_group_item3;
+    private RadioButton market_group_item1,market_group_item2,market_group_item3;
     private View drop;
-    private LinearLayout get_layout;
-    private CheckBox get_all;
-    private TextView get_sure;
+
     @Override
     public void init() {
         drop = findViewById(R.id.drop);
-        get_layout = (LinearLayout) findViewById(R.id.get_layout);
-        get_all = (CheckBox) findViewById(R.id.get_all);
-        get_sure = (TextView) findViewById(R.id.get_sure);
+
 
         pull_to_refresh_list = (PullToRefreshView) findViewById(R.id.pull_to_refresh_list);
         pull_to_refresh_list.setOnHeaderRefreshListener(listHeadListener);
         pull_to_refresh_list.setOnFooterRefreshListener(listFootListener);
         gas_list = (ListView) findViewById(R.id.gas_list);
-        start0Adapter = new Start0Adapter(Start0Activity.this,ribs);
+        start2Adapter = new Start2Adapter(Start2Activity.this,ribs);
         market_group = (RadioGroup) findViewById(R.id.market_group);
-        market_group_item0 = (RadioButton) findViewById(R.id.market_group_item0);
         market_group_item1 = (RadioButton) findViewById(R.id.market_group_item1);
         market_group_item2 = (RadioButton) findViewById(R.id.market_group_item2);
         market_group_item3 = (RadioButton) findViewById(R.id.market_group_item3);
         nav_grp = (RadioGroup) findViewById(R.id.nav_grp);
         nav_0 = (RadioButton) findViewById(R.id.nav_0);
         nav_1 = (RadioButton) findViewById(R.id.nav_1);
-        gas_list.setAdapter(start0Adapter);
+        gas_list.setAdapter(start2Adapter);
         back = (TextView) findViewById(R.id.back);
-        head_btn = (TextView) findViewById(R.id.head_btn);
 
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AppManager.getAppManager().finishActivity(Start0Activity.this);
+                AppManager.getAppManager().finishActivity(Start2Activity.this);
             }
         });
-
-        if(sharedUtils.getBooleanValue("head")){
-            head_btn.setVisibility(View.VISIBLE);
-        }else{
-            head_btn.setVisibility(View.GONE);
-        }
-
         nav_grp.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, @IdRes int i) {
                 ribs.clear();
                 CURRENT_PAGE = 1;
                 loadList();
-                /*get_layout.setVisibility(View.GONE);
-                start0Adapter.changeItem(false);
-                market_group_item0.setChecked(false);*/
+
                 market_group.clearCheck();
                switch (i){
                     case R.id.nav_0:
                         if(nav_0.isChecked()){
-                            get_sure.setText("确认");
+
                         }
                         break;
                     case R.id.nav_1:
                         if(nav_1.isChecked()){
-                            get_sure.setText("领取");
+
                         }
                         break;
                 }
@@ -178,20 +150,13 @@ public class Start0Activity extends BaseActivity {
         market_group.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
-                get_layout.setVisibility(View.GONE);
-                start0Adapter.changeItem(false);
+
+
                 switch (checkedId){
-                    case R.id.market_group_item0:
-                        P.c("点击"+market_group_item0.isChecked());
-                        if(market_group_item0.isChecked()){
-                            get_layout.setVisibility(View.VISIBLE);
-                            start0Adapter.changeItem(true);
-                        }
-                        break;
+
                     case R.id.market_group_item2:
                         if(market_group_item2.isChecked()){
                             //选中才打开
-
                             dataPop();
                             showDataPop(dataPopupWindow,drop);
                         }
@@ -207,77 +172,7 @@ public class Start0Activity extends BaseActivity {
             }
         });
 
-        get_sure.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                StringBuilder builder = new StringBuilder();
-                for(int i=0;i<ribs.size();i++){
-                  ReserItemBean rtb =   ribs.get(i);
-                    if(rtb.isOpen()){
-                        builder.append(rtb.getNo()+",");
-                    }
-                }
-               String temp = builder.toString();
-                if(temp.length()>0){
-                    P.c(temp.substring(0,temp.length()-1));
-                    //在这里进行领取任务
-                    JSONObject jsonObject = new JSONObject();
-                    try {
-                        jsonObject.put("toKen",sharedUtils.getStringValue("token"));
-                        jsonObject.put("cls","Gas.SecurityOrder");
-                        jsonObject.put("method","AssignOrder");
-                        JSONObject object = new JSONObject();
-                        object.put("OrderIds",temp);
-                        object.put("StaffId",sharedUtils.getStringValue("userid"));
-                        object.put("Date","2017-08-12");//默认占位
-                        jsonObject.put("param",object.toString());
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
 
-                    OkHttpUtils.postString().url(U.VISTER(U.BASE_URL)+U.LIST).mediaType(MediaType.parse("application/json; charset=utf-8")).content(jsonObject.toString()).build().execute(new StringCallback() {
-                        @Override
-                        public void onError(Call call, Exception e, int id) {
-
-                        }
-
-                        @Override
-                        public void onResponse(String response, int id) {
-
-                            try {
-                                P.c(FileUtils.formatJson(response));
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                            startHandler.sendEmptyMessage(5);
-                            try {
-                                JSONObject jsonObject = new JSONObject(FileUtils.formatJson(response));
-                                if(jsonObject.getBoolean("Success")){
-
-                                }
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-
-                        }
-                    });
-                }
-
-
-                NewToast.makeText(Start0Activity.this,builder.toString(),1000).show();
-            }
-        });
-        get_all.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                for(int i=0;i<ribs.size();i++){
-                    ReserItemBean rtb =   ribs.get(i);
-                    rtb.setOpen(b);
-                }
-                start0Adapter.notifyDataSetChanged();
-//                startHandler.sendEmptyMessage(1);
-            }
-        });
 
       //  loadList(CURRENT_PAGE);
     }
@@ -288,7 +183,7 @@ public class Start0Activity extends BaseActivity {
     private RequestCall requestCall;
     private void loadList(){
         if(loadView==null){
-            loadView = new LoadView(Start0Activity.this);
+            loadView = new LoadView(Start2Activity.this);
             loadView.showSheet();
         }
 
@@ -301,7 +196,7 @@ public class Start0Activity extends BaseActivity {
             jsonObject.put("method",type==0?"GetSelfOrder":"GetCommonOrder");
             JSONObject pms = new JSONObject();
             //0 自己和下属的，还包括未领取的，1自己和下属的，2未领取的
-            pms.put("GetNone",type==0?0:2);
+            pms.put("OrderStatus",5);
             pms.put("OrderType",type);
             pms.put("Index",CURRENT_PAGE);
             pms.put("Size",Common.SHOW_NUM);
@@ -371,7 +266,7 @@ public class Start0Activity extends BaseActivity {
 
                 }else {
                     if(jsonObject.getString("Result").equals(Common.UNLOGIN)){
-                        NewToast.makeText(Start0Activity.this, "未登录", 1000).show();
+                        NewToast.makeText(Start2Activity.this, "未登录", 1000).show();
                         startHandler.sendEmptyMessage(4);
                     }
                 }
@@ -407,7 +302,7 @@ public class Start0Activity extends BaseActivity {
         areaPopupWindow.setTouchable(true);
         areaPopupWindow.setFocusable(true);
         area_list = (ListView) areaPop.findViewById(R.id.area_list);
-        areasAdapter = new AreasAdapter(Start0Activity.this,rbs);
+        areasAdapter = new AreasAdapter(Start2Activity.this,rbs);
         area_list.setAdapter(areasAdapter);
         JSONObject jsonObject = new JSONObject();
         try {
@@ -514,7 +409,7 @@ public class Start0Activity extends BaseActivity {
                         + (calendar1.get(Calendar.MONTH) + 1) + "-"
                         + calendar1.get(Calendar.DAY_OF_MONTH);
 
-                NewToast.makeText(Start0Activity.this,showToast,1000).show();
+                NewToast.makeText(Start2Activity.this,showToast,1000).show();
 
             }
         });
@@ -564,10 +459,10 @@ public class Start0Activity extends BaseActivity {
 
 
     private class StartHandler extends Handler {
-        WeakReference<Start0Activity> mLeakActivityRef;
+        WeakReference<Start2Activity> mLeakActivityRef;
 
-        public StartHandler(Start0Activity leakActivity) {
-            mLeakActivityRef = new WeakReference<Start0Activity>(leakActivity);
+        public StartHandler(Start2Activity leakActivity) {
+            mLeakActivityRef = new WeakReference<Start2Activity>(leakActivity);
         }
 
         @Override
@@ -577,10 +472,10 @@ public class Start0Activity extends BaseActivity {
             if (mLeakActivityRef.get() != null) {
                 switch (msg.what){
                     case 1:
-                        start0Adapter.updata(ribs);
+                        start2Adapter.updata(ribs);
                         break;
                     case 2:
-                        NewToast.makeText(Start0Activity.this,"最后一页",1000).show();
+                        NewToast.makeText(Start2Activity.this,"最后一页",1000).show();
                         break;
                     case 3:
                         areasAdapter.updata(rbs);
@@ -589,12 +484,7 @@ public class Start0Activity extends BaseActivity {
                         //用户未登录处理
 
                         break;
-                    case 5:
-                        //领取成功，进行提示
-                        HeadTips tips = new HeadTips(Start0Activity.this,getCheckedId());
-                        tips.showSheet();
 
-                        break;
                 }
             }
         }

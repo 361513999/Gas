@@ -66,11 +66,6 @@
             android:layout_height="50dp"
             android:orientation="horizontal" >
 
-            <RadioButton
-
-                android:id="@+id/market_group_item0"
-                style="@style/_category_radiobtn"
-                android:text="一键领取" />
 
             <RadioButton
                 android:id="@+id/market_group_item1"
@@ -138,11 +133,6 @@
                 android:layout_height="1dp"
                 android:background="@color/blue_n"/>
         </LinearLayout>
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -168,24 +158,6 @@
             </com.hhkj.gas.www.widget.PullToRefreshView>
 
         </LinearLayout>
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
 
-            <TextView
-                android:id="@+id/head_btn"
-                android:layout_width="100dp"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentRight="true"
-                android:layout_marginRight="10dp"
-                android:layout_marginBottom="10dp"
-                android:text="指派\n任务"
-               android:textSize="18sp"
-                android:textColor="@color/font_normal"
-                android:gravity="center"
-                android:background="@drawable/head_act"
-                android:layout_height="100dp" />
-        </RelativeLayout>
-        </FrameLayout>
     </LinearLayout>
 </LinearLayout>
