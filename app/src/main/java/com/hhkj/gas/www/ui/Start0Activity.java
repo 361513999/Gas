@@ -10,6 +10,8 @@ import android.support.annotation.IdRes;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -28,9 +30,11 @@ import com.hhkj.gas.www.base.AppManager;
 import com.hhkj.gas.www.base.BaseActivity;
 import com.hhkj.gas.www.bean.AreaBean;
 import com.hhkj.gas.www.bean.ReserItemBean;
+import com.hhkj.gas.www.common.Common;
 import com.hhkj.gas.www.common.FileUtils;
 import com.hhkj.gas.www.common.P;
 import com.hhkj.gas.www.common.U;
+import com.hhkj.gas.www.widget.LoadView;
 import com.hhkj.gas.www.widget.NewToast;
 import com.hhkj.gas.www.widget.PullToRefreshView;
 import com.zc.http.okhttp.OkHttpUtils;
@@ -64,6 +68,7 @@ public class Start0Activity extends BaseActivity {
          setContentView(R.layout.start0_layout);
         startHandler = new StartHandler(Start0Activity.this);
     }
+    private LoadView loadView;
     private RadioGroup nav_grp;
     private RadioButton nav_0,nav_1;
     private ListView gas_list;
@@ -90,54 +95,77 @@ public class Start0Activity extends BaseActivity {
                 @Override
                 public void run() {
                     pull_to_refresh_list.onFooterRefreshComplete();
-                    loadList(CURRENT_PAGE+1);
+                    loadList();
 
                 }
             },runTime);
         }
     };
-    private final int runTime = 1000;
+    private final int runTime = 400;
     private TextView head_btn;
     private RadioGroup market_group;
     private RadioButton market_group_item0,market_group_item1,market_group_item2,market_group_item3;
     private View drop;
+    private LinearLayout get_layout;
+    private CheckBox get_all;
+    private TextView get_sure;
     @Override
     public void init() {
         drop = findViewById(R.id.drop);
+        get_layout = (LinearLayout) findViewById(R.id.get_layout);
+        get_all = (CheckBox) findViewById(R.id.get_all);
+        get_sure = (TextView) findViewById(R.id.get_sure);
+
         pull_to_refresh_list = (PullToRefreshView) findViewById(R.id.pull_to_refresh_list);
         pull_to_refresh_list.setOnHeaderRefreshListener(listHeadListener);
         pull_to_refresh_list.setOnFooterRefreshListener(listFootListener);
         gas_list = (ListView) findViewById(R.id.gas_list);
         start0Adapter = new Start0Adapter(Start0Activity.this,ribs);
+        market_group = (RadioGroup) findViewById(R.id.market_group);
+        market_group_item0 = (RadioButton) findViewById(R.id.market_group_item0);
+        market_group_item1 = (RadioButton) findViewById(R.id.market_group_item1);
+        market_group_item2 = (RadioButton) findViewById(R.id.market_group_item2);
+        market_group_item3 = (RadioButton) findViewById(R.id.market_group_item3);
+        nav_grp = (RadioGroup) findViewById(R.id.nav_grp);
+        nav_0 = (RadioButton) findViewById(R.id.nav_0);
+        nav_1 = (RadioButton) findViewById(R.id.nav_1);
         gas_list.setAdapter(start0Adapter);
         back = (TextView) findViewById(R.id.back);
+        head_btn = (TextView) findViewById(R.id.head_btn);
+
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 AppManager.getAppManager().finishActivity(Start0Activity.this);
             }
         });
-        head_btn = (TextView) findViewById(R.id.head_btn);
+
         if(sharedUtils.getBooleanValue("head")){
             head_btn.setVisibility(View.VISIBLE);
         }else{
             head_btn.setVisibility(View.GONE);
         }
-        nav_grp = (RadioGroup) findViewById(R.id.nav_grp);
-        nav_0 = (RadioButton) findViewById(R.id.nav_0);
-        nav_1 = (RadioButton) findViewById(R.id.nav_1);
+
         nav_grp.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, @IdRes int i) {
                 ribs.clear();
                 CURRENT_PAGE = 1;
-                loadList(CURRENT_PAGE);
-                switch (i){
+                loadList();
+                /*get_layout.setVisibility(View.GONE);
+                start0Adapter.changeItem(false);
+                market_group_item0.setChecked(false);*/
+                market_group_item0.setChecked(false);
+               switch (i){
                     case R.id.nav_0:
-
+                        if(nav_0.isChecked()){
+                            get_sure.setText("确认");
+                        }
                         break;
                     case R.id.nav_1:
-
+                        if(nav_1.isChecked()){
+                            get_sure.setText("领取");
+                        }
                         break;
                 }
             }
@@ -145,18 +173,26 @@ public class Start0Activity extends BaseActivity {
         //默认
         nav_0.setChecked(true);
         //菜单
-        market_group = (RadioGroup) findViewById(R.id.market_group);
-        market_group_item0 = (RadioButton) findViewById(R.id.market_group_item0);
-        market_group_item1 = (RadioButton) findViewById(R.id.market_group_item1);
-        market_group_item2 = (RadioButton) findViewById(R.id.market_group_item2);
-        market_group_item3 = (RadioButton) findViewById(R.id.market_group_item3);
+
         market_group.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
+                get_layout.setVisibility(View.GONE);
+                start0Adapter.changeItem(false);
                 switch (checkedId){
+                    case R.id.market_group_item0:
+                        if(market_group_item0.isChecked()){
+                            get_layout.setVisibility(View.VISIBLE);
+                            start0Adapter.changeItem(true);
+                        }else{
+                            get_layout.setVisibility(View.GONE);
+                            start0Adapter.changeItem(false);
+                        }
+                        break;
                     case R.id.market_group_item2:
                         if(market_group_item2.isChecked()){
                             //选中才打开
+
                             dataPop();
                             showDataPop(dataPopupWindow,drop);
                         }
@@ -172,7 +208,30 @@ public class Start0Activity extends BaseActivity {
             }
         });
 
-
+        get_sure.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                StringBuilder builder = new StringBuilder();
+                for(int i=0;i<ribs.size();i++){
+                  ReserItemBean rtb =   ribs.get(i);
+                    if(rtb.isOpen()){
+                        builder.append(i+",");
+                    }
+                }
+                NewToast.makeText(Start0Activity.this,builder.toString(),1000).show();
+            }
+        });
+        get_all.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                for(int i=0;i<ribs.size();i++){
+                    ReserItemBean rtb =   ribs.get(i);
+                    rtb.setOpen(b);
+                }
+                start0Adapter.notifyDataSetChanged();
+//                startHandler.sendEmptyMessage(1);
+            }
+        });
 
       //  loadList(CURRENT_PAGE);
     }
@@ -180,9 +239,15 @@ public class Start0Activity extends BaseActivity {
 
     private   ArrayList<ReserItemBean> ribs = new ArrayList<>();
     private int CURRENT_PAGE = 1;
-    private final int SHOW_NUM = 8;
+    private final int SHOW_NUM = 1;
     private RequestCall requestCall;
-    private void loadList(int CURRENT_PAGE){
+    private void loadList(){
+        if(loadView==null){
+            loadView = new LoadView(Start0Activity.this);
+            loadView.showSheet();
+        }
+
+
         int type = Integer.parseInt(getCheckedId());
         JSONObject jsonObject = new JSONObject();
         try {
@@ -207,11 +272,14 @@ public class Start0Activity extends BaseActivity {
     private StringCallback stringCallback = new StringCallback() {
         @Override
         public void onError(Call call, Exception e, int id) {
-
+            loadView.cancle();
+            loadView = null;
         }
 
         @Override
         public void onResponse(String response, int id) {
+            loadView.cancle();
+            loadView = null;
             try {
                 P.c(FileUtils.formatJson(response));
             } catch (JSONException e) {
@@ -248,16 +316,14 @@ public class Start0Activity extends BaseActivity {
                        }
 
                         ribs.add(ib);
-                        ribs.add(ib);
-                        ribs.add(ib);
-                        ribs.add(ib);
-                        ribs.add(ib);
-                        ribs.add(ib);
-                        ribs.add(ib);
-                        ribs.add(ib);
                     }
                     startHandler.sendEmptyMessage(1);
 
+                }else {
+                    if(jsonObject.getString("Result").equals(Common.UNLOGIN)){
+                        NewToast.makeText(Start0Activity.this, "未登录", 1000).show();
+                        startHandler.sendEmptyMessage(4);
+                    }
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -468,6 +534,10 @@ public class Start0Activity extends BaseActivity {
                         break;
                     case 3:
                         areasAdapter.updata(rbs);
+                        break;
+                    case 4:
+                        //用户未登录处理
+
                         break;
                 }
             }

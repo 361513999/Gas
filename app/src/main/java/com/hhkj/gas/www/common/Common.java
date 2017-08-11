@@ -16,4 +16,5 @@ public class Common {
     public static String APK_LOG = SD+"LOG/";
     public final static String DB_DIR = "data/data/"+BaseApplication.application.getPackageName()+"/databases/";
     public static final String DB_NAME = "store.gas";
+    public static final String UNLOGIN = "login";
 }

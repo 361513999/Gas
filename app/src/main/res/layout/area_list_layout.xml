@@ -22,7 +22,6 @@
             android:dividerHeight="1dp"
             android:background="@color/no_color"
             android:cacheColorHint="@color/no_color"/>
-
     </LinearLayout>
     <View
         android:id="@+id/diss"
