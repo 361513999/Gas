@@ -12,6 +12,7 @@ public class U {
     public static final String BASE_URL = "/DataService.svc/";
     public static final String LOGIN = "StaffLogin";
     public static final String LIST = "Post";
+    public static final String Get = "Get";
     public static String VISTER(String url){
         SharedUtils sharedUtils = new SharedUtils(Common.config);
         String ip = sharedUtils.getStringValue("IP");

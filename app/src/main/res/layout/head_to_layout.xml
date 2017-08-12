@@ -40,15 +40,27 @@
             android:gravity="center"
             android:paddingBottom="5dp"
             android:paddingTop="5dp"
-            android:text="确定"
+            android:text="指派组员"
             android:textColor="@color/white"
-            android:textSize="16sp" />
+            android:textSize="14sp" />
+        <TextView
 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/common_blue_act"
+            android:ems="5"
+            android:gravity="center"
+            android:paddingBottom="5dp"
+            android:paddingTop="5dp"
+            android:text="自己领取"
+            android:textColor="@color/white"
+            android:textSize="14sp" />
         <TextView
             android:id="@+id/cancle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
+
             android:background="@color/cancle"
             android:ems="5"
             android:gravity="center"
@@ -56,7 +68,7 @@
             android:paddingTop="5dp"
             android:text="取消"
             android:textColor="@color/white"
-            android:textSize="16sp" />
+            android:textSize="14sp" />
     </LinearLayout>
     </LinearLayout>
 </LinearLayout>

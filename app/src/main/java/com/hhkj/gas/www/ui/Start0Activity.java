@@ -29,11 +29,13 @@ import com.hhkj.gas.www.adapter.Start0Adapter;
 import com.hhkj.gas.www.base.AppManager;
 import com.hhkj.gas.www.base.BaseActivity;
 import com.hhkj.gas.www.bean.AreaBean;
+import com.hhkj.gas.www.bean.HeadChild;
 import com.hhkj.gas.www.bean.ReserItemBean;
 import com.hhkj.gas.www.common.Common;
 import com.hhkj.gas.www.common.FileUtils;
 import com.hhkj.gas.www.common.P;
 import com.hhkj.gas.www.common.U;
+import com.hhkj.gas.www.widget.HeadChildsList;
 import com.hhkj.gas.www.widget.HeadTips;
 import com.hhkj.gas.www.widget.LoadView;
 import com.hhkj.gas.www.widget.NewToast;
@@ -146,7 +148,30 @@ public class Start0Activity extends BaseActivity {
         }else{
             head_btn.setVisibility(View.GONE);
         }
+        head_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //进行任务指派操作
+                market_group.clearCheck();
+                get_layout.setVisibility(View.VISIBLE);
+                get_sure.setText("指派");
+                start0Adapter.changeItem(true);
+                if(head_btn.getTag().toString().equals("0")){
+                    head_btn.setTag("1");
+                    //开启指派模式
+                }
 
+            }
+        });
+        head_btn.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                HeadChildsList childsList = new HeadChildsList(Start0Activity.this,sharedUtils,0);
+                childsList.showSheet();
+
+                return true;
+            }
+        });
         nav_grp.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, @IdRes int i) {
@@ -157,6 +182,7 @@ public class Start0Activity extends BaseActivity {
                 start0Adapter.changeItem(false);
                 market_group_item0.setChecked(false);*/
                 market_group.clearCheck();
+                get_all.setChecked(false);
                switch (i){
                     case R.id.nav_0:
                         if(nav_0.isChecked()){
@@ -180,12 +206,21 @@ public class Start0Activity extends BaseActivity {
             public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
                 get_layout.setVisibility(View.GONE);
                 start0Adapter.changeItem(false);
+                head_btn.setTag("0");//重置指派模式
+                get_all.setChecked(false);
                 switch (checkedId){
                     case R.id.market_group_item0:
                         P.c("点击"+market_group_item0.isChecked());
                         if(market_group_item0.isChecked()){
                             get_layout.setVisibility(View.VISIBLE);
                             start0Adapter.changeItem(true);
+                            if(nav_0.isChecked()){
+                                get_sure.setText("确认");
+                            }
+                            if(nav_1.isChecked()){
+                                get_sure.setText("领取");
+                            }
+
                         }
                         break;
                     case R.id.market_group_item2:
@@ -210,61 +245,67 @@ public class Start0Activity extends BaseActivity {
         get_sure.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                StringBuilder builder = new StringBuilder();
-                for(int i=0;i<ribs.size();i++){
-                  ReserItemBean rtb =   ribs.get(i);
-                    if(rtb.isOpen()){
-                        builder.append(rtb.getNo()+",");
-                    }
-                }
-               String temp = builder.toString();
-                if(temp.length()>0){
-                    P.c(temp.substring(0,temp.length()-1));
-                    //在这里进行领取任务
-                    JSONObject jsonObject = new JSONObject();
-                    try {
-                        jsonObject.put("toKen",sharedUtils.getStringValue("token"));
-                        jsonObject.put("cls","Gas.SecurityOrder");
-                        jsonObject.put("method","AssignOrder");
-                        JSONObject object = new JSONObject();
-                        object.put("OrderIds",temp);
-                        object.put("StaffId",sharedUtils.getStringValue("userid"));
-                        object.put("Date","2017-08-12");//默认占位
-                        jsonObject.put("param",object.toString());
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+                if(head_btn.getTag().toString().equals("1")){
+                    NewToast.makeText(Start0Activity.this,"指派模式",1000).show();
+                }else{
 
-                    OkHttpUtils.postString().url(U.VISTER(U.BASE_URL)+U.LIST).mediaType(MediaType.parse("application/json; charset=utf-8")).content(jsonObject.toString()).build().execute(new StringCallback() {
-                        @Override
-                        public void onError(Call call, Exception e, int id) {
-
+                    StringBuilder builder = new StringBuilder();
+                    for(int i=0;i<ribs.size();i++){
+                        ReserItemBean rtb =   ribs.get(i);
+                        if(rtb.isOpen()){
+                            builder.append(rtb.getNo()+",");
+                        }
+                    }
+                    String temp = builder.toString();
+                    if(temp.length()>0){
+                        P.c(temp.substring(0,temp.length()-1));
+                        //在这里进行领取任务
+                        JSONObject jsonObject = new JSONObject();
+                        try {
+                            jsonObject.put("toKen",sharedUtils.getStringValue("token"));
+                            jsonObject.put("cls","Gas.SecurityOrder");
+                            jsonObject.put("method","AssignOrder");
+                            JSONObject object = new JSONObject();
+                            object.put("OrderIds",temp);
+                            object.put("StaffId",sharedUtils.getStringValue("userid"));
+                            object.put("Date","2017-08-12");//默认占位
+                            jsonObject.put("param",object.toString());
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
 
-                        @Override
-                        public void onResponse(String response, int id) {
+                        OkHttpUtils.postString().url(U.VISTER(U.BASE_URL)+U.LIST).mediaType(MediaType.parse("application/json; charset=utf-8")).content(jsonObject.toString()).build().execute(new StringCallback() {
+                            @Override
+                            public void onError(Call call, Exception e, int id) {
 
-                            try {
-                                P.c(FileUtils.formatJson(response));
-                            } catch (JSONException e) {
-                                e.printStackTrace();
                             }
-                            startHandler.sendEmptyMessage(5);
-                            try {
-                                JSONObject jsonObject = new JSONObject(FileUtils.formatJson(response));
-                                if(jsonObject.getBoolean("Success")){
 
+                            @Override
+                            public void onResponse(String response, int id) {
+
+                                try {
+                                    P.c(FileUtils.formatJson(response));
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
                                 }
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
+                                startHandler.sendEmptyMessage(5);
+                                try {
+                                    JSONObject jsonObject = new JSONObject(FileUtils.formatJson(response));
+                                    if(jsonObject.getBoolean("Success")){
 
-                        }
-                    });
+                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+
+                            }
+                        });
+                    }
+
+
+                    NewToast.makeText(Start0Activity.this,builder.toString(),1000).show();
                 }
 
-
-                NewToast.makeText(Start0Activity.this,builder.toString(),1000).show();
             }
         });
         get_all.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -301,8 +342,11 @@ public class Start0Activity extends BaseActivity {
             jsonObject.put("method",type==0?"GetSelfOrder":"GetCommonOrder");
             JSONObject pms = new JSONObject();
             //0 自己和下属的，还包括未领取的，1自己和下属的，2未领取的
-            pms.put("GetNone",type==0?0:2);
-            pms.put("OrderType",type);
+            pms.put("OrderStatus","1,2");
+
+            if(type==0){
+                pms.put("OrderType",type);
+            }
             pms.put("Index",CURRENT_PAGE);
             pms.put("Size",Common.SHOW_NUM);
             jsonObject.put("param",pms.toString());

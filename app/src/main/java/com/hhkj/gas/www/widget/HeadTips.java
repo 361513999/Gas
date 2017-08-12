@@ -32,7 +32,8 @@ public class HeadTips {
         TextView sure = (TextView) layout.findViewById(R.id.sure);
         TextView cancle = (TextView) layout.findViewById(R.id.cancle);
         TextView txt = (TextView) layout.findViewById(R.id.txt);
-        txt.setText(type.equals("1")?"将刚领取的任务指派给组员":"将刚确认的任务指派给组员");
+//        txt.setText(type.equals("1")?"将刚领取的任务指派给组员":"将刚确认的任务指派给组员");
+        txt.setText("将选择的任务执行以下操作");
         dlg.setOnShowListener(new OnShowListener() {
             @Override
             public void onShow(DialogInterface arg0) {
@@ -40,6 +41,7 @@ public class HeadTips {
 
             }
         });
+
         dlg.setCanceledOnTouchOutside(true);
         dlg.setOnDismissListener(new OnDismissListener() {
 
