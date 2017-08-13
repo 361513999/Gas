@@ -9,36 +9,34 @@ import android.content.DialogInterface.OnShowListener;
 import android.os.Handler;
 import android.os.Message;
 import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+
 import com.hhkj.gas.www.R;
-import com.hhkj.gas.www.adapter.HeadChildsItemAdapter;
-import com.hhkj.gas.www.bean.HeadChild;
+import com.hhkj.gas.www.common.Common;
 import com.hhkj.gas.www.common.FileUtils;
 import com.hhkj.gas.www.common.P;
 import com.hhkj.gas.www.common.SharedUtils;
 import com.hhkj.gas.www.common.U;
 import com.zc.http.okhttp.OkHttpUtils;
 import com.zc.http.okhttp.callback.StringCallback;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import java.util.ArrayList;
 import okhttp3.Call;
 import okhttp3.MediaType;
 
-public class HeadChildsList {
+public class CommonLogin {
     private Context context;
 
     private IDialog dlg;
-    private int type;
     private  LayoutInflater inflater;
     private SharedUtils sharedUtils;
-    public HeadChildsList(Context context, SharedUtils sharedUtils,int type) {
+    public CommonLogin(Context context,SharedUtils sharedUtils) {
         this.context = context;
         this.sharedUtils = sharedUtils;
-        this.type = type;
        inflater  = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
@@ -47,74 +45,76 @@ public class HeadChildsList {
         public void dispatchMessage(Message msg) {
             super.dispatchMessage(msg);
         switch (msg.what){
+            case 0:
+                NewToast.makeText(context,(String)msg.obj, Common.TTIME).show();
+                break;
             case 1:
+                NewToast.makeText(context,"登录成功", Common.TTIME).show();
 
-                itemAdapter.updata(rbs);
                 break;
         }
+        cancle();
         }
     };
-    private  HeadChildsItemAdapter itemAdapter;
-    private ArrayList<HeadChild> rbs = new ArrayList<>();
     public Dialog showSheet() {
         dlg = new IDialog(context, R.style.head_pop_style);
         final LinearLayout layout = (LinearLayout) inflater.inflate(
-                R.layout.head_child_layout, null);
+                R.layout.common_login, null);
         TextView sure = (TextView) layout.findViewById(R.id.sure);
         TextView cancle = (TextView) layout.findViewById(R.id.cancle);
-        ListView childs_list = (ListView) layout.findViewById(R.id.childs_list);
-          itemAdapter = new HeadChildsItemAdapter(context,rbs);
-        childs_list.setAdapter(itemAdapter);
+        final EditText user = (EditText) layout.findViewById(R.id.user);
+        final EditText pass = (EditText) layout.findViewById(R.id.pass);
 
-
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("toKen",sharedUtils.getStringValue("token"));
-            jsonObject.put("cls","Gas.Staff");
-            jsonObject.put("method","GetStaffList");
-            jsonObject.put("param","");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-
-        OkHttpUtils.postString().url(U.VISTER(U.BASE_URL)+U.LIST).mediaType(MediaType.parse("application/json; charset=utf-8")).content(jsonObject.toString()).build().execute(new StringCallback() {
+        sure.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onError(Call call, Exception e, int id) {
-                P.c("错误了"+e.getLocalizedMessage());
-            }
+            public void onClick(View v) {
 
-            @Override
-            public void onResponse(String response, int id) {
-
+                String userValue = user.getText().toString().trim();
+                String passValue = pass.getText().toString().trim();
+                JSONObject object = new JSONObject();
                 try {
-                    P.c(FileUtils.formatJson(response));
+                    object.put("id",userValue);
+                    object.put("pwd",passValue);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+                OkHttpUtils.postString().url(U.VISTER(U.BASE_URL)+U.LOGIN).mediaType(MediaType.parse("application/json; charset=utf-8")).content(object.toString()).build().execute(new StringCallback() {
+                    @Override
+                    public void onError(Call call, Exception e, int id) {
+                        P.c("错误了"+e.getLocalizedMessage());
 
-                try {
-                    JSONObject jsonObject = new JSONObject(FileUtils.formatJson(response));
-                    if(jsonObject.getBoolean("Success")){
-                        rbs.clear();
-                        String result = jsonObject.getString("Result");
-                        JSONArray jsonArray = new JSONArray(result);
-                        int len = jsonArray.length();
-                        for(int i=0;i<len;i++){
-                            JSONObject object = jsonArray.getJSONObject(i);
-                            HeadChild child  = new HeadChild();
-                            child.setId(object.getString("StaffCode"));
-                            child.setName(object.getString("StaffName"));
-                            rbs.add(child);
-                        }
-                        handler.sendEmptyMessage(1);
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+
+                    @Override
+                    public void onResponse(String response, int id) {
+
+                        try {
+                            JSONObject jsonObject = new JSONObject( FileUtils.formatJson(response));
+                            if(jsonObject.getBoolean("Success")){
+
+                                sharedUtils.setStringValue("token",jsonObject.getString("Value"));
+                                sharedUtils.setBooleanValue("head",(jsonObject.getInt("Error")==0)?false:true);
+                                String result = jsonObject.getString("Result");
+                                JSONObject obj = new JSONObject(result);
+                                sharedUtils.setStringValue("userid",obj.getString("Id"));
+                                handler.sendEmptyMessage(1);
+                            }else{
+                                Message msg = new Message();
+                                msg.what = 0;
+                                msg.obj = jsonObject.getString("Error");
+                                handler.sendMessage(msg);
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                });
 
             }
         });
+
+
 
 
         dlg.setOnShowListener(new OnShowListener() {

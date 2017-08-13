@@ -46,6 +46,9 @@
         <activity android:name=".ui.Start0Activity">
 
         </activity>
+        <activity android:name=".ui.Start1Activity">
+
+        </activity>
         <activity android:name=".ui.Start2Activity">
 
         </activity>

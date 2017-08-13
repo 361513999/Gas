@@ -8,6 +8,8 @@ import android.view.WindowManager;
 
 import com.hhkj.gas.www.common.Common;
 import com.hhkj.gas.www.common.SharedUtils;
+import com.hhkj.gas.www.widget.CommonLogin;
+import com.hhkj.gas.www.widget.LoadView;
 
 public abstract class BaseActivity extends Activity{
     /**
@@ -32,6 +34,13 @@ public abstract class BaseActivity extends Activity{
         AppManager.getAppManager().finishActivity(this);
     }
 
+    /**
+     * 重新登录
+     */
+    public void reLogin(){
+        CommonLogin login = new CommonLogin(this,sharedUtils);
+        login.showSheet();
+    }
     @Override
     protected void onStart() {
         super.onStart();
