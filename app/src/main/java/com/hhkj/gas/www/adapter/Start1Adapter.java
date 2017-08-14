@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.hhkj.gas.www.R;
@@ -44,8 +45,8 @@ public class Start1Adapter extends BaseAdapter {
         return position;
     }
     private class ViewHolder {
-        TextView item0,item1,item2,item3,item4;
-
+        TextView item0,item1,item2,item3,item4,item_tag;
+        ImageView item_icon;
     }
 
     @Override
@@ -55,7 +56,8 @@ public class Start1Adapter extends BaseAdapter {
                 || convertView.getTag(R.mipmap.ic_launcher + position) == null) {
             viewHolder = new ViewHolder();
             convertView = inflater.inflate(R.layout.start2_item, null);
-
+            viewHolder.item_icon = (ImageView) convertView.findViewById(R.id.item_icon);
+            viewHolder.item_tag = (TextView) convertView.findViewById(R.id.item_tag);
             viewHolder.item0 = (TextView) convertView.findViewById(R.id.item0);
             viewHolder.item1 = (TextView) convertView.findViewById(R.id.item1);
             viewHolder.item2 = (TextView) convertView.findViewById(R.id.item2);
@@ -72,12 +74,24 @@ public class Start1Adapter extends BaseAdapter {
         viewHolder.item1.setText(context.getString(R.string.nor_item_txt1,it.getName()));
         viewHolder.item2.setText(context.getString(R.string.nor_item_txt2,it.getTel()));
         viewHolder.item3.setText(context.getString(R.string.nor_item_txt3,it.getAdd()));
+       switch (it.getOrderStatus()){
+           case 3:
+               viewHolder.item_icon.setBackgroundResource(R.mipmap.icon_running);
+               viewHolder.item_tag.setText("进行中");
+               break;
+           case 6:
+               //6重新安检中，7等待再次执行，8隐患整改中
+               viewHolder.item_icon.setBackgroundResource(R.mipmap.icon_check_again);
+               viewHolder.item_tag.setText("重新安检中");
+               break;
+           case 7:
+               break;
+           case 8:
+               viewHolder.item_icon.setBackgroundResource(R.mipmap.icon_zhengtai);
+               viewHolder.item_tag.setText("隐患整改中");
+               break;
+       }
 
-        if(it.getTime().equals("待定")){
-            viewHolder.item4.setTextColor(context.getResources().getColor(R.color.rd_p));
-        }else{
-            viewHolder.item4.setTextColor(context.getResources().getColor(R.color.font_normal));
-        }
 
         viewHolder.item4.setText(context.getString(R.string.nor_item_txt4,it.getTime()));
         return  convertView;

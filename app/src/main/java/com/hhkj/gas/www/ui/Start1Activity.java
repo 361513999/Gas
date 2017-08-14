@@ -82,7 +82,12 @@ public class Start1Activity extends BaseActivity {
                 @Override
                 public void run() {
                     pull_to_refresh_list.onFooterRefreshComplete();
-                    loadList();
+                    if(isMore){
+                        loadList();
+                    }else{
+                        NewToast.makeText(Start1Activity.this,"没有数据可加载",Common.TTIME).show();
+
+                    }
 
                 }
             },runTime);
@@ -124,6 +129,7 @@ public class Start1Activity extends BaseActivity {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, @IdRes int i) {
                 ribs.clear();
+                isMore = true;
                 CURRENT_PAGE = 1;
                 loadList();
 
@@ -196,7 +202,7 @@ public class Start1Activity extends BaseActivity {
             jsonObject.put("method","GetSelfOrder");
             JSONObject pms = new JSONObject();
             //0 自己和下属的，还包括未领取的，1自己和下属的，2未领取的
-            pms.put("OrderStatus","4,5");
+            pms.put("OrderStatus","3,6,7,8");
             pms.put("OrderType",type);
             pms.put("Index",CURRENT_PAGE);
             pms.put("Size",Common.SHOW_NUM);
@@ -204,9 +210,9 @@ public class Start1Activity extends BaseActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        P.c("发送"+jsonObject.toString());
+
         requestCall = OkHttpUtils.postString().url(U.VISTER(U.BASE_URL)+U.LIST).mediaType(MediaType.parse("application/json; charset=utf-8")).content(jsonObject.toString()).build();
-        P.c(U.VISTER(U.BASE_URL)+U.LIST);
+
         requestCall.execute(stringCallback);
     }
     private void closeLoad(){
@@ -216,6 +222,7 @@ public class Start1Activity extends BaseActivity {
         }
 
     }
+    private boolean isMore = true;
     private StringCallback stringCallback = new StringCallback() {
         @Override
         public void onError(Call call, Exception e, int id) {
@@ -225,11 +232,7 @@ public class Start1Activity extends BaseActivity {
         @Override
         public void onResponse(String response, int id) {
             closeLoad();
-            try {
-                P.c(FileUtils.formatJson(response));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+
             try {
                 JSONObject jsonObject = new JSONObject(FileUtils.formatJson(response));
                 if(jsonObject.getBoolean("Success")){
@@ -238,6 +241,7 @@ public class Start1Activity extends BaseActivity {
                     JSONArray jsonArray = new JSONArray(result);
                     int len = jsonArray.length();
                     if(len<Common.SHOW_NUM){
+                        isMore = false;
                         startHandler.sendEmptyMessage(2);
                     }else{
                         CURRENT_PAGE = CURRENT_PAGE+1;
@@ -250,6 +254,7 @@ public class Start1Activity extends BaseActivity {
                         ib.setName(object.getString("CName"));
                         ib.setNo(object.getString("OrderCode"));
                         ib.setTel(object.getString("MobilePhone"));
+                        ib.setOrderStatus(object.getInt("OrderStatus"));
                         int type = Integer.parseInt(getCheckedId());
                        switch (type){
                            case 0:
@@ -355,6 +360,11 @@ public class Start1Activity extends BaseActivity {
                             rbs.add(ab);
                         }
                         startHandler.sendEmptyMessage(3);
+                    }else {
+                        if(jsonObject.getString("Result").equals(Common.UNLOGIN)){
+                            NewToast.makeText(Start1Activity.this, "未登录", 1000).show();
+                            startHandler.sendEmptyMessage(4);
+                        }
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -479,7 +489,7 @@ public class Start1Activity extends BaseActivity {
                         break;
                     case 4:
                         //用户未登录处理
-
+                        reLogin();
                         break;
 
                 }

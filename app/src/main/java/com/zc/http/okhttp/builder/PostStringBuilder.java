@@ -1,5 +1,6 @@
 package com.zc.http.okhttp.builder;
 
+import com.hhkj.gas.www.common.P;
 import com.zc.http.okhttp.request.PostStringRequest;
 import com.zc.http.okhttp.request.RequestCall;
 
@@ -17,6 +18,7 @@ public class PostStringBuilder extends OkHttpRequestBuilder<PostStringBuilder>
     public PostStringBuilder content(String content)
     {
         this.content = content;
+        P.c("发送"+content);
         return this;
     }
 

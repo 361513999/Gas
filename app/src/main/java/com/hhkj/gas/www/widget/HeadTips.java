@@ -7,6 +7,7 @@ import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.DialogInterface.OnShowListener;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -29,11 +30,30 @@ public class HeadTips {
         dlg = new IDialog(context, R.style.load_pop_style);
         final LinearLayout layout = (LinearLayout) inflater.inflate(
                 R.layout.head_to_layout, null);
-        TextView sure = (TextView) layout.findViewById(R.id.sure);
-        TextView cancle = (TextView) layout.findViewById(R.id.cancle);
+        TextView item0 = (TextView) layout.findViewById(R.id.item0);
+        TextView item1 = (TextView) layout.findViewById(R.id.item1);
+        TextView item2 = (TextView) layout.findViewById(R.id.item2);
         TextView txt = (TextView) layout.findViewById(R.id.txt);
 //        txt.setText(type.equals("1")?"将刚领取的任务指派给组员":"将刚确认的任务指派给组员");
         txt.setText("将选择的任务执行以下操作");
+        item0.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+        item1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+        item2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                cancle();
+            }
+        });
         dlg.setOnShowListener(new OnShowListener() {
             @Override
             public void onShow(DialogInterface arg0) {
@@ -41,7 +61,6 @@ public class HeadTips {
 
             }
         });
-
         dlg.setCanceledOnTouchOutside(true);
         dlg.setOnDismissListener(new OnDismissListener() {
 

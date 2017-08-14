@@ -31,7 +31,7 @@
         android:paddingBottom="20dp">
 
         <TextView
-            android:id="@+id/sure"
+            android:id="@+id/item0"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="10dp"
@@ -44,7 +44,7 @@
             android:textColor="@color/white"
             android:textSize="14sp" />
         <TextView
-
+            android:id="@+id/item1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="10dp"
@@ -57,10 +57,9 @@
             android:textColor="@color/white"
             android:textSize="14sp" />
         <TextView
-            android:id="@+id/cancle"
+            android:id="@+id/item2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-
             android:background="@color/cancle"
             android:ems="5"
             android:gravity="center"

@@ -13,6 +13,24 @@ public class ReserItemBean implements Serializable{
     private String add;
     private String time;
     private boolean isOpen;
+    private String id;
+    private int OrderStatus;
+
+    public int getOrderStatus() {
+        return OrderStatus;
+    }
+
+    public void setOrderStatus(int orderStatus) {
+        OrderStatus = orderStatus;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public boolean isOpen() {
         return isOpen;

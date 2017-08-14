@@ -46,7 +46,14 @@ public class HeadChildsItemAdapter extends BaseAdapter {
     private class ViewHolder {
         TextView txt;
     }
-
+    private int pt = -1;
+    public void select(int position){
+        this.pt = position;
+        notifyDataSetChanged();
+    }
+    public int getSelect(){
+        return  pt;
+    }
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder viewHolder;
@@ -59,6 +66,11 @@ public class HeadChildsItemAdapter extends BaseAdapter {
         } else {
             viewHolder = (ViewHolder) convertView.getTag(R.mipmap.ic_launcher
                     + position);
+        }
+        if(pt==position){
+            viewHolder.txt.setTextColor(context.getResources().getColor(R.color.green_n));
+        }else{
+            viewHolder.txt.setTextColor(context.getResources().getColor(R.color.font_light));
         }
         HeadChild it = rbs.get(position);
         viewHolder.txt.setText(it.getName());

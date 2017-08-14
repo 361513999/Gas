@@ -102,7 +102,7 @@ public class LoginActivity extends BaseActivity{
             e.printStackTrace();
         }
         loginCall = OkHttpUtils.postString().url(U.VISTER(U.BASE_URL)+U.LOGIN).mediaType(MediaType.parse("application/json; charset=utf-8")).content(object.toString()).build();
-        P.c(U.VISTER(U.BASE_URL)+U.LOGIN);
+
         loginCall.execute(loginCallback);
     }
     private void closeLoad(){
@@ -121,11 +121,6 @@ public class LoginActivity extends BaseActivity{
         @Override
         public void onResponse(String response, int id) {
             closeLoad();
-            try {
-                P.c(FileUtils.formatJson(response));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
             try {
                 JSONObject jsonObject = new JSONObject( FileUtils.formatJson(response));
                 if(jsonObject.getBoolean("Success")){

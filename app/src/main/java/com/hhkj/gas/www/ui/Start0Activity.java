@@ -98,7 +98,12 @@ public class Start0Activity extends BaseActivity {
                 @Override
                 public void run() {
                     pull_to_refresh_list.onFooterRefreshComplete();
-                    loadList();
+                    if(isMore){
+                        loadList();
+                    }else{
+                        NewToast.makeText(Start0Activity.this,"没有数据可加载",Common.TTIME).show();
+
+                    }
 
                 }
             },runTime);
@@ -163,20 +168,13 @@ public class Start0Activity extends BaseActivity {
 
             }
         });
-        head_btn.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-//                HeadChildsList childsList = new HeadChildsList(Start0Activity.this,sharedUtils,0);
-//                childsList.showSheet();
-                reLogin();
-                return true;
-            }
-        });
+
         nav_grp.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, @IdRes int i) {
                 ribs.clear();
                 CURRENT_PAGE = 1;
+                isMore = true;
                 loadList();
                 /*get_layout.setVisibility(View.GONE);
                 start0Adapter.changeItem(false);
@@ -210,7 +208,7 @@ public class Start0Activity extends BaseActivity {
                 get_all.setChecked(false);
                 switch (checkedId){
                     case R.id.market_group_item0:
-                        P.c("点击"+market_group_item0.isChecked());
+
                         if(market_group_item0.isChecked()){
                             get_layout.setVisibility(View.VISIBLE);
                             start0Adapter.changeItem(true);
@@ -246,19 +244,21 @@ public class Start0Activity extends BaseActivity {
             @Override
             public void onClick(View view) {
                 if(head_btn.getTag().toString().equals("1")){
-                    NewToast.makeText(Start0Activity.this,"指派模式",1000).show();
+                    HeadChildsList childsList = new HeadChildsList(Start0Activity.this,sharedUtils,ribs,startHandler);
+                    childsList.showSheet();
+
                 }else{
 
                     StringBuilder builder = new StringBuilder();
                     for(int i=0;i<ribs.size();i++){
                         ReserItemBean rtb =   ribs.get(i);
                         if(rtb.isOpen()){
-                            builder.append(rtb.getNo()+",");
+                            builder.append(rtb.getId()+",");
                         }
                     }
-                    String temp = builder.toString();
+                    final String temp = builder.toString();
                     if(temp.length()>0){
-                        P.c(temp.substring(0,temp.length()-1));
+
                         //在这里进行领取任务
                         JSONObject jsonObject = new JSONObject();
                         try {
@@ -267,32 +267,44 @@ public class Start0Activity extends BaseActivity {
                             jsonObject.put("method","AssignOrder");
                             JSONObject object = new JSONObject();
                             object.put("OrderIds",temp);
-                            object.put("StaffId",sharedUtils.getStringValue("userid"));
-                            object.put("Date","2017-08-12");//默认占位
                             jsonObject.put("param",object.toString());
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
+                    if(loadView==null){
+                        loadView = new LoadView(Start0Activity.this);
+                        loadView.showSheet();
+                    }
 
                         OkHttpUtils.postString().url(U.VISTER(U.BASE_URL)+U.LIST).mediaType(MediaType.parse("application/json; charset=utf-8")).content(jsonObject.toString()).build().execute(new StringCallback() {
                             @Override
                             public void onError(Call call, Exception e, int id) {
-
+                                closeLoad();
                             }
 
                             @Override
                             public void onResponse(String response, int id) {
+                                closeLoad();
 
-                                try {
-                                    P.c(FileUtils.formatJson(response));
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                                startHandler.sendEmptyMessage(5);
+
                                 try {
                                     JSONObject jsonObject = new JSONObject(FileUtils.formatJson(response));
                                     if(jsonObject.getBoolean("Success")){
+                                        //领取操作
+                                        String []strs = temp.split(",");
+                                        for(int i=0;i<ribs.size();i++){
+                                            for(int j=0;j<strs.length;j++){
+                                                if(ribs.get(i).getId().equals(strs[j])){
+                                                    ribs.remove(i);
+                                                }
+                                            }
+                                        }
+                                        head_btn.setTag("0");//重置指派模式
+                                        get_all.setChecked(false);
+                                        market_group.clearCheck();
 
+                                        NewToast.makeText(Start0Activity.this,"成功确认",Common.TTIME).show();
+                                        startHandler.sendEmptyMessage(1);
                                     }
                                 } catch (JSONException e) {
                                     e.printStackTrace();
@@ -303,7 +315,7 @@ public class Start0Activity extends BaseActivity {
                     }
 
 
-                    NewToast.makeText(Start0Activity.this,builder.toString(),1000).show();
+
                 }
 
             }
@@ -353,9 +365,9 @@ public class Start0Activity extends BaseActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        P.c("发送"+jsonObject.toString());
+
         requestCall = OkHttpUtils.postString().url(U.VISTER(U.BASE_URL)+U.LIST).mediaType(MediaType.parse("application/json; charset=utf-8")).content(jsonObject.toString()).build();
-        P.c(U.VISTER(U.BASE_URL)+U.LIST);
+
         requestCall.execute(stringCallback);
     }
     private void closeLoad(){
@@ -365,6 +377,7 @@ public class Start0Activity extends BaseActivity {
         }
 
     }
+    private boolean isMore = true;
     private StringCallback stringCallback = new StringCallback() {
         @Override
         public void onError(Call call, Exception e, int id) {
@@ -374,11 +387,7 @@ public class Start0Activity extends BaseActivity {
         @Override
         public void onResponse(String response, int id) {
             closeLoad();
-            try {
-                P.c(FileUtils.formatJson(response));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+
             try {
                 JSONObject jsonObject = new JSONObject(FileUtils.formatJson(response));
                 if(jsonObject.getBoolean("Success")){
@@ -387,6 +396,7 @@ public class Start0Activity extends BaseActivity {
                     JSONArray jsonArray = new JSONArray(result);
                     int len = jsonArray.length();
                     if(len<Common.SHOW_NUM){
+                        isMore = false;
                         startHandler.sendEmptyMessage(2);
                     }else{
                         CURRENT_PAGE = CURRENT_PAGE+1;
@@ -398,11 +408,12 @@ public class Start0Activity extends BaseActivity {
                         ib.setAdd(object.getString("Address"));
                         ib.setName(object.getString("CName"));
                         ib.setNo(object.getString("OrderCode"));
+                        ib.setId(object.getString("Id"));
                         ib.setTel(object.getString("MobilePhone"));
                         int type = Integer.parseInt(getCheckedId());
                        switch (type){
                            case 0:
-                               ib.setTime(object.getString("FdtmCreateTime"));
+                               ib.setTime(object.getString("SecurityTime"));
                                break;
                            case 1:
                                ib.setTime("待定");
@@ -504,6 +515,11 @@ public class Start0Activity extends BaseActivity {
                             rbs.add(ab);
                         }
                         startHandler.sendEmptyMessage(3);
+                    }else {
+                        if(jsonObject.getString("Result").equals(Common.UNLOGIN)){
+                            NewToast.makeText(Start0Activity.this, "未登录", 1000).show();
+                            startHandler.sendEmptyMessage(4);
+                        }
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -631,13 +647,17 @@ public class Start0Activity extends BaseActivity {
                         break;
                     case 4:
                         //用户未登录处理
-
+                        reLogin();
                         break;
                     case 5:
-                        //领取成功，进行提示
-                        HeadTips tips = new HeadTips(Start0Activity.this,getCheckedId());
-                        tips.showSheet();
 
+//                        HeadTips tips = new HeadTips(Start0Activity.this,getCheckedId());
+//                        tips.showSheet();
+                        head_btn.setTag("0");//重置指派模式
+                        get_all.setChecked(false);
+                        market_group.clearCheck();
+                        start0Adapter.updata(ribs);
+                        NewToast.makeText(Start0Activity.this,"成功指派",Common.TTIME).show();
                         break;
                 }
             }

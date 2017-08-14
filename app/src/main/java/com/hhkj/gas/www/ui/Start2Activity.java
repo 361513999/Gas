@@ -84,7 +84,13 @@ public class Start2Activity extends BaseActivity {
                 @Override
                 public void run() {
                     pull_to_refresh_list.onFooterRefreshComplete();
-                    loadList();
+                  if(isMore){
+                      loadList();
+                  }else{
+                      NewToast.makeText(Start2Activity.this,"没有数据可加载",Common.TTIME).show();
+
+                  }
+
 
                 }
             },runTime);
@@ -125,6 +131,7 @@ public class Start2Activity extends BaseActivity {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, @IdRes int i) {
                 ribs.clear();
+                isMore = true;
                 CURRENT_PAGE = 1;
                 loadList();
 
@@ -204,9 +211,9 @@ public class Start2Activity extends BaseActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        P.c("发送"+jsonObject.toString());
+
         requestCall = OkHttpUtils.postString().url(U.VISTER(U.BASE_URL)+U.LIST).mediaType(MediaType.parse("application/json; charset=utf-8")).content(jsonObject.toString()).build();
-        P.c(U.VISTER(U.BASE_URL)+U.LIST);
+
         requestCall.execute(stringCallback);
     }
     private void closeLoad(){
@@ -216,6 +223,7 @@ public class Start2Activity extends BaseActivity {
         }
 
     }
+    private boolean isMore = true;
     private StringCallback stringCallback = new StringCallback() {
         @Override
         public void onError(Call call, Exception e, int id) {
@@ -225,11 +233,7 @@ public class Start2Activity extends BaseActivity {
         @Override
         public void onResponse(String response, int id) {
             closeLoad();
-            try {
-                P.c(FileUtils.formatJson(response));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+
             try {
                 JSONObject jsonObject = new JSONObject(FileUtils.formatJson(response));
                 if(jsonObject.getBoolean("Success")){
@@ -238,6 +242,7 @@ public class Start2Activity extends BaseActivity {
                     JSONArray jsonArray = new JSONArray(result);
                     int len = jsonArray.length();
                     if(len<Common.SHOW_NUM){
+                        isMore = false;
                         startHandler.sendEmptyMessage(2);
                     }else{
                         CURRENT_PAGE = CURRENT_PAGE+1;
@@ -355,6 +360,11 @@ public class Start2Activity extends BaseActivity {
                             rbs.add(ab);
                         }
                         startHandler.sendEmptyMessage(3);
+                    }else {
+                        if(jsonObject.getString("Result").equals(Common.UNLOGIN)){
+                            NewToast.makeText(Start2Activity.this, "未登录", 1000).show();
+                            startHandler.sendEmptyMessage(4);
+                        }
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -482,7 +492,7 @@ public class Start2Activity extends BaseActivity {
                         break;
                     case 4:
                         //用户未登录处理
-
+                         reLogin();
                         break;
 
                 }
