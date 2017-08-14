@@ -255,7 +255,8 @@ public class Start2Activity extends BaseActivity {
                         ib.setName(object.getString("CName"));
                         ib.setNo(object.getString("OrderCode"));
                         ib.setTel(object.getString("MobilePhone"));
-                        int type = Integer.parseInt(getCheckedId());
+//                        int type = Integer.parseInt(getCheckedId());
+                        int type = object.getInt("OrderType");
                        switch (type){
                            case 0:
                                ib.setTime(object.getString("FdtmCreateTime"));

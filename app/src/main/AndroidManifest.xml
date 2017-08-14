@@ -52,6 +52,9 @@
         <activity android:name=".ui.Start2Activity">
 
         </activity>
+        <activity android:name=".ui.DetailActivity">
+
+        </activity>
         <activity android:name=".ui.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>

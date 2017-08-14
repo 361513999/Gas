@@ -410,7 +410,8 @@ public class Start0Activity extends BaseActivity {
                         ib.setNo(object.getString("OrderCode"));
                         ib.setId(object.getString("Id"));
                         ib.setTel(object.getString("MobilePhone"));
-                        int type = Integer.parseInt(getCheckedId());
+//                        int type = Integer.parseInt(getCheckedId());
+                        int type = object.getInt("OrderType");
                        switch (type){
                            case 0:
                                ib.setTime(object.getString("SecurityTime"));

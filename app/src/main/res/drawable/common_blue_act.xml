@@ -3,12 +3,12 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!-- 点中时的 -->
-    <item android:drawable="@drawable/shape_btn_blue_press" android:state_pressed="true"/>
+    <item android:drawable="@drawable/shape_btn_green_press" android:state_pressed="true"/>
     <!-- 有焦点时的 -->
-    <item android:drawable="@drawable/shape_btn_blue_press" android:state_focused="true"/>
+    <item android:drawable="@drawable/shape_btn_green_press" android:state_focused="true"/>
     <!-- 选中时字体 -->
-    <item android:drawable="@drawable/shape_btn_blue_press" android:state_enabled="false"/>
+    <item android:drawable="@drawable/shape_btn_green_press" android:state_enabled="false"/>
     <!-- 默认的 -->
-    <item android:drawable="@drawable/shape_btn_blue_normal"/>
+    <item android:drawable="@drawable/shape_btn_green_normal"/>
 
 </selector>

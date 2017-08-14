@@ -1,11 +1,13 @@
 package com.hhkj.gas.www.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.IdRes;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
@@ -117,6 +119,13 @@ public class Start1Activity extends BaseActivity {
         nav_0 = (RadioButton) findViewById(R.id.nav_0);
         nav_1 = (RadioButton) findViewById(R.id.nav_1);
         gas_list.setAdapter(start1Adapter);
+        gas_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(Start1Activity.this,DetailActivity.class);
+                startActivity(intent);
+            }
+        });
         back = (TextView) findViewById(R.id.back);
 
         back.setOnClickListener(new View.OnClickListener() {
@@ -255,13 +264,22 @@ public class Start1Activity extends BaseActivity {
                         ib.setNo(object.getString("OrderCode"));
                         ib.setTel(object.getString("MobilePhone"));
                         ib.setOrderStatus(object.getInt("OrderStatus"));
-                        int type = Integer.parseInt(getCheckedId());
+//                        int type = Integer.parseInt(getCheckedId());
+                        int type = object.getInt("OrderType");
                        switch (type){
                            case 0:
                                ib.setTime(object.getString("FdtmCreateTime"));
                                break;
                            case 1:
-                               ib.setTime("待定");
+                               //
+//                               SecurityTime
+
+                               if(object.isNull("SecurityTime")){
+                                   ib.setTime("无时间");
+                               }else{
+                                   ib.setTime(object.getString("SecurityTime"));
+                               }
+
                                break;
                        }
 
