@@ -12,9 +12,24 @@ public class ReserItemBean implements Serializable{
     private String tel;
     private String add;
     private String time;
+    /**
+     * 列表是否展开
+     */
     private boolean isOpen;
     private String id;
     private int OrderStatus;
+    /**
+     * 安检员
+     */
+    private String StaffName;
+
+    public String getStaffName() {
+        return StaffName;
+    }
+
+    public void setStaffName(String staffName) {
+        StaffName = staffName;
+    }
 
     public int getOrderStatus() {
         return OrderStatus;

@@ -11,4 +11,6 @@
     <string name="nor_item_txt2">电话:%1$s</string>
     <string name="nor_item_txt3">地址:%1$s</string>
     <string name="nor_item_txt4">时间:%1$s</string>
+    <string name="curr_status">当前状态:%1$s</string>
+    <string name="curr_person">执行人:%1$s</string>
 </resources>

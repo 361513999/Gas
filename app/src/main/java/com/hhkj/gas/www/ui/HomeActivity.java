@@ -10,6 +10,7 @@ import android.widget.LinearLayout;
 import com.hhkj.gas.www.R;
 import com.hhkj.gas.www.base.AppManager;
 import com.hhkj.gas.www.base.BaseActivity;
+import com.hhkj.gas.www.widget.ChangeTime;
 
 /**
  * Created by cloor on 2017/8/7.

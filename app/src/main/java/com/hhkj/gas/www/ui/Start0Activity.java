@@ -97,8 +97,7 @@ public class Start0Activity extends BaseActivity {
             pull_to_refresh_list.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    pull_to_refresh_list.onFooterRefreshComplete();
-                    if(isMore){
+                    pull_to_refresh_list.onFooterRefreshComplete();                    if(isMore){
                         loadList();
                     }else{
                         NewToast.makeText(Start0Activity.this,"没有数据可加载",Common.TTIME).show();

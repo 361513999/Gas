@@ -109,7 +109,7 @@ public class Start1Activity extends BaseActivity {
         pull_to_refresh_list.setOnHeaderRefreshListener(listHeadListener);
         pull_to_refresh_list.setOnFooterRefreshListener(listFootListener);
         gas_list = (ListView) findViewById(R.id.gas_list);
-        start1Adapter = new Start1Adapter(Start1Activity.this,ribs);
+        start1Adapter = new Start1Adapter(Start1Activity.this,ribs,sharedUtils);
         market_group = (RadioGroup) findViewById(R.id.market_group);
         market_group_item0 = (RadioButton) findViewById(R.id.market_group_item0);
         market_group_item1 = (RadioButton) findViewById(R.id.market_group_item1);
@@ -123,6 +123,7 @@ public class Start1Activity extends BaseActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(Start1Activity.this,DetailActivity.class);
+                intent.putExtra("obj",ribs.get(position));
                 startActivity(intent);
             }
         });
@@ -259,12 +260,14 @@ public class Start1Activity extends BaseActivity {
                     for(int i=0;i<len;i++){
                         JSONObject object = jsonArray.getJSONObject(i);
                         ReserItemBean ib = new ReserItemBean();
+                        ib.setId(object.getString("Id"));
                         ib.setAdd(object.getString("Address"));
                         ib.setName(object.getString("CName"));
                         ib.setNo(object.getString("OrderCode"));
                         ib.setTel(object.getString("MobilePhone"));
                         ib.setOrderStatus(object.getInt("OrderStatus"));
 //                        int type = Integer.parseInt(getCheckedId());
+                        ib.setStaffName(object.getString("StaffName"));
                         int type = object.getInt("OrderType");
                        switch (type){
                            case 0:
@@ -275,7 +278,7 @@ public class Start1Activity extends BaseActivity {
 //                               SecurityTime
 
                                if(object.isNull("SecurityTime")){
-                                   ib.setTime("无时间");
+                                   ib.setTime("NON");
                                }else{
                                    ib.setTime(object.getString("SecurityTime"));
                                }
