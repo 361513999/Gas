@@ -5,19 +5,19 @@
     android:background="@android:color/white" >
 
     <ImageView
-        android:id="@+id/id_index_gallery_item_image"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
+        android:id="@+id/item0"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_margin="5dp"
         android:scaleType="centerCrop" />
 
     <TextView
-        android:id="@+id/id_index_gallery_item_text"
+        android:id="@+id/item1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/id_index_gallery_item_image"
+        android:layout_below="@+id/item0"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="5dp"
         android:layout_marginTop="5dp"

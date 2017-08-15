@@ -5,9 +5,13 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.hhkj.gas.www.R;
+import com.hhkj.gas.www.adapter.DetailImageAdapter;
 import com.hhkj.gas.www.base.AppManager;
 import com.hhkj.gas.www.base.BaseActivity;
 import com.hhkj.gas.www.bean.ReserItemBean;
@@ -19,6 +23,7 @@ import com.hhkj.gas.www.common.P;
 import com.hhkj.gas.www.common.U;
 import com.hhkj.gas.www.inter.TimeSelect;
 import com.hhkj.gas.www.widget.ChangeTime;
+import com.hhkj.gas.www.widget.LoadView;
 import com.hhkj.gas.www.widget.NewToast;
 import com.zc.http.okhttp.OkHttpUtils;
 import com.zc.http.okhttp.callback.StringCallback;
@@ -43,6 +48,7 @@ public class DetailActivity extends BaseActivity {
     private TextView back;
     private ReserItemBean bean;
     private DetailHandler detailHandler;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,8 +75,12 @@ public class DetailActivity extends BaseActivity {
                 switch (msg.what){
                     case 1:
                         //进行数据更新
+                        int imageLen = staffImages.size();
+                        item7.setNumColumns(imageLen);
 
-
+                        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams( FileUtils.dip2px(DetailActivity.this,110)*imageLen,LinearLayout.LayoutParams.WRAP_CONTENT);
+                        item7.setLayoutParams(params);
+                        imageAdapter.updata(staffImages);
                         break;
                     case 2:
 
@@ -90,7 +100,9 @@ public class DetailActivity extends BaseActivity {
 
     private TextView item0,item1,item2,item3,item4,item5,item6;
     private ImageView item_edit;
-
+    private GridView item7;
+    private DetailImageAdapter imageAdapter;
+    private LoadView loadView;
     @Override
     public void init() {
         back = (TextView) findViewById(R.id.back);
@@ -107,8 +119,9 @@ public class DetailActivity extends BaseActivity {
         item4 = (TextView) findViewById(R.id.item4);
         item5 = (TextView) findViewById(R.id.item5);
         item6 = (TextView) findViewById(R.id.item6);
-
-
+        item7 = (GridView) findViewById(R.id.item7);
+        imageAdapter = new DetailImageAdapter(DetailActivity.this,staffImages);
+        item7.setAdapter(imageAdapter);
 
         item_edit = (ImageView) findViewById(R.id.item_edit);
          item0.setText(getString(R.string.nor_item_txt0,bean.getNo()));
@@ -171,6 +184,10 @@ public class DetailActivity extends BaseActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        if(loadView==null){
+            loadView = new LoadView(DetailActivity.this);
+            loadView.showSheet();
+        }
         OkHttpUtils.postString().url(U.VISTER(U.BASE_URL)+U.LIST).mediaType(MediaType.parse("application/json; charset=utf-8")).content(object.toString()).build().execute(new StringCallback() {
             @Override
             public void onError(Call call, Exception e, int id) {
@@ -181,7 +198,10 @@ public class DetailActivity extends BaseActivity {
             @Override
             public void onResponse(String response, int id) {
                 //0 安检条目  1安检图片   2燃气具
-
+                if(loadView!=null){
+                    loadView.cancle();
+                    loadView = null;
+                }
                 try {
                     JSONObject jsonObject = new JSONObject( FileUtils.formatJson(response));
                     if(jsonObject.getBoolean("Success")){

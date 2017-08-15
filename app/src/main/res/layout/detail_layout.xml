@@ -239,8 +239,41 @@
                     android:text="拍照部分"
                     android:textColor="@color/white"
                     android:textSize="9sp" />
+            <HorizontalScrollView
+                android:layout_marginBottom="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:layout_height="match_parent">
+                    <GridView
+                        android:id="@+id/item7"
+                        android:numColumns="auto_fit"
+                        android:layout_width="wrap_content"
 
+                        android:layout_height="wrap_content"
+                        android:background="@color/no_color"
+                        android:horizontalSpacing="10dp"/>
+                </LinearLayout>
+            </HorizontalScrollView>
 
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@mipmap/bg_line"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:background="@mipmap/bg_title"
+                    android:gravity="center"
+                    android:paddingBottom="5dp"
+                    android:text="内容和结果"
+                    android:textColor="@color/white"
+                    android:textSize="9sp" />
             </LinearLayout>
         </com.hhkj.gas.www.widget.MyScroll>
 

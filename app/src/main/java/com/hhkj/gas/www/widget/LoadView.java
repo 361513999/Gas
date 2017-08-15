@@ -14,6 +14,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.hhkj.gas.www.R;
+import com.hhkj.gas.www.inter.LoadDis;
 
 
 public class LoadView {
@@ -25,6 +26,10 @@ public class LoadView {
         this.context = context;
        inflater  = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    }
+    private LoadDis dis;
+    public void setDis(LoadDis dis){
+        this.dis = dis;
     }
     public Dialog showSheet() {
         dlg = new IDialog(context, R.style.load_pop_style);
@@ -43,7 +48,9 @@ public class LoadView {
             @Override
             public void onDismiss(DialogInterface arg0) {
                 // TODO Auto-generated method stub
-
+                if(dis!=null){
+                    dis.dis();
+                }
             }
         });
         dlg.setOnCancelListener(new OnCancelListener() {

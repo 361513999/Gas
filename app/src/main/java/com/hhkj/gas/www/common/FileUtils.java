@@ -1,4 +1,6 @@
 package com.hhkj.gas.www.common;
+import android.content.Context;
+
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -16,6 +18,15 @@ import org.json.JSONObject;
 
 public class FileUtils {
 
+	public static int dip2px(Context context, float dipValue){
+		final float scale = context.getResources().getDisplayMetrics().density;
+		return (int)(dipValue * scale + 0.5f);
+	}
+
+	public static int px2dip(Context context, float pxValue){
+		final float scale = context.getResources().getDisplayMetrics().density;
+		return (int)(pxValue / scale + 0.5f);
+	}
 	/**
 	 * 检查数据库是否存在
 	 * @return
