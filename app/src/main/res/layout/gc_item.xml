@@ -12,13 +12,14 @@
             android:id="@+id/gc_item0"
             android:layout_width="wrap_content"
             android:layout_marginLeft="10dp"
+            android:textSize="13sp"
             android:layout_height="wrap_content"
             android:textColor="@color/font_normal"
             android:gravity="center"
             android:layout_gravity="center_vertical"/>
         <CheckBox
             android:id="@+id/gc_item1"
-            android:layout_marginLeft="2dp"
+            android:layout_marginLeft="3dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:button="@drawable/reser_nor_cb_sy"/>

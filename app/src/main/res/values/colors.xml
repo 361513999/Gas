@@ -21,4 +21,5 @@
     <color name="head_pop">#8896CC</color>
     <color name="green_n">#44BB5C</color>
     <color name="login_edit">#E7E7E7</color>
+    <color name="detail_red">#FF4C3E</color>
 </resources>

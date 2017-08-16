@@ -445,15 +445,14 @@ public class Start0Activity extends BaseActivity {
     /**
      * 关于时间的pop
      */
-    private LayoutInflater dateInflater,areaInflater;
+
     private View dataPop,areaPop;
     private PopupWindow dataPopupWindow,areaPopupWindow;
     private ListView area_list;
     private AreasAdapter areasAdapter;
     private ArrayList<AreaBean> rbs = new ArrayList<>();
     private void areaPop(){
-        areaInflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-        areaPop = areaInflater.inflate(R.layout.area_list_layout,null);
+        areaPop = inflater.inflate(R.layout.area_list_layout,null);
         areaPopupWindow = new PopupWindow(areaPop,LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.MATCH_PARENT);
         areaPopupWindow.setBackgroundDrawable(getResources().getDrawable(
                 R.color.bcolor));
@@ -532,8 +531,8 @@ public class Start0Activity extends BaseActivity {
 
 
     private void dataPop(){
-        dateInflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-        dataPop = dateInflater.inflate(R.layout.date_double_layout, null);
+
+        dataPop = inflater.inflate(R.layout.date_double_layout, null);
         dataPopupWindow = new PopupWindow(dataPop, LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout. LayoutParams.MATCH_PARENT);
         dataPopupWindow.setBackgroundDrawable(getResources().getDrawable(

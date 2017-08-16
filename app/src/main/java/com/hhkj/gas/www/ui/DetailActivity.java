@@ -11,10 +11,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.hhkj.gas.www.R;
+import com.hhkj.gas.www.adapter.DetailBAdapter;
 import com.hhkj.gas.www.adapter.DetailImageAdapter;
 import com.hhkj.gas.www.adapter.StaffItemAdapter;
 import com.hhkj.gas.www.base.AppManager;
 import com.hhkj.gas.www.base.BaseActivity;
+import com.hhkj.gas.www.bean.DetailBItem;
 import com.hhkj.gas.www.bean.DetailStaff;
 import com.hhkj.gas.www.bean.ReserItemBean;
 
@@ -27,6 +29,7 @@ import com.hhkj.gas.www.common.U;
 import com.hhkj.gas.www.inter.TimeSelect;
 import com.hhkj.gas.www.widget.ChangeTime;
 import com.hhkj.gas.www.widget.InScrollListView;
+import com.hhkj.gas.www.widget.LinePathView;
 import com.hhkj.gas.www.widget.LoadView;
 import com.hhkj.gas.www.widget.NewToast;
 import com.zc.http.okhttp.OkHttpUtils;
@@ -144,13 +147,19 @@ public class DetailActivity extends BaseActivity {
         }
     }
     private final int SHOW_STAFF = 5;
-    private TextView item0,item1,item2,item3,item4,item5,item6,item9;
+    private TextView item0,item1,item2,item3,item4,item5,item6,item9,item13;
     private ImageView item_edit;
     private GridView item7;
+    private ImageView item15,item16;
+    //图片
     private DetailImageAdapter imageAdapter;
     private LoadView loadView;
-    private InScrollListView item8;
+    private InScrollListView item8,item14;
+    //安检条目
     private StaffItemAdapter staffItemAdapter;
+    //器具
+    private DetailBAdapter bAdapter;
+    private ArrayList<DetailBItem> detailBItems = new ArrayList<>();
     @Override
     public void init() {
         back = (TextView) findViewById(R.id.back);
@@ -170,13 +179,18 @@ public class DetailActivity extends BaseActivity {
         item7 = (GridView) findViewById(R.id.item7);
         item8 = (InScrollListView) findViewById(R.id.item8);
         item9 = (TextView) findViewById(R.id.item9);
-
-
+        item13 = (TextView) findViewById(R.id.item13);
+        item14 = (InScrollListView) findViewById(R.id.item14);
+        item15 = (ImageView) findViewById(R.id.item15);
+        item16 = (ImageView) findViewById(R.id.item16);
          imageAdapter = new DetailImageAdapter(DetailActivity.this,staffImages);
          item7.setAdapter(imageAdapter);
 
         staffItemAdapter = new StaffItemAdapter(DetailActivity.this,dss);
         item8.setAdapter(staffItemAdapter);
+
+        bAdapter = new DetailBAdapter(DetailActivity.this,detailBItems);
+        item14.setAdapter(bAdapter);
          item_edit = (ImageView) findViewById(R.id.item_edit);
          item0.setText(getString(R.string.nor_item_txt0,bean.getNo()));
          item1.setText(getString(R.string.nor_item_txt1,bean.getName()));
@@ -224,6 +238,29 @@ public class DetailActivity extends BaseActivity {
                     }
                 });
                 changeTime.showSheet();
+            }
+        });
+        item13.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DetailBItem bItem = new DetailBItem();
+                detailBItems.add(bItem);
+
+               bAdapter.updata(detailBItems);
+            }
+        });
+        item15.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                    Intent intent = new Intent(DetailActivity.this, CommonLineActivity.class);
+                startActivity(intent);
+            }
+        });
+        item16.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(DetailActivity.this, CommonLineActivity.class);
+                startActivity(intent);
             }
         });
     }
