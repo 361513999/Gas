@@ -12,17 +12,21 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.hhkj.gas.www.R;
 import com.hhkj.gas.www.adapter.DetailImageAdapter;
+import com.hhkj.gas.www.adapter.StaffItemAdapter;
 import com.hhkj.gas.www.base.AppManager;
 import com.hhkj.gas.www.base.BaseActivity;
+import com.hhkj.gas.www.bean.DetailStaff;
 import com.hhkj.gas.www.bean.ReserItemBean;
 
 import com.hhkj.gas.www.bean.StaffImageItem;
+import com.hhkj.gas.www.bean.StaffTxtItem;
 import com.hhkj.gas.www.common.Common;
 import com.hhkj.gas.www.common.FileUtils;
 import com.hhkj.gas.www.common.P;
 import com.hhkj.gas.www.common.U;
 import com.hhkj.gas.www.inter.TimeSelect;
 import com.hhkj.gas.www.widget.ChangeTime;
+import com.hhkj.gas.www.widget.InScrollListView;
 import com.hhkj.gas.www.widget.LoadView;
 import com.hhkj.gas.www.widget.NewToast;
 import com.zc.http.okhttp.OkHttpUtils;
@@ -33,9 +37,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import okhttp3.Call;
 import okhttp3.MediaType;
@@ -81,6 +90,43 @@ public class DetailActivity extends BaseActivity {
                         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams( FileUtils.dip2px(DetailActivity.this,110)*imageLen,LinearLayout.LayoutParams.WRAP_CONTENT);
                         item7.setLayoutParams(params);
                         imageAdapter.updata(staffImages);
+                        //解析安检项目数据
+                       Set set =  txtListMap.keySet();
+                        Iterator it = set.iterator();
+
+                        dss.clear();
+                        while(it.hasNext()){
+                            String key =  it.next().toString();
+                            Object obj = txtListMap.get(key);
+                            if(obj instanceof StaffTxtItem){
+                                //普通
+                                StaffTxtItem item = (StaffTxtItem) obj;
+                                DetailStaff ds = new DetailStaff();
+                                ds.setItem(item);
+                                dss.add(ds);
+                                P.c("单项:"+item.getTxt());
+                            }else  if(obj instanceof  ArrayList){
+                                    ArrayList<StaffTxtItem> items = (ArrayList<StaffTxtItem>) obj;
+                                DetailStaff ds = new DetailStaff();
+                                ds.setItems(items);
+                                ds.setItems_tag(key);
+                                dss.add(ds);
+                                for(int i=0;i<items.size();i++){
+                                    StaffTxtItem item = items.get(i);
+                                    P.c("复项:"+item.getTxt());
+                                }
+
+                            }
+                        }
+                        //整理完毕
+                        if(dss.size()>SHOW_STAFF){
+                            staffItemAdapter.updata(dss,SHOW_STAFF);
+                            item9.setVisibility(View.VISIBLE);
+                        }else{
+                            staffItemAdapter.updata(dss);
+                            item9.setVisibility(View.GONE);
+                        }
+
                         break;
                     case 2:
 
@@ -97,12 +143,14 @@ public class DetailActivity extends BaseActivity {
             }
         }
     }
-
-    private TextView item0,item1,item2,item3,item4,item5,item6;
+    private final int SHOW_STAFF = 5;
+    private TextView item0,item1,item2,item3,item4,item5,item6,item9;
     private ImageView item_edit;
     private GridView item7;
     private DetailImageAdapter imageAdapter;
     private LoadView loadView;
+    private InScrollListView item8;
+    private StaffItemAdapter staffItemAdapter;
     @Override
     public void init() {
         back = (TextView) findViewById(R.id.back);
@@ -120,29 +168,33 @@ public class DetailActivity extends BaseActivity {
         item5 = (TextView) findViewById(R.id.item5);
         item6 = (TextView) findViewById(R.id.item6);
         item7 = (GridView) findViewById(R.id.item7);
-        imageAdapter = new DetailImageAdapter(DetailActivity.this,staffImages);
-        item7.setAdapter(imageAdapter);
+        item8 = (InScrollListView) findViewById(R.id.item8);
+        item9 = (TextView) findViewById(R.id.item9);
 
-        item_edit = (ImageView) findViewById(R.id.item_edit);
+
+         imageAdapter = new DetailImageAdapter(DetailActivity.this,staffImages);
+         item7.setAdapter(imageAdapter);
+
+        staffItemAdapter = new StaffItemAdapter(DetailActivity.this,dss);
+        item8.setAdapter(staffItemAdapter);
+         item_edit = (ImageView) findViewById(R.id.item_edit);
          item0.setText(getString(R.string.nor_item_txt0,bean.getNo()));
          item1.setText(getString(R.string.nor_item_txt1,bean.getName()));
          item2.setText(getString(R.string.nor_item_txt2,bean.getTel()));
          item3.setText(getString(R.string.nor_item_txt3,bean.getAdd()));
-        if(bean.getTime().equals("NON")){
+         if(bean.getTime().equals("NON")){
             item4.setText(getString(R.string.nor_item_txt4,"____-__-__ __:__"));
-        }else{
+         }else{
             item4.setText(getString(R.string.nor_item_txt4,bean.getTime()));
-        }
-        String status = "";
-        switch (bean.getOrderStatus()){
+         }
+         String status = "";
+         switch (bean.getOrderStatus()){
             case 3:
                 status = "进行中";
                 break;
-
             case 6:
                 status = "重新安检中";
                 break;
-
             case 8:
                 status = "整改中";
                 break;
@@ -151,7 +203,15 @@ public class DetailActivity extends BaseActivity {
         item5.setText(getString(R.string.curr_status,status));
         item6.setText(getString(R.string.curr_person,bean.getStaffName()));
 
-
+        item9.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(dss.size()>SHOW_STAFF){
+                    staffItemAdapter.updata(dss);
+                    item9.setVisibility(View.GONE);
+                }
+            }
+        });
         loadData();
         item_edit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -168,7 +228,8 @@ public class DetailActivity extends BaseActivity {
         });
     }
     private ArrayList<StaffImageItem> staffImages = new ArrayList<>();
-
+    private Map<String,Object> txtListMap = new HashMap<>();
+    private ArrayList<DetailStaff> dss = new ArrayList<>();
     /**
      * 初始化详细数据信息
      */
@@ -217,11 +278,31 @@ public class DetailActivity extends BaseActivity {
                             switch (obj.getInt("ItemType")){
                                 case 0:
                                     //安检条目
+                                    String key = obj.getString("ItemGroup");
+                                    String tag = obj.getString("ItemName");
+                                    StaffTxtItem item0 = new StaffTxtItem();
+                                    item0.setId(obj.getString("Id"));
+                                    item0.setTxt(tag);
+
+                                    if(key.length()==0){
+                                        //单独的数据
+                                        txtListMap.put(tag,item0);
+                                    }else{
+                                        if(txtListMap.containsKey(key)){
+                                            //存在这个组就添加
+                                            ((ArrayList<StaffTxtItem>)txtListMap.get(key)).add(item0);
+                                        }else{
+                                            ArrayList<StaffTxtItem> txts = new ArrayList<StaffTxtItem>();
+                                            txts.add(item0);
+                                            txtListMap.put(key,txts);
+                                        }
+                                    }
                                     break;
                                 case 1:
                                     //安检图片
                                     StaffImageItem item = new StaffImageItem();
                                     item.setTag(obj.getString("ItemName"));
+                                    item.setId(obj.getString("Id"));
                                     staffImages.add(item);
                                     break;
                                 case 2:
