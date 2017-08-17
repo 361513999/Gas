@@ -8,6 +8,8 @@ import android.graphics.Matrix;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
 
+import com.hhkj.gas.www.common.P;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -111,6 +113,15 @@ public abstract class PrinterWriter {
             reset();
         bos.write(data);
     }
+    public void Line(int gap){
+        writeH(gap);
+    }
+    public void writeH(int gap){
+        bos.write(0x1B);
+        bos.write(0x33);
+        bos.write(gap);
+
+    }
 
     /**
      * 设置居中
@@ -194,6 +205,10 @@ public abstract class PrinterWriter {
     public void print(String string) throws IOException {
         print(string, CHARSET);
     }
+    public void printL(String string) throws IOException {
+        print(string, CHARSET);
+        printLineFeed();
+    }
 
     /**
      * 写入字符串
@@ -256,6 +271,7 @@ public abstract class PrinterWriter {
     @SuppressWarnings("unused")
     public void printInOneLine(String str1, String str2, int textSize, String charsetName) throws IOException {
         int lineLength = getLineStringWidth(textSize);
+        P.c("计算的长度"+lineLength);
         int needEmpty = lineLength - (getStringWidth(str1) + getStringWidth(str2)) % lineLength;
         String empty = "";
         while (needEmpty > 0) {
@@ -264,6 +280,8 @@ public abstract class PrinterWriter {
         }
         print(str1 + empty + str2, charsetName);
     }
+
+
 
     /**
      * 获取一行字符串长度
@@ -305,6 +323,128 @@ public abstract class PrinterWriter {
             throw new IOException(e.getMessage());
         }
     }
+
+    /**
+     * 打印客户和电话栏
+     */
+    public void printTP(String txt) throws IOException {
+        int ep = 12-txt.length();
+        print(txt+getEmp(ep),CHARSET);
+    }
+    /**
+     * 计算地址下面的长度
+      */
+    private  int ssl(int sLen){
+        int len = (sLen/addMoreLen);
+        if(((double)sLen/addMoreLen)>(sLen/addMoreLen)){
+            return len+1;
+        }
+        return len;
+    }
+    /**
+     * 格式化地址
+     */
+    final int addMoreLen = 21;
+    public void printAdd(String txt,int emp) throws IOException {
+        int oneLen = 24;
+
+        if(txt.length()>oneLen){
+            //进行处理
+            int sLen = txt.length()-oneLen;//剩余的长度
+            int ssL = ssl(sLen);
+            printL(txt.substring(0,oneLen));
+            String sTxt = txt.substring(oneLen,txt.length());
+            for(int i=0;i<ssL;i++){
+
+                //如果不是最后一行
+                if(sTxt.length()>=addMoreLen){
+                    printL(getEmp(emp)+sTxt.substring(0,addMoreLen));
+                    sTxt = sTxt.substring(addMoreLen,sTxt.length());
+                }else{
+                    printL(getEmp(emp)+sTxt);
+                }
+            }
+
+        }else{
+            printL(txt);
+        }
+    }
+    /**
+     * 打印空格
+     * @param len
+     * @return
+     */
+    public String getEmp(double len){
+        StringBuilder sb = new StringBuilder();//字符串拼接使用StringBuilder效率比较高
+
+        for (int i = 0; i < 2*len; i++) {//循环添加空格
+            sb.append(" ");
+        }
+        return  sb.toString();
+    }
+    private String checkTxt = getEmp(1.5)+"□是"+getEmp(0.5)+"□否";
+
+    private void printOneStaffItem(int index,String txt,int empS,int empE) throws IOException {
+
+            int showLen = 15;
+
+            if(txt.length()>showLen){
+                //进行处理
+                writeH(50);
+                int sLen = txt.length()-showLen;//剩余的长度
+                int ssL = ssitem(sLen,showLen);
+
+                print(getEmp(1)+index+getEmp(1)+txt.substring(0,showLen)+checkTxt);
+                String sTxt = txt.substring(showLen,txt.length());
+
+                for(int i=0;i<ssL;i++){
+                    //如果不是最后一行
+                    if(sTxt.length()>=showLen){
+                        print(getEmp(empS)+sTxt.substring(0,showLen)+getEmp(empE));
+                        sTxt = sTxt.substring(showLen,sTxt.length());
+                    }else{
+                        print(getEmp(empS)+sTxt);
+                        writeH(70);
+                    }
+                }
+
+            }else{
+
+                print(getEmp(1)+index+getEmp(1)+txt+getEmp(showLen-txt.length())+checkTxt);
+            }
+
+    }
+
+    /**
+     * 计算staffItem的长度
+     */
+
+    private  int ssitem(int sLen,int showLen){
+        int len = (sLen/showLen);
+        if(((double)sLen/showLen)>(sLen/showLen)){
+            return len+1;
+        }
+        return len;
+    }
+    private ArrayList getTemp(){
+        ArrayList list = new ArrayList();
+        list.add("橱柜未打透气孔");
+        list.add("燃气设施空间改装成客厅、卧室等起居室");
+        list.add("燃气设施空间安装配电设备");
+        list.add("私自改管");
+        list.add("阀门老化、破损");
+        list.add("明装绝缘电线与燃气管道平行敷设净距离小于25cm");
+        return  list;
+
+    }
+    String temp = "知道吗？我昨晚又梦到你了，梦中的你一如既往地帅气，你背对着我，坐在那家我们常去的咖啡馆常坐的位置，我进门径直朝着那个位置走去，却看到了你，我就愣在那儿停顿了好久，然后你转过头来看到了我，你朝我笑，我鼓起勇气试着向你走近，却始终走不到那个位置，眼睁睁地看着你近在咫尺，却偏偏难以靠近，最后直到你消失不见";
+    public void printStaffItems() throws IOException {
+        for(int i=0;i<getTemp().size();i++){
+            printOneStaffItem(i,getTemp().get(i).toString(),3,6);
+            printLineFeed();
+        }
+    }
+
 
     /**
      * 获取图片数据流
