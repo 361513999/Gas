@@ -151,6 +151,7 @@ public class DetailActivity extends BaseActivity {
     private ImageView item_edit;
     private GridView item7;
     private ImageView item15,item16;
+    private LinearLayout item18,item19;
     //图片
     private DetailImageAdapter imageAdapter;
     private LoadView loadView;
@@ -183,6 +184,9 @@ public class DetailActivity extends BaseActivity {
         item14 = (InScrollListView) findViewById(R.id.item14);
         item15 = (ImageView) findViewById(R.id.item15);
         item16 = (ImageView) findViewById(R.id.item16);
+
+        item18 = (LinearLayout) findViewById(R.id.item18);
+        item19 = (LinearLayout) findViewById(R.id.item19);
          imageAdapter = new DetailImageAdapter(DetailActivity.this,staffImages);
          item7.setAdapter(imageAdapter);
 
@@ -260,6 +264,13 @@ public class DetailActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(DetailActivity.this, CommonLineActivity.class);
+                startActivity(intent);
+            }
+        });
+        item18.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(DetailActivity.this, StaffBtActivity.class);
                 startActivity(intent);
             }
         });

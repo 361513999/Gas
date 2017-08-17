@@ -407,7 +407,14 @@
                     android:layout_marginLeft="20dp"
                     android:layout_marginRight="20dp"
                     android:orientation="horizontal">
-
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="燃气表"
+                        android:textColor="@color/font_normal"
+                        android:textSize="13sp" />
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -452,7 +459,22 @@
                     android:layout_marginRight="20dp"
                     android:layout_marginTop="4dp"
                     android:orientation="horizontal">
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center">
 
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:ems="3"
+                            android:gravity="center"
+                            android:padding="2dp"
+                            android:text="表一"
+                            android:textColor="@color/font_normal"
+                            android:textSize="13sp" />
+                    </LinearLayout>
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -523,7 +545,22 @@
                     android:layout_marginRight="20dp"
                     android:focusableInTouchMode="true"
                     android:orientation="horizontal">
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center">
 
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:ems="3"
+                            android:gravity="center"
+                            android:padding="2dp"
+                            android:text="表一"
+                            android:textColor="@color/font_normal"
+                            android:textSize="13sp" />
+                    </LinearLayout>
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -765,6 +802,7 @@
         android:orientation="horizontal">
 
         <LinearLayout
+            android:id="@+id/item18"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="150"
@@ -784,6 +822,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/item19"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="275"
