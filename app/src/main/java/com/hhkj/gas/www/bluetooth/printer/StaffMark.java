@@ -3,12 +3,19 @@ package com.hhkj.gas.www.bluetooth.printer;
 import android.content.Context;
 
 import com.hhkj.gas.www.R;
+import com.hhkj.gas.www.bean.DetailStaff;
+import com.hhkj.gas.www.bean.ReserItemBean;
+import com.hhkj.gas.www.bean.StaffB;
+import com.hhkj.gas.www.bean.StaffImageItem;
+import com.hhkj.gas.www.bean.StaffQj;
 import com.hhkj.gas.www.bluetooth.printer.PrintDataMaker;
 import com.hhkj.gas.www.common.P;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Administrator on 2017/8/17/017.
@@ -45,7 +52,7 @@ public class StaffMark implements PrintDataMaker {
             printerWriter.printLineFeed();
             printerWriter.printLineFeed();
             printerWriter.setFontSize(0);
-            printerWriter.print("工作编号:157941316");
+            printerWriter.print("工作编号:"+bean.getNo());
             printerWriter.printLineFeed();
             printerWriter.setAlignRight();
             printerWriter.print("第一次打印");
@@ -53,13 +60,13 @@ public class StaffMark implements PrintDataMaker {
             printerWriter.setAlignLeft();
             //开始写客户
             printerWriter.writeH(70);
-            printerWriter.printTP("客户姓名:吴凡");
-            printerWriter.print("联系电话:18813955321");
+            printerWriter.printTP("客户姓名:"+bean.getName());
+            printerWriter.print("联系电话:"+bean.getTel());
             printerWriter.printLineFeed();
-            printerWriter.print("预约时间:2017-08-18");
+            printerWriter.print("预约时间:"+bean.getTel());
             printerWriter.printLineFeed();
 
-            printerWriter.printAdd("地址:知道吗？我昨晚又梦到你了，梦中的你一如既往地帅气，你背对着我，坐在那家我们常去的咖啡馆常坐的位置，我进门径直朝着那个位置走去，却看到了你，我就愣在那儿停顿了好久，然后你转过头来看到了我，你朝我笑，我鼓起勇气试着向你走近，却始终走不到那个位置，眼睁睁地看着你近在咫尺，却偏偏难以靠近，最后直到你消失不见",3);
+            printerWriter.printAdd("地址:"+bean.getAdd(),3);
 //            printerWriter.printAdd("地址:广东省深圳市宝安区西乡街道宝源路(就是要让地址长长的，看看会怎样)",2);
             printerWriter.printLine();
             printerWriter.printLineFeed();
@@ -67,7 +74,8 @@ public class StaffMark implements PrintDataMaker {
             printerWriter.print("序号"+printerWriter.getEmp(8)+"项目"+printerWriter.getEmp(7)+"检查情况"+printerWriter.getEmp(1));
             //
             printerWriter.printLineFeed();
-            printerWriter.printStaffItems();
+            printerWriter.printStaffItems(dss);
+            printerWriter.writeH(70);
            // printerWriter.setLineHeight(10);
             printerWriter.printLineFeed();
             printerWriter.print("序号"+printerWriter.getEmp(1)+"燃气表"+printerWriter.getEmp(1)+"品牌型号"+printerWriter.getEmp(1)+"机表读数"+printerWriter.getEmp(3)+"运行情况"+printerWriter.getEmp(1));
@@ -124,7 +132,17 @@ public class StaffMark implements PrintDataMaker {
 
     }
     private Context context;
-    public StaffMark(Context context){
+    private ReserItemBean bean;
+    private ArrayList<StaffImageItem> staffImages;//图片
+    private ArrayList<DetailStaff> dss ;//栏目
+    private ArrayList<StaffB> staffBs ;//燃气表
+    private ArrayList<StaffQj> staffQjs;//器具
+    public StaffMark(Context context,ReserItemBean bean,ArrayList<StaffImageItem> staffImages,ArrayList<DetailStaff> dss,ArrayList<StaffB> staffBs,ArrayList<StaffQj> staffQjs  ){
         this.context = context;
+        this.bean = bean;
+        this.staffImages = staffImages;
+        this.dss = dss;
+        this.staffBs = staffBs;
+        this.staffQjs = staffQjs;
     }
 }

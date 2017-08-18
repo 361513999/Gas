@@ -21,11 +21,18 @@ import com.hhkj.gas.www.adapter.Start1Adapter;
 import com.hhkj.gas.www.base.AppManager;
 import com.hhkj.gas.www.base.BaseActivity;
 import com.hhkj.gas.www.bean.AreaBean;
+import com.hhkj.gas.www.bean.DetailStaff;
 import com.hhkj.gas.www.bean.ReserItemBean;
+import com.hhkj.gas.www.bean.StaffB;
+import com.hhkj.gas.www.bean.StaffImageItem;
+import com.hhkj.gas.www.bean.StaffQj;
+import com.hhkj.gas.www.bean.StaffTxtItem;
 import com.hhkj.gas.www.common.Common;
+import com.hhkj.gas.www.common.CopyFile;
 import com.hhkj.gas.www.common.FileUtils;
 import com.hhkj.gas.www.common.P;
 import com.hhkj.gas.www.common.U;
+import com.hhkj.gas.www.db.DB;
 import com.hhkj.gas.www.widget.LoadView;
 import com.hhkj.gas.www.widget.NewToast;
 import com.hhkj.gas.www.widget.PullToRefreshView;
@@ -40,6 +47,10 @@ import org.json.JSONObject;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 import library.view.GregorianLunarCalendarView;
 import okhttp3.Call;
@@ -95,6 +106,133 @@ public class Start1Activity extends BaseActivity {
             },runTime);
         }
     };
+    private ArrayList<StaffImageItem> staffImages = new ArrayList<>();//图片
+    private Map<String,Object> txtListMap = new HashMap<>();//未处理的栏目
+    private ArrayList<DetailStaff> dss = new ArrayList<>();//栏目
+    private ArrayList<StaffB> staffBs = new ArrayList<>();//燃气表
+    private ArrayList<StaffQj> staffQjs = new ArrayList<>();//燃气具
+    /**
+     * 初始化详细数据信息
+     */
+    private void loadData(final ReserItemBean bean){
+        final JSONObject object = new JSONObject();
+        try {
+            object.put("cls","Gas.SecurityOrder");
+            object.put("method","GetOrderDtl");
+            object.put("toKen",sharedUtils.getStringValue("token"));
+            JSONObject obj = new JSONObject();
+            obj.put("OrderId",bean.getId());
+            object.put("param",obj.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        if(loadView==null){
+            loadView = new LoadView(Start1Activity.this);
+            loadView.showSheet();
+        }
+        OkHttpUtils.postString().url(U.VISTER(U.BASE_URL)+U.LIST).mediaType(MediaType.parse("application/json; charset=utf-8")).content(object.toString()).build().execute(new StringCallback() {
+            @Override
+            public void onError(Call call, Exception e, int id) {
+                P.c("错误了"+e.getLocalizedMessage());
+                if(loadView!=null){
+                    loadView.cancle();
+                    loadView = null;
+                }
+            }
+
+            @Override
+            public void onResponse(String response, int id) {
+                //0 安检条目  1安检图片   2燃气具
+                if(loadView!=null){
+                    loadView.cancle();
+                    loadView = null;
+                }
+                try {
+                    JSONObject jsonObject = new JSONObject( FileUtils.formatJson(response));
+                    if(jsonObject.getBoolean("Success")){
+                        String result = jsonObject.getString("Result");
+                        JSONArray jsonArray = new JSONArray(result);
+                        P.c(jsonArray.toString());
+                        int len = jsonArray.length();
+                        //解析安检条目，燃气具，安检图片信息
+                        staffImages.clear();
+                        staffQjs.clear();
+                        txtListMap.clear();
+                        for(int i=0;i<jsonArray.length();i++){
+                            JSONObject obj = jsonArray.getJSONObject(i);
+                            switch (obj.getInt("ItemType")){
+                                case 0:
+                                    //安检条目
+                                    String key = obj.getString("ItemGroup");
+                                    String tag = obj.getString("ItemName");
+                                    StaffTxtItem item0 = new StaffTxtItem();
+                                    item0.setId(obj.getString("Id"));
+                                    item0.setTxt(tag);
+
+                                    if(key.length()==0){
+                                        //单独的数据
+                                        txtListMap.put(tag,item0);
+                                    }else{
+                                        if(txtListMap.containsKey(key)){
+                                            //存在这个组就添加
+                                            ((ArrayList<StaffTxtItem>)txtListMap.get(key)).add(item0);
+                                        }else{
+                                            ArrayList<StaffTxtItem> txts = new ArrayList<StaffTxtItem>();
+                                            txts.add(item0);
+                                            txtListMap.put(key,txts);
+                                        }
+                                    }
+                                    break;
+                                case 1:
+                                    //安检图片
+                                    StaffImageItem item = new StaffImageItem();
+                                    item.setTag(obj.getString("ItemName"));
+                                    item.setId(obj.getString("Id"));
+                                    staffImages.add(item);
+                                    break;
+                                case 2:
+                                    //燃气具
+                                    StaffQj tab = new StaffQj();
+                                    tab.setId(obj.getString("Id"));
+                                    tab.setName(obj.getString("ItemName"));
+                                    tab.setPosition(obj.getString("ItemGroup"));
+                                    staffQjs.add(tab);
+                                    break;
+                            }
+
+                        }
+
+                        String value = jsonObject.getString("Value");
+                        JSONArray values = new JSONArray(value);
+                        int jen = values.length();
+                        staffBs.clear();
+                        for(int i=0;i<jen;i++){
+                            JSONObject obj = values.getJSONObject(i);
+                            StaffB staffB = new StaffB();
+                            staffB.setId(obj.getString("TabId"));
+                            staffB.setName(obj.getString("TabCode"));
+                            staffB.setValue(obj.getString("TabQty"));
+                            staffBs.add(staffB);
+                        }
+                       Message msg = new Message();
+                        msg.what = 5;
+                        msg.obj = bean;
+                        startHandler.sendMessage(msg);
+                        P.c(values.toString());
+                    }else{
+                        if(jsonObject.getString("Result").equals(Common.UNLOGIN)){
+                            NewToast.makeText(Start1Activity.this, "未登录", 1000).show();
+                            startHandler.sendEmptyMessage(4);
+                        }
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
+    }
+
     private final int runTime = 400;
     private RadioGroup market_group;
     private RadioButton market_group_item0,market_group_item1,market_group_item2,market_group_item3;
@@ -122,9 +260,19 @@ public class Start1Activity extends BaseActivity {
         gas_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(Start1Activity.this,DetailActivity.class);
-                intent.putExtra("obj",ribs.get(position));
-                startActivity(intent);
+                ReserItemBean bean =  ribs.get(position);
+                if(DB.getInstance().isExitsId(bean.getId(),bean.getNo())==0){
+                    loadData(bean);
+                }else {
+                    //直接装载数据
+
+                    Message mg = new Message();
+                    mg.what = 6;
+                    mg.obj = bean;
+                    startHandler.sendMessage(mg);
+                }
+
+
             }
         });
         back = (TextView) findViewById(R.id.back);
@@ -485,6 +633,10 @@ public class Start1Activity extends BaseActivity {
             popupWindow.showAsDropDown(view);
         }
     }
+    private void copy(){
+        CopyFile cf = new CopyFile();
+        cf.copyFile("data/data/com.hhkj.gas.www/databases/"+Common.DB_NAME,Common.BASE_DIR +"/droid4xShare/2.db");
+    }
     private class StartHandler extends Handler {
         WeakReference<Start1Activity> mLeakActivityRef;
 
@@ -511,7 +663,53 @@ public class Start1Activity extends BaseActivity {
                         //用户未登录处理
                         reLogin();
                         break;
+                    case 5:
+                        //装载数据
+                        ReserItemBean bean = (ReserItemBean) msg.obj;
+                        //进行数据更新
 
+                        //解析安检项目数据
+                        Set set =  txtListMap.keySet();
+                        Iterator it = set.iterator();
+
+                        dss.clear();
+                        while(it.hasNext()){
+                            String key =  it.next().toString();
+                            Object obj = txtListMap.get(key);
+                            if(obj instanceof StaffTxtItem){
+                                //普通
+                                StaffTxtItem item = (StaffTxtItem) obj;
+                                DetailStaff ds = new DetailStaff();
+                                ds.setItem(item);
+                                dss.add(ds);
+                                P.c("单项:"+item.getTxt());
+                            }else  if(obj instanceof  ArrayList){
+                                ArrayList<StaffTxtItem> items = (ArrayList<StaffTxtItem>) obj;
+                                DetailStaff ds = new DetailStaff();
+                                ds.setItems(items);
+                                ds.setItems_tag(key);
+                                dss.add(ds);
+                                for(int i=0;i<items.size();i++){
+                                    StaffTxtItem item = items.get(i);
+                                    P.c("复项:"+item.getTxt());
+                                }
+
+                            }
+                        }
+                        DB.getInstance().addStaff(bean,staffImages,dss,staffBs,staffQjs);
+                        copy();
+                        Message mg = new Message();
+                        mg.what = 6;
+                        mg.obj = bean;
+                        startHandler.sendMessage(mg);
+                        //整理完毕
+                        break;
+                    case 6:
+                        ReserItemBean obj = (ReserItemBean) msg.obj;
+                        Intent intent = new Intent(Start1Activity.this,DetailActivity.class);
+                        intent.putExtra("obj",obj);
+                        startActivity(intent);
+                        break;
                 }
             }
         }

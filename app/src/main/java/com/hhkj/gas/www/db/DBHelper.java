@@ -39,11 +39,14 @@ public class DBHelper extends SQLiteOpenHelper{
         //isSend 是否提交, problem 隐患单号
     db.execSQL("create table staff_stand(i integer primary key autoincrement,id varchar,staffId varchar,staffName varchar,staffTel varchar,staffAdd varchar,staffTime varchar,opt varchar,status int,statudName varchar,printCount int,isSend boolean,staffTag varchar,problem varchar)");
 	//拍照列表信息
-     db.execSQL("create table staff_stand_image(i integer primary key autoincrement,id varchar,standId varchar,staffId varchar,name varchar)");
+     db.execSQL("create table staff_stand_image(i integer primary key autoincrement,id varchar,standId varchar,staffId varchar,name varchar,path varchar)");
         //拍照信息数据表
-      db.execSQL("create table staff_stand_img_values(i integer primary key autoincrement,id varchar,standId varchar,staffId varchar,path varchar);");
         //安检条目 grp 分组  chk是否选中
       db.execSQL("create table staff_stand_item(i integer primary key autoincrement,id varchar,standId varchar,staffId varchar,name varchar,sort int,grp varchar,chk boolean)");
+		//燃气表
+		db.execSQL("create table staff_stand_tab(i integer primary key autoincrement,id varchar,standId varchar,staffId varchar,type varchar,value varchar,chk boolean)");
+		//燃气具
+		db.execSQL("create table staff_stand_qj(i integer primary key autoincrement,id varchar,standId varchar,staffId varchar,name varchar,position varchar,chk boolean)");
 
 
     db.setTransactionSuccessful();
@@ -53,8 +56,9 @@ public class DBHelper extends SQLiteOpenHelper{
 		db.beginTransaction();
 		db.execSQL("DROP TABLE IF EXISTS staff_stand");
         db.execSQL("DROP TABLE IF EXISTS staff_stand_image");
-        db.execSQL("DROP TABLE IF EXISTS staff_stand_img_values");
         db.execSQL("DROP TABLE IF EXISTS staff_stand_item");
+        db.execSQL("DROP TABLE IF EXISTS staff_stand_tab");
+        db.execSQL("DROP TABLE IF EXISTS staff_stand_qj");
 		db.setTransactionSuccessful();
 		db.endTransaction();
 		//此处是删除数据表，在实际的业务中一般是需要数据备份的

@@ -15,6 +15,7 @@ import com.hhkj.gas.www.R;
 import com.hhkj.gas.www.bean.DetailStaff;
 import com.hhkj.gas.www.bean.StaffImageItem;
 import com.hhkj.gas.www.bean.StaffTxtItem;
+import com.hhkj.gas.www.common.P;
 import com.hhkj.gas.www.widget.auto.AutoFlowLayout;
 
 import java.util.ArrayList;
@@ -81,6 +82,7 @@ public class StaffItemAdapter extends BaseAdapter {
             viewHolder = (ViewHolder) convertView.getTag(R.mipmap.ic_launcher
                     + position);
         }
+
         DetailStaff it = rbs.get(position);
         int index = position+1;
         if(it.getItem()!=null){
@@ -95,6 +97,7 @@ public class StaffItemAdapter extends BaseAdapter {
             viewHolder.layout1.setVisibility(View.VISIBLE);
             viewHolder.item_gt.setText(index+"、"+it.getItems_tag());
             ArrayList<StaffTxtItem> temps = it.getItems();
+//
             for(int i=0;i<temps.size();i++){
                 StaffTxtItem si =  temps.get(i);
                 View v = inflater.inflate(R.layout.gc_item,null);
@@ -103,6 +106,7 @@ public class StaffItemAdapter extends BaseAdapter {
                 gc_item0.setText(si.getTxt());
                 viewHolder.item_gc.addView(v);
             }
+
 
         }
 

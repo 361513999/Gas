@@ -8,6 +8,8 @@ import android.graphics.Matrix;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
 
+import com.hhkj.gas.www.bean.DetailStaff;
+import com.hhkj.gas.www.bean.StaffTxtItem;
 import com.hhkj.gas.www.common.P;
 
 import java.io.ByteArrayOutputStream;
@@ -384,33 +386,56 @@ public abstract class PrinterWriter {
     }
     private String checkTxt = getEmp(1.5)+"□是"+getEmp(0.5)+"□否";
 
+    /**
+     *
+     * @param index
+     * @param txt
+     * @param empS
+     * @param empE
+     * @throws IOException
+     */
+    //tag:-------------还需要处理中文和英文以及数字的占据比例  英文数字48   中文24
     private void printOneStaffItem(int index,String txt,int empS,int empE) throws IOException {
 
             int showLen = 15;
 
             if(txt.length()>showLen){
                 //进行处理
-                writeH(50);
+                writeH(40);
                 int sLen = txt.length()-showLen;//剩余的长度
                 int ssL = ssitem(sLen,showLen);
+                if(index<10){
+                    print(getEmp(1)+index+getEmp(1)+txt.substring(0,showLen)+checkTxt);
+                }else{
+                    print(getEmp(0.5)+index+getEmp(1)+txt.substring(0,showLen)+checkTxt);
+                }
 
-                print(getEmp(1)+index+getEmp(1)+txt.substring(0,showLen)+checkTxt);
                 String sTxt = txt.substring(showLen,txt.length());
 
                 for(int i=0;i<ssL;i++){
                     //如果不是最后一行
+                    printLineFeed();
+
+
                     if(sTxt.length()>=showLen){
+                       writeH(40);
                         print(getEmp(empS)+sTxt.substring(0,showLen)+getEmp(empE));
                         sTxt = sTxt.substring(showLen,sTxt.length());
                     }else{
+                        writeH(20);
                         print(getEmp(empS)+sTxt);
-                        writeH(70);
+
                     }
                 }
 
             }else{
+                writeH(20);
+                if(index<10){
+                    print(getEmp(1)+index+getEmp(1)+txt+getEmp(showLen-txt.length())+checkTxt);
+                }else{
+                    print(getEmp(0.5)+index+getEmp(1)+txt+getEmp(showLen-txt.length())+checkTxt);
+                }
 
-                print(getEmp(1)+index+getEmp(1)+txt+getEmp(showLen-txt.length())+checkTxt);
             }
 
     }
@@ -426,21 +451,31 @@ public abstract class PrinterWriter {
         }
         return len;
     }
-    private ArrayList getTemp(){
-        ArrayList list = new ArrayList();
-        list.add("橱柜未打透气孔");
-        list.add("燃气设施空间改装成客厅、卧室等起居室");
-        list.add("燃气设施空间安装配电设备");
-        list.add("私自改管");
-        list.add("阀门老化、破损");
-        list.add("明装绝缘电线与燃气管道平行敷设净距离小于25cm");
-        return  list;
 
-    }
     String temp = "知道吗？我昨晚又梦到你了，梦中的你一如既往地帅气，你背对着我，坐在那家我们常去的咖啡馆常坐的位置，我进门径直朝着那个位置走去，却看到了你，我就愣在那儿停顿了好久，然后你转过头来看到了我，你朝我笑，我鼓起勇气试着向你走近，却始终走不到那个位置，眼睁睁地看着你近在咫尺，却偏偏难以靠近，最后直到你消失不见";
-    public void printStaffItems() throws IOException {
-        for(int i=0;i<getTemp().size();i++){
-            printOneStaffItem(i,getTemp().get(i).toString(),3,6);
+    public void printStaffItems(ArrayList<DetailStaff> dss) throws IOException {
+
+        for(int i=0;i<dss.size();i++){
+            DetailStaff ds = dss.get(i);
+            StringBuilder builder = new StringBuilder();
+            if(ds.getItem()!=null){
+                //单项
+                builder.append(ds.getItem().getTxt());
+
+            }else {
+                builder.append(ds.getItems_tag()+":");
+              ArrayList<StaffTxtItem> items =   ds.getItems();
+                for(int j=0;j<items.size();j++){
+                    StaffTxtItem tp = items.get(j);
+                   if(j==items.size()-1){
+                       builder.append(tp.getTxt());
+                   }else {
+                       builder.append(tp.getTxt()+"、");
+                   }
+                }
+            }
+            printOneStaffItem(i,builder.toString(),3,6);
+            printLineFeed();
             printLineFeed();
         }
     }

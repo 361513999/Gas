@@ -10,7 +10,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.hhkj.gas.www.R;
-import com.hhkj.gas.www.bean.DetailBItem;
 
 import java.util.ArrayList;
 

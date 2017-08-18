@@ -9,6 +9,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
@@ -16,16 +18,27 @@ import android.widget.TextView;
 
 import com.hhkj.gas.www.R;
 import com.hhkj.gas.www.base.BaseActivity;
+import com.hhkj.gas.www.bean.DetailStaff;
+import com.hhkj.gas.www.bean.ReserItemBean;
+import com.hhkj.gas.www.bean.StaffB;
+import com.hhkj.gas.www.bean.StaffImageItem;
+import com.hhkj.gas.www.bean.StaffQj;
+import com.hhkj.gas.www.bean.StaffTxtItem;
 import com.hhkj.gas.www.bluetooth.printer.PrintExecutor;
 import com.hhkj.gas.www.bluetooth.printer.PrintSocketHolder;
 import com.hhkj.gas.www.bluetooth.printer.StaffMark;
 import com.hhkj.gas.www.bluetooth.printer.TestPrintDataMaker;
 import com.hhkj.gas.www.common.Common;
 import com.hhkj.gas.www.common.P;
+import com.hhkj.gas.www.db.DB;
 import com.hhkj.gas.www.widget.NewToast;
 
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -36,16 +49,96 @@ public class StaffBtActivity extends BaseActivity  {
 
     private final BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
     private StaffMark staffMark;
+    private ReserItemBean bean;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.staff_bt_layout);
-        staffMark = new StaffMark(StaffBtActivity.this);
+        staffBtHandler = new StaffBtHandler(this);
+
+        Intent intent = getIntent();
+        if(intent.hasExtra("obj")){
+            bean = (ReserItemBean) intent.getSerializableExtra("obj");
+        }
+
         IntentFilter filter = new IntentFilter();
         filter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
         filter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
         registerReceiver(mReceiver,filter);
     }
+    private StaffBtHandler staffBtHandler;
+    private class StaffBtHandler extends Handler {
+        WeakReference<StaffBtActivity> mLeakActivityRef;
+
+        public StaffBtHandler(StaffBtActivity leakActivity) {
+            mLeakActivityRef = new WeakReference<StaffBtActivity>(leakActivity);
+        }
+
+        @Override
+        public void dispatchMessage(Message msg) {
+            // TODO Auto-generated method stub
+            super.dispatchMessage(msg);
+            if (mLeakActivityRef.get() != null) {
+                switch (msg.what){
+                    case 1:
+                        staffMark = new StaffMark(StaffBtActivity.this,bean,staffImages,dss,staffBs,staffQjs);
+                        break;
+                }
+            }
+        }
+    }
+    private ArrayList<StaffImageItem> staffImages = new ArrayList<>();//图片
+    private Map<String, Object> txtListMap = new HashMap<>();//未处理的栏目
+    private ArrayList<DetailStaff> dss = new ArrayList<>();//栏目
+    private ArrayList<StaffB> staffBs = new ArrayList<>();//燃气表
+    private ArrayList<StaffQj> staffQjs = new ArrayList<>();//燃气具
+
+    private void parseTxtItem() {
+        //解析安检项目数据
+        Set set = txtListMap.keySet();
+        Iterator it = set.iterator();
+        dss.clear();
+        while (it.hasNext()) {
+            String key = it.next().toString();
+            Object obj = txtListMap.get(key);
+            if (obj instanceof StaffTxtItem) {
+                //普通
+                StaffTxtItem item = (StaffTxtItem) obj;
+                DetailStaff ds = new DetailStaff();
+                ds.setItem(item);
+                dss.add(ds);
+
+            } else if (obj instanceof ArrayList) {
+                ArrayList<StaffTxtItem> items = (ArrayList<StaffTxtItem>) obj;
+                DetailStaff ds = new DetailStaff();
+                ds.setItems(items);
+                ds.setItems_tag(key);
+                dss.add(ds);
+                for (int i = 0; i < items.size(); i++) {
+                    StaffTxtItem item = items.get(i);
+
+                }
+
+            }
+        }
+    }
+
+    private void load() {
+        new Thread() {
+            @Override
+            public void run() {
+                super.run();
+                DB.getInstance().updataStand(bean);
+                DB.getInstance().updataStaffImageItem(staffImages, bean);
+                DB.getInstance().updataStaffTxtItem(txtListMap, bean);
+                parseTxtItem();
+                DB.getInstance().updataStaffBs(staffBs,bean);
+                DB.getInstance().updataStaffQj(staffQjs,bean);
+                staffBtHandler.sendEmptyMessage(1);
+            }
+        }.start();
+    }
+
     private TextView back;
     @Override
     public void init() {
@@ -57,6 +150,7 @@ public class StaffBtActivity extends BaseActivity  {
                 checkBluetooth();
             }
         });
+        load();
     }
     private BroadcastReceiver mReceiver = new BroadcastReceiver() {
 
