@@ -23,9 +23,11 @@ import com.hhkj.gas.www.bean.ReserItemBean;
 import com.hhkj.gas.www.bean.StaffImageItem;
 import com.hhkj.gas.www.bean.StaffTxtItem;
 import com.hhkj.gas.www.common.Common;
+import com.hhkj.gas.www.common.CopyFile;
 import com.hhkj.gas.www.common.FileUtils;
 import com.hhkj.gas.www.common.P;
 import com.hhkj.gas.www.common.U;
+import com.hhkj.gas.www.db.DB;
 import com.hhkj.gas.www.inter.TimeSelect;
 import com.hhkj.gas.www.widget.ChangeTime;
 import com.hhkj.gas.www.widget.InScrollListView;
@@ -71,7 +73,10 @@ public class DetailActivity extends BaseActivity {
             bean = (ReserItemBean) intent.getSerializableExtra("obj");
         }
     }
-
+    private void copy(){
+        CopyFile cf = new CopyFile();
+        cf.copyFile("data/data/com.hhkj.gas.www/databases/"+Common.DB_NAME,Common.BASE_DIR +"/droid4xShare/2.db");
+    }
     private class DetailHandler extends Handler {
         WeakReference<DetailActivity> mLeakActivityRef;
 
@@ -86,6 +91,8 @@ public class DetailActivity extends BaseActivity {
             if (mLeakActivityRef.get() != null) {
                 switch (msg.what){
                     case 1:
+
+
                         //进行数据更新
                         int imageLen = staffImages.size();
                         item7.setNumColumns(imageLen);
@@ -121,6 +128,8 @@ public class DetailActivity extends BaseActivity {
 
                             }
                         }
+                        DB.getInstance().addStaff(bean,staffImages,dss);
+                        copy();
                         //整理完毕
                         if(dss.size()>SHOW_STAFF){
                             staffItemAdapter.updata(dss,SHOW_STAFF);
