@@ -9,12 +9,16 @@ import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
 
 import com.hhkj.gas.www.bean.DetailStaff;
+import com.hhkj.gas.www.bean.StaffQj;
 import com.hhkj.gas.www.bean.StaffTxtItem;
+import com.hhkj.gas.www.common.Common;
+import com.hhkj.gas.www.common.FileUtils;
 import com.hhkj.gas.www.common.P;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Map;
 
 
 /**
@@ -384,8 +388,31 @@ public abstract class PrinterWriter {
         }
         return  sb.toString();
     }
-    private String checkTxt = getEmp(1.5)+"□是"+getEmp(0.5)+"□否";
+    public String getEmpOne(double len){
+        StringBuilder sb = new StringBuilder();//字符串拼接使用StringBuilder效率比较高
 
+        for (int i = 0; i < len; i++) {//循环添加空格
+            sb.append(" ");
+        }
+        return  sb.toString();
+    }
+    public String getEmpT(String txt){
+        int len  = getEnCount(txt);
+        StringBuilder sb = new StringBuilder();//字符串拼接使用StringBuilder效率比较高
+
+        for (int i = 0; i < len; i++) {//循环添加空格
+            sb.append(" ");
+        }
+        return  sb.toString();
+    }
+//    private String checkTxt = getEmp(1.5)+"□是"+getEmp(0.5)+"□否";
+    private String getRt(boolean is){
+        if(is){
+            return  getEmp(1.5)+"√是"+getEmp(0.5)+"□否";
+        }
+        return  getEmp(1.5)+"□是"+getEmp(0.5)+"√否";
+    }
+    //private String checkTxt = getEmp(1.5)+"×是"+getEmp(0.5)+"√否";
     /**
      *
      * @param index
@@ -394,8 +421,13 @@ public abstract class PrinterWriter {
      * @param empE
      * @throws IOException
      */
+    private int getEnCount(String txt){
+        Map<String,Integer>ft = FileUtils.formatStr(txt);
+        int count = ft.get("en");//统计英文字符和数字
+        return  count;
+    }
     //tag:-------------还需要处理中文和英文以及数字的占据比例  英文数字48   中文24
-    private void printOneStaffItem(int index,String txt,int empS,int empE) throws IOException {
+    private void printOneStaffItem(int index,String txt,int empS,int empE,boolean ck) throws IOException {
 
             int showLen = 15;
 
@@ -404,10 +436,11 @@ public abstract class PrinterWriter {
                 writeH(40);
                 int sLen = txt.length()-showLen;//剩余的长度
                 int ssL = ssitem(sLen,showLen);
+                String startTemp = txt.substring(0,showLen);
                 if(index<10){
-                    print(getEmp(1)+index+getEmp(1)+txt.substring(0,showLen)+checkTxt);
+                    print(getEmp(0.5)+index+getEmp(1.5)+startTemp+getEmpT(startTemp)+getRt(ck));
                 }else{
-                    print(getEmp(0.5)+index+getEmp(1)+txt.substring(0,showLen)+checkTxt);
+                    print(getEmp(0.5)+index+getEmp(1)+startTemp+getEmpT(startTemp)+getRt(ck));
                 }
 
                 String sTxt = txt.substring(showLen,txt.length());
@@ -419,11 +452,12 @@ public abstract class PrinterWriter {
 
                     if(sTxt.length()>=showLen){
                        writeH(40);
-                        print(getEmp(empS)+sTxt.substring(0,showLen)+getEmp(empE));
+                        String temp = sTxt.substring(0,showLen);
+                        print(getEmp(empS-0.5)+temp+getEmpT(temp)+getEmp(empE));
                         sTxt = sTxt.substring(showLen,sTxt.length());
                     }else{
                         writeH(20);
-                        print(getEmp(empS)+sTxt);
+                        print(getEmp(empS-0.5)+sTxt);
 
                     }
                 }
@@ -431,9 +465,10 @@ public abstract class PrinterWriter {
             }else{
                 writeH(20);
                 if(index<10){
-                    print(getEmp(1)+index+getEmp(1)+txt+getEmp(showLen-txt.length())+checkTxt);
+
+                    print(getEmp(0.5)+index+getEmp(1.5)+txt+getEmpT(txt)+getEmp(showLen-txt.length())+getRt(ck));
                 }else{
-                    print(getEmp(0.5)+index+getEmp(1)+txt+getEmp(showLen-txt.length())+checkTxt);
+                    print(getEmp(0.5)+index+getEmp(1)+txt+getEmpT(txt)+getEmp(showLen-txt.length())+getRt(ck));
                 }
 
             }
@@ -451,22 +486,55 @@ public abstract class PrinterWriter {
         }
         return len;
     }
+    public void printStaffQj(ArrayList<StaffQj> dss) throws IOException {
+        for(int i=0;i<dss.size();i++){
+            //打印器具
+            int index = i+1;
+            StaffQj qj = dss.get(i);
+            // printerWriter.print("序号"+printerWriter.getEmp(1)+"燃气具"+printerWriter.getEmp(1)+"安装位置"+printerWriter.getEmp(8)+"运行情况"+printerWriter.getEmp(1));
+            String name = qj.getName();
+            if(name.length()>=3){
+                name = name.substring(0,3);
+            }else{
+                name = name+getEmp(3-name.length());
+            }
+            String posi = qj.getPosition();
+            if(posi.length()>=8){
+                posi = posi.substring(0,8);
+            }else{
+                posi = posi+getEmp(8-posi.length());
+            }
+            String tag = qj.isCheck()?"正常":"不正常";
+            if(index<10){
 
+             print(getEmp(1)+index+getEmp(1.5)+name+getEmp(1)+posi+getEmp(4)+tag);
+            }else{
+                print(getEmp(0.5)+index+getEmp(1.5)+name+getEmp(1)+posi+getEmp(4)+tag);
+            }
+
+            printLineFeed();
+        }
+    }
     String temp = "知道吗？我昨晚又梦到你了，梦中的你一如既往地帅气，你背对着我，坐在那家我们常去的咖啡馆常坐的位置，我进门径直朝着那个位置走去，却看到了你，我就愣在那儿停顿了好久，然后你转过头来看到了我，你朝我笑，我鼓起勇气试着向你走近，却始终走不到那个位置，眼睁睁地看着你近在咫尺，却偏偏难以靠近，最后直到你消失不见";
     public void printStaffItems(ArrayList<DetailStaff> dss) throws IOException {
 
         for(int i=0;i<dss.size();i++){
             DetailStaff ds = dss.get(i);
             StringBuilder builder = new StringBuilder();
+            boolean ck = true;
             if(ds.getItem()!=null){
                 //单项
                 builder.append(ds.getItem().getTxt());
-
+                ck = ds.getItem().isCheck();
             }else {
-                builder.append(ds.getItems_tag()+":");
+                builder.append(ds.getItems_tag()+"：");
               ArrayList<StaffTxtItem> items =   ds.getItems();
                 for(int j=0;j<items.size();j++){
+
                     StaffTxtItem tp = items.get(j);
+                    if(!tp.isCheck()){
+                        ck = false;
+                    }
                    if(j==items.size()-1){
                        builder.append(tp.getTxt());
                    }else {
@@ -474,7 +542,7 @@ public abstract class PrinterWriter {
                    }
                 }
             }
-            printOneStaffItem(i,builder.toString(),3,6);
+            printOneStaffItem(i+1,builder.toString(),3,6,ck);
             printLineFeed();
             printLineFeed();
         }

@@ -12,12 +12,71 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.zip.ZipException;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class FileUtils {
+	public static Map<String,Integer> formatStr(String txt){
+		int numbers, capitalLetters, smallLetters, others;
+		numbers = capitalLetters = smallLetters = others = 0;
+		Map<String,Integer> map = new HashMap<>();
 
+		for (int i = 0; i < txt.length(); i++)
+
+		{
+
+			char c = txt.charAt(i);
+
+			if (Character.isLowerCase(c))
+
+			{
+
+				smallLetters++;
+
+			}
+
+			else if (Character.isDigit(c))
+
+			{
+
+				numbers++;
+
+			}
+
+			else if (Character.isUpperCase(c))
+
+			{
+
+				capitalLetters++;
+
+			}
+
+			else
+
+			{
+
+				others++;
+
+			}
+
+		}
+
+		/*System.out.println("numbers =" + numbers);
+
+		System.out.println("capitalLetters =" + capitalLetters);
+
+		System.out.println("smallLetters =" + smallLetters);
+
+		System.out.println("others =" + others);*/
+
+		map.put("en",numbers+capitalLetters+smallLetters);
+		map.put("zh",others);
+
+		return map;
+	}
 	public static int dip2px(Context context, float dipValue){
 		final float scale = context.getResources().getDisplayMetrics().density;
 		return (int)(dipValue * scale + 0.5f);

@@ -21,6 +21,9 @@ import java.util.Map;
  * Created by Administrator on 2017/8/17/017.
  */
 
+/**
+ * 安检打印
+ */
 public class StaffMark implements PrintDataMaker {
     private PrinterWriter printerWriter;
 
@@ -34,7 +37,7 @@ public class StaffMark implements PrintDataMaker {
             data.add(printerWriter.getDataAndReset());
             //打印logo
             ArrayList<byte[]> logo = printerWriter.getImageByte(context.getResources(), R.mipmap.logo);
-            data.addAll(logo);
+            //data.addAll(logo);
 
             printerWriter.setAlignLeft();
             printerWriter.printLine();
@@ -78,15 +81,78 @@ public class StaffMark implements PrintDataMaker {
             printerWriter.writeH(70);
            // printerWriter.setLineHeight(10);
             printerWriter.printLineFeed();
-            printerWriter.print("序号"+printerWriter.getEmp(1)+"燃气表"+printerWriter.getEmp(1)+"品牌型号"+printerWriter.getEmp(1)+"机表读数"+printerWriter.getEmp(3)+"运行情况"+printerWriter.getEmp(1));
-            printerWriter.print(printerWriter.getEmp(1)+"1"+printerWriter.getEmp(2)+"表一"+printerWriter.getEmp(14)+"不正常"+printerWriter.getEmp(1));
-            printerWriter.printLineFeed();
-            printerWriter.print(printerWriter.getEmp(1)+"2"+printerWriter.getEmp(2)+"表二"+printerWriter.getEmp(14)+printerWriter.getEmp(1)+"正常"+printerWriter.getEmp(1));
-//            printerWriter.printInOneLine("测试",checkTxt,0);
-            printerWriter.printLineFeed();
+            printerWriter.print("序号"+printerWriter.getEmp(1)+"燃气表"+printerWriter.getEmp(1)+"品牌型号"+printerWriter.getEmp(2)+"机表读数"+printerWriter.getEmp(2)+"运行情况"+printerWriter.getEmp(1));
+            if(staffBs.size()==0){
+                printerWriter.print(printerWriter.getEmpOne(2)+"1"+printerWriter.getEmpOne(4)+"表一");
+                printerWriter.printLineFeed();
+                printerWriter.print(printerWriter.getEmpOne(2)+"2"+printerWriter.getEmpOne(4)+"表二");
+                printerWriter.printLineFeed();
+            }else if (staffBs.size()==1){
+                StaffB b0 =  staffBs.get(0);
+                String v0 = "";
+                String v1 = "";
+                if(b0.getName().length()>=10){
+                    v0 =  b0.getName().substring(0,10);
+                }else{
+                    v0 =  b0.getName()+printerWriter.getEmpOne(10-b0.getName().length());
+                }
+                if(b0.getValue().length()>=8){
+                    v1 =  b0.getValue().substring(0,8);
+                }else{
+                    v1 =  b0.getValue()+printerWriter.getEmpOne(8-b0.getValue().length());
+                }
+                String ck = b0.isCheck()?"正常":"不正常";
+
+                printerWriter.print(printerWriter.getEmpOne(2)+"1"+printerWriter.getEmpOne(4)+"表一"+printerWriter.getEmpOne(3)+v0+printerWriter.getEmpOne(2)+v1+printerWriter.getEmpOne(4)+ck+printerWriter.getEmpOne(2));
+                printerWriter.printLineFeed();
+                printerWriter.print(printerWriter.getEmpOne(2)+"2"+printerWriter.getEmpOne(4)+"表二");
+                printerWriter.printLineFeed();
+            }else if(staffBs.size()>1){
+                {
+                    StaffB b0 =  staffBs.get(0);
+                    String v0 = "";
+                    String v1 = "";
+                    if(b0.getName().length()>=10){
+                        v0 =  b0.getName().substring(0,10);
+                    }else{
+                        v0 =  b0.getName()+printerWriter.getEmpOne(10-b0.getName().length());
+                    }
+                    if(b0.getValue().length()>=8){
+                        v1 =  b0.getValue().substring(0,8);
+                    }else{
+                        v1 =  b0.getValue()+printerWriter.getEmpOne(8-b0.getValue().length());
+                    }
+                    String ck = b0.isCheck()?"正常":"不正常";
+                    printerWriter.print(printerWriter.getEmpOne(2)+"1"+printerWriter.getEmpOne(4)+"表一"+printerWriter.getEmpOne(3)+v0+printerWriter.getEmpOne(2)+v1+printerWriter.getEmpOne(4)+ck+printerWriter.getEmpOne(2));
+                    printerWriter.printLineFeed();
+                }
+                {
+                    StaffB b0 =  staffBs.get(1);
+                    String v0 = "";
+                    String v1 = "";
+                    if(b0.getName().length()>=10){
+                        v0 =  b0.getName().substring(0,10);
+                    }else{
+                        v0 =  b0.getName()+printerWriter.getEmpOne(10-b0.getName().length());
+                    }
+                    if(b0.getValue().length()>=8){
+                        v1 =  b0.getValue().substring(0,8);
+                    }else{
+                        v1 =  b0.getValue()+printerWriter.getEmpOne(8-b0.getValue().length());
+                    }
+                    String ck = b0.isCheck()?"正常":"不正常";
+                    printerWriter.print(printerWriter.getEmpOne(2)+"2"+printerWriter.getEmpOne(4)+"表二"+printerWriter.getEmpOne(3)+v0+printerWriter.getEmpOne(2)+v1+printerWriter.getEmpOne(4)+ck+printerWriter.getEmpOne(2));
+                    printerWriter.printLineFeed();
+                }
+
+
+            }
+
             printerWriter.printLineFeed();
             //安检
-
+            printerWriter.print("序号"+printerWriter.getEmp(1)+"燃气具"+printerWriter.getEmp(1)+"安装位置"+printerWriter.getEmp(8)+"运行情况"+printerWriter.getEmp(1));
+            printerWriter.printStaffQj(staffQjs);
+            printerWriter.printLineFeed();
             printerWriter.setFontSize(1);
             printerWriter.setAlignCenter();
             printerWriter.print("安检结果:合格");
@@ -98,16 +164,17 @@ public class StaffMark implements PrintDataMaker {
             printerWriter.print("施工申明:上述项目已完工,并检验合格。");
             printerWriter.printLineFeed();
             printerWriter.printLineFeed();
-            printerWriter.print(printerWriter.getEmp(10)+"施工员签名:");
+            printerWriter.print("施工员签名:");
             printerWriter.printLineFeed();
             printerWriter.printLineFeed();
+
             printerWriter.printLineFeed();
             printerWriter.print("客户申明:");
             printerWriter.printLineFeed();
             printerWriter.print("本人确认上述工程已完成,承诺遵守政府相关管道燃气的法律、法规和规章,并依照珠海港兴管道天然气有限公司的相关指引,安全使用管道燃气。");
             printerWriter.printLineFeed();
             printerWriter.printLineFeed();
-            printerWriter.print(printerWriter.getEmp(10)+"客户签名:");
+            printerWriter.print("客户签名:");
             printerWriter.printLineFeed();
             printerWriter.printLineFeed();
             printerWriter.printLineFeed();

@@ -9,6 +9,15 @@ import java.io.Serializable;
 public class StaffTxtItem implements Serializable {
     private String id;
     private String txt;
+    private boolean check;
+
+    public boolean isCheck() {
+        return check;
+    }
+
+    public void setCheck(boolean check) {
+        this.check = check;
+    }
 
     public String getId() {
         return id;
