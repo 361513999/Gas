@@ -21,12 +21,12 @@
                 android:textSize="13sp"
                 android:layout_toLeftOf="@+id/item_c"
                 android:layout_height="wrap_content" />
-            <CheckBox
+            <TextView
                 android:id="@+id/item_c"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
-                android:button="@drawable/reser_nor_cb_sy"/>
+                />
         </RelativeLayout>
         <LinearLayout
             android:id="@+id/layout1"

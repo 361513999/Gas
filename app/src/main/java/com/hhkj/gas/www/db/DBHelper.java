@@ -36,11 +36,13 @@ public class DBHelper extends SQLiteOpenHelper{
 	private void create (SQLiteDatabase db){
 	db.beginTransaction();	
     //详情页基本信息数据
-        //isSend 是否提交, problem 隐患单号
+        //isSend 是否提交, problem 隐患单号  staffTag N 不合格   Y 合格  O 隐患
     db.execSQL("create table staff_stand(i integer primary key autoincrement,id varchar,staffId varchar,staffName varchar,staffTel varchar,staffAdd varchar,staffTime varchar,opt varchar,status int,statudName varchar,printCount int,isSend boolean,staffTag varchar,problem varchar)");
 	//拍照列表信息
      db.execSQL("create table staff_stand_image(i integer primary key autoincrement,id varchar,standId varchar,staffId varchar,name varchar,path varchar)");
-        //拍照信息数据表
+		db.execSQL("create table staff_stand_image_values(i integer primary key autoincrement,id varchar,standId varchar,staffId varchar,name varchar,path varchar)");
+
+		//拍照信息数据表
         //安检条目 grp 分组  chk是否选中
       db.execSQL("create table staff_stand_item(i integer primary key autoincrement,id varchar,standId varchar,staffId varchar,name varchar,sort int,grp varchar,chk boolean)");
 		//燃气表
@@ -56,6 +58,7 @@ public class DBHelper extends SQLiteOpenHelper{
 		db.beginTransaction();
 		db.execSQL("DROP TABLE IF EXISTS staff_stand");
         db.execSQL("DROP TABLE IF EXISTS staff_stand_image");
+		db.execSQL("DROP TABLE IF EXISTS staff_stand_image_values");
         db.execSQL("DROP TABLE IF EXISTS staff_stand_item");
         db.execSQL("DROP TABLE IF EXISTS staff_stand_tab");
         db.execSQL("DROP TABLE IF EXISTS staff_stand_qj");

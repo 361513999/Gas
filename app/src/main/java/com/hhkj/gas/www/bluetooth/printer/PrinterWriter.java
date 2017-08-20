@@ -532,8 +532,9 @@ public abstract class PrinterWriter {
                 for(int j=0;j<items.size();j++){
 
                     StaffTxtItem tp = items.get(j);
-                    if(!tp.isCheck()){
-                        ck = false;
+                    ck = false;
+                    if(tp.isCheck()){
+                        ck = true;
                     }
                    if(j==items.size()-1){
                        builder.append(tp.getTxt());

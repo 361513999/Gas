@@ -7,10 +7,19 @@ import java.io.Serializable;
  */
 
 public class StaffB implements Serializable {
+    private int i;
     private String id;
     private String name;
     private String value;
     private boolean check;
+
+    public int getI() {
+        return i;
+    }
+
+    public void setI(int i) {
+        this.i = i;
+    }
 
     public boolean isCheck() {
         return check;

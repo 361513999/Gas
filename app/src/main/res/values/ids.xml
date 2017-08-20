@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="staff_item_id" type="id"/>
+    <item name="s_updata" type="id"/>
+    <item name="e_updata" type="id"/>
+</resources>

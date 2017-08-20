@@ -47,12 +47,12 @@
             android:layout_weight="2"
             android:gravity="center"
             android:layout_height="wrap_content">
-            <CheckBox
+            <TextView
                 android:id="@+id/item2"
                 android:layout_marginLeft="2dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:button="@drawable/reser_nor_cb_sy"/>
+                />
         </LinearLayout>
         <LinearLayout
             android:layout_width="0dp"

@@ -5,6 +5,8 @@
       <module fileurl="file://$PROJECT_DIR$/Gas.iml" filepath="$PROJECT_DIR$/Gas.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/datalib/datalib.iml" filepath="$PROJECT_DIR$/datalib/datalib.iml" />
+      <module fileurl="file://$PROJECT_DIR$/fileselectlib/fileselectlib.iml" filepath="$PROJECT_DIR$/fileselectlib/fileselectlib.iml" />
+      <module fileurl="file://$PROJECT_DIR$/photolib/photolib.iml" filepath="$PROJECT_DIR$/photolib/photolib.iml" />
     </modules>
   </component>
 </project>

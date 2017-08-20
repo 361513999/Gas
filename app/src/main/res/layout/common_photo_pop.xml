@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/no_color"
+    android:orientation="vertical"
+    android:padding="5dp" >
+
+    <TextView
+        android:id="@+id/camer"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/title_heigh"
+        android:background="@drawable/actionsheet_top_selector"
+        android:gravity="center"
+        android:text="拍照"
+        android:textColor="#FD4A2E"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/photo"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/title_heigh"
+        android:background="@drawable/actionsheet_bottom_selector"
+        android:gravity="center"
+        android:text="图片选择"
+        android:textColor="#FD4A2E"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/cancel"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/title_heigh"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/actionsheet_single_selector"
+        android:gravity="center"
+        android:text="取消"
+        android:textColor="#037BFF"
+        android:textSize="16sp" />
+
+</LinearLayout>

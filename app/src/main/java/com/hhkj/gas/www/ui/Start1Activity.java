@@ -633,10 +633,7 @@ public class Start1Activity extends BaseActivity {
             popupWindow.showAsDropDown(view);
         }
     }
-    private void copy(){
-        CopyFile cf = new CopyFile();
-        cf.copyFile("data/data/com.hhkj.gas.www/databases/"+Common.DB_NAME,Common.BASE_DIR +"/droid4xShare/2.db");
-    }
+
     private class StartHandler extends Handler {
         WeakReference<Start1Activity> mLeakActivityRef;
 
@@ -697,7 +694,7 @@ public class Start1Activity extends BaseActivity {
                             }
                         }
                         DB.getInstance().addStaff(bean,staffImages,dss,staffBs,staffQjs);
-                        copy();
+                        Common.copy();
                         Message mg = new Message();
                         mg.what = 6;
                         mg.obj = bean;

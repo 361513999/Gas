@@ -11,13 +11,16 @@ import com.hhkj.gas.www.common.Common;
 import com.hhkj.gas.www.common.SharedUtils;
 import com.hhkj.gas.www.widget.CommonLogin;
 import com.hhkj.gas.www.widget.LoadView;
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 public abstract class BaseActivity extends Activity{
     /**
      * 返回键调用
      */
+    ImageLoader imageLoader = ImageLoader.getInstance();
     public SharedUtils sharedUtils;
     public LayoutInflater inflater;
+
     public void backActivity(){
         AppManager.getAppManager().finishActivity(this);
     }

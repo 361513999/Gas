@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.hhkj.gas.www.R;
 import com.hhkj.gas.www.bean.AreaBean;
 import com.hhkj.gas.www.bean.StaffImageItem;
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.ArrayList;
 
@@ -22,9 +23,11 @@ public class DetailImageAdapter extends BaseAdapter {
     private LayoutInflater inflater;
     private Context context;
     private ArrayList<StaffImageItem> rbs;
-    public DetailImageAdapter(Context context, ArrayList<StaffImageItem> rbs){
+    private ImageLoader imageLoader ;
+    public DetailImageAdapter(Context context, ArrayList<StaffImageItem> rbs, ImageLoader imageLoader ){
         this.context = context;
         this.rbs = rbs;
+        this.imageLoader = imageLoader;
         inflater = LayoutInflater.from(context);
     }
     public void updata(ArrayList<StaffImageItem> rbs){
@@ -67,6 +70,8 @@ public class DetailImageAdapter extends BaseAdapter {
         StaffImageItem it = rbs.get(position);
       if(it.getPath()==null){
           viewHolder.item0.setImageResource(R.mipmap.btn_add);
+      }else{
+          imageLoader.displayImage("file://"+it.getPath(),viewHolder.item0);
       }
         viewHolder.txt.setText(it.getTag());
         return  convertView;

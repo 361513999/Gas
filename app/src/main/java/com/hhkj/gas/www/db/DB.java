@@ -2,6 +2,7 @@ package com.hhkj.gas.www.db;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Handler;
 
 import com.hhkj.gas.www.bean.DetailStaff;
 import com.hhkj.gas.www.bean.ReserItemBean;
@@ -11,6 +12,7 @@ import com.hhkj.gas.www.bean.StaffQj;
 import com.hhkj.gas.www.bean.StaffTxtItem;
 import com.hhkj.gas.www.common.BaseApplication;
 import com.hhkj.gas.www.common.P;
+import com.jph.takephoto.model.TImage;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -194,7 +196,8 @@ public class DB {
      * @param bean
      */
     public void updataStaffImageItem(ArrayList<StaffImageItem> staffImages,ReserItemBean bean){
-        String sql = "select * from staff_stand_image where standId=? and staffId =? group by id";
+        staffImages.clear();
+        String sql = "select min(v.i),s.id,s.standId,s.staffId,s.name,v.path from staff_stand_image as s left   join staff_stand_image_values as v on v.id=s.id where s.standId=? and s.staffId=? group by s.id";
         Cursor cursor = null;
 
         try {
@@ -205,10 +208,8 @@ public class DB {
                 item.setTag(getString(cursor,"name"));
                 item.setPath(getString(cursor,"path"));
                 staffImages.add(item);
-                P.c(getString(cursor,"name"));
+
             }
-
-
         } catch (Exception e) {
 
         } finally {
@@ -218,13 +219,42 @@ public class DB {
             }
         }
     }
+    /**
+     * 图片项,子项全部
+     * @param staffImages
+     * @param bean
+     */
+    public void updataStaffImageDlgItem(ArrayList<StaffImageItem> staffImages,String id,ReserItemBean bean){
+        staffImages.clear();
+        String sql = "select * from staff_stand_image_values where id=? and standId = ? and staffId = ?";
+        Cursor cursor = null;
 
+        try {
+            cursor = db.rawQuery(sql, new String[] {id, bean.getId(),bean.getNo() });
+            while(cursor.moveToNext()){
+                StaffImageItem item = new StaffImageItem();
+                item.setId(getString(cursor,"id"));
+                item.setTag(getString(cursor,"name"));
+                item.setPath(getString(cursor,"path"));
+                staffImages.add(item);
+
+            }
+        } catch (Exception e) {
+
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+                cursor = null;
+            }
+        }
+    }
     /**
      * 安检条目
      * @param txtListMap
      * @param bean
      */
     public void updataStaffTxtItem(Map<String,Object> txtListMap, ReserItemBean bean){
+        txtListMap.clear();
         String sql = "select * from staff_stand_item where standId=? and staffId =? ";
         Cursor cursor = null;
 
@@ -236,6 +266,7 @@ public class DB {
                 StaffTxtItem item0 = new StaffTxtItem();
                 item0.setId(getString(cursor,"id"));
                 item0.setTxt(tag);
+                item0.setCheck(getBoolean(cursor,"chk"));
 
                 if(key.length()==0){
                     //单独的数据
@@ -275,6 +306,7 @@ public class DB {
             cursor = db.rawQuery(sql, new String[] { bean.getId(),bean.getNo() });
             while(cursor.moveToNext()){
                 StaffB item = new StaffB();
+                item.setI(getInt(cursor,"i"));
                 item.setId(getString(cursor,"id"));
                 item.setName(getString(cursor,"type"));
                 item.setValue(getString(cursor,"value"));
@@ -310,6 +342,7 @@ public class DB {
             cursor = db.rawQuery(sql, new String[] { bean.getId(),bean.getNo() });
             while(cursor.moveToNext()){
                 StaffQj item = new StaffQj();
+                item.setI(getInt(cursor,"i"));
                 item.setId(getString(cursor,"id"));
                 item.setName(getString(cursor,"name"));
                 item.setPosition(getString(cursor,"position"));
@@ -331,5 +364,101 @@ public class DB {
             }
         }
     }
+
+    /**
+     * 获得单据是否是合格状态
+     * @param bean
+     * @return
+     */
+    public String getStafftag(ReserItemBean bean){
+
+        String sql = "select staffTag from staff_stand where id=? and staffid=?";
+        Cursor cursor = null;
+        String result = null;
+        try {
+            cursor = db.rawQuery(sql, new String[] { bean.getId(),bean.getNo() });
+            if(cursor.getCount()!=0) {
+
+                if (cursor.moveToFirst()){
+                    result = getString(cursor,"staffTag");
+                }
+
+            }
+        } catch (Exception e) {
+
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+                cursor = null;
+            }
+        }
+        return  result;
+    }
+
+    /**
+     * 更新安检栏目
+     * @param id
+     * @param chk
+     * @param handler
+     */
+    public void updateStandItemChk(String id, boolean chk, Handler handler){
+        db.execSQL("update staff_stand_item set chk=? where  id = ? ",new Object[]{chk,id});
+        if(handler!=null){
+            handler.sendEmptyMessage(6);
+        }
+    }
+
+    /**
+     * 更新器具
+     * @param qjs
+     * @param bean
+     */
+    public void updateQjs(ArrayList<StaffQj> qjs,ReserItemBean bean){
+        for(int i=0;i<qjs.size();i++){
+            StaffQj qj = qjs.get(i);
+            if(qj.getI()!=-1){
+                //证明是有i值的，那么执行更新操作
+                db.execSQL("update staff_stand_qj set name=?,position=?,chk=? where i=?",new Object[]{qj.getName(),qj.getPosition(),qj.isCheck(),qj.getI()});
+            }else{
+                //无i值，执行插入操作
+                db.execSQL("insert into staff_stand_qj(standId,staffId,name,position,chk) values(?,?,?,?,?)",new Object[]{bean.getId(),bean.getNo(),qj.getName(),qj.getPosition(),qj.isCheck()});
+            }
+        }
+    }
+    /**
+     * 更新燃气表
+     * @param qjs
+     * @param bean
+     */
+    public void updateTab(ArrayList<StaffB> sf,ReserItemBean bean){
+        P.c("燃气表数量"+sf.size());
+        for(int i=0;i<sf.size();i++){
+            StaffB qj = sf.get(i);
+            P.c(qj.getName()+"qj"+qj.isCheck());
+            if(qj.getI()!=-1){
+                //证明是有i值的，那么执行更新操作
+                db.execSQL("update staff_stand_tab set type=?,value=?,chk=? where i=?",new Object[]{qj.getName(),qj.getValue(),qj.isCheck(),qj.getI()});
+            }else{
+                //无i值，执行插入操作
+                db.execSQL("insert into staff_stand_tab(standId,staffId,type,value,chk) values(?,?,?,?,?)",new Object[]{bean.getId(),bean.getNo(),qj.getName(),qj.getValue(),qj.isCheck()});
+            }
+        }
+    }
+
+    /**
+     * 增加安检图片
+     * @param item
+     * @param bean
+     * @param images
+     */
+    public void addStaffImages(StaffImageItem item, ReserItemBean bean, ArrayList<TImage> images,Handler handler){
+        for(int i=0;i<images.size();i++){
+            db.execSQL("insert into staff_stand_image_values(id,standId,staffId,name,path) values(?,?,?,?,?)",new Object[]{item.getId(),bean.getId(),bean.getNo(),item.getTag(),images.get(i).getCompressPath()});
+        }
+        if(handler!=null){
+            handler.sendEmptyMessage(5);
+        }
+    }
+
 
 }

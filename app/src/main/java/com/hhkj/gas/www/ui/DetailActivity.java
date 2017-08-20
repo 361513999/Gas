@@ -1,11 +1,18 @@
 package com.hhkj.gas.www.ui;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -28,20 +35,29 @@ import com.hhkj.gas.www.common.Common;
 import com.hhkj.gas.www.common.CopyFile;
 import com.hhkj.gas.www.common.FileUtils;
 import com.hhkj.gas.www.common.P;
+import com.hhkj.gas.www.common.SharedUtils;
 import com.hhkj.gas.www.common.U;
 import com.hhkj.gas.www.db.DB;
+import com.hhkj.gas.www.inter.PhotoSelect;
 import com.hhkj.gas.www.inter.TimeSelect;
 import com.hhkj.gas.www.widget.ChangeTime;
+import com.hhkj.gas.www.widget.CommonLogin;
+import com.hhkj.gas.www.widget.CommonPhotoPop;
+import com.hhkj.gas.www.widget.DetailImageDlg;
+import com.hhkj.gas.www.widget.HeadTips;
 import com.hhkj.gas.www.widget.InScrollListView;
 import com.hhkj.gas.www.widget.LoadView;
 import com.hhkj.gas.www.widget.NewToast;
-import com.zc.http.okhttp.OkHttpUtils;
-import com.zc.http.okhttp.callback.StringCallback;
+import com.jph.takephoto.app.TakePhoto;
+import com.jph.takephoto.app.TakePhotoActivity;
+import com.jph.takephoto.compress.CompressConfig;
+import com.jph.takephoto.model.LubanOptions;
+import com.jph.takephoto.model.TImage;
+import com.jph.takephoto.model.TResult;
+import com.jph.takephoto.model.TakePhotoOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
+import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,22 +65,41 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import okhttp3.Call;
-import okhttp3.MediaType;
-
 /**
  * Created by cloor on 2017/8/15.
  */
 
-public class DetailActivity extends BaseActivity {
+public class DetailActivity extends TakePhotoActivity {
+    private ImageLoader imageLoader = ImageLoader.getInstance();
     private TextView back;
     private ReserItemBean bean;
     private DetailHandler detailHandler;
+    public SharedUtils sharedUtils;
+    public LayoutInflater inflater;
+    public void backActivity(){
+        AppManager.getAppManager().finishActivity(this);
+    }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        AppManager.getAppManager().finishActivity(this);
+    }
+    /**
+     * 重新登录
+     */
+    public void reLogin(){
+        CommonLogin login = new CommonLogin(this,sharedUtils);
+        login.showSheet();
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.detail_layout);
+        takePhoto = getTakePhoto();
+        sharedUtils = new SharedUtils(Common.config);
+        inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+        AppManager.getAppManager().addActivity(this);
         detailHandler = new DetailHandler(DetailActivity.this);
         Intent intent = getIntent();
         if (intent.hasExtra("obj")) {
@@ -86,6 +121,26 @@ public class DetailActivity extends BaseActivity {
             super.dispatchMessage(msg);
             if (mLeakActivityRef.get() != null) {
                 switch (msg.what) {
+                    case 5:
+                       new Thread(){
+                           @Override
+                           public void run() {
+                               super.run();
+                               DB.getInstance().updataStaffImageItem(staffImages, bean);
+                               detailHandler.sendEmptyMessage(51);
+                           }
+                       }.start();
+                        break;
+                    case 51:
+                        //装载图片列表
+                        //控制图片
+                        int imageLen = staffImages.size();
+                        item7.setNumColumns(imageLen);
+                        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(FileUtils.dip2px(DetailActivity.this, 110) * imageLen, LinearLayout.LayoutParams.WRAP_CONTENT);
+                        item7.setLayoutParams(params);
+                        imageAdapter.updata(staffImages);
+                        break;
+
                     case 1:
                         P.c("本地数据装载");
                         //装载基础数据
@@ -114,33 +169,107 @@ public class DetailActivity extends BaseActivity {
                         item5.setText(getString(R.string.curr_status, status));
                         item6.setText(getString(R.string.curr_person, bean.getStaffName()));
                         //----------
-                        //装载图片列表
-                        //控制图片
-                        int imageLen = staffImages.size();
-                        item7.setNumColumns(imageLen);
-                        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(FileUtils.dip2px(DetailActivity.this, 110) * imageLen, LinearLayout.LayoutParams.WRAP_CONTENT);
-                        item7.setLayoutParams(params);
-                        imageAdapter.updata(staffImages);
+
                         //装载安检条目
-                        //控制安检条目
-                        if (dss.size() > SHOW_STAFF) {
-                            staffItemAdapter.updata(dss, SHOW_STAFF);
-                            item9.setVisibility(View.VISIBLE);
-                        } else {
-                            staffItemAdapter.updata(dss);
-                            item9.setVisibility(View.GONE);
-                        }
+
                         //装载燃气表
                         if(staffBs.size()==1){
                             item_b00.setText(staffBs.get(0).getName());
                             item_b01.setText(staffBs.get(0).getValue());
-
+                            item_b02.setChecked(staffBs.get(0).isCheck());
+                            StaffB staffB = new StaffB();
+                            staffB.setI(-1);
+                            staffBs.add(staffB);
                         }else if(staffBs.size()>1){
                             item_b00.setText(staffBs.get(0).getName());
                             item_b01.setText(staffBs.get(0).getValue());
+                            item_b02.setChecked(staffBs.get(0).isCheck());
                             item_b10.setText(staffBs.get(1).getName());
                             item_b11.setText(staffBs.get(1).getValue());
+                            item_b12.setChecked(staffBs.get(1).isCheck());
                         }
+                    {
+                        item_b02.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                            @Override
+                            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                                staffBs.get(0).setCheck(isChecked);
+                            }
+                        });
+                        item_b12.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                            @Override
+                            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                                staffBs.get(1).setCheck(isChecked);
+                            }
+                        });
+                        //--1
+                        item_b00.addTextChangedListener(new TextWatcher() {
+                            @Override
+                            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                            }
+
+                            @Override
+                            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                            }
+
+                            @Override
+                            public void afterTextChanged(Editable s) {
+                                staffBs.get(0).setName(s.toString().trim());
+                            }
+                        });
+                        //--2
+                        item_b01.addTextChangedListener(new TextWatcher() {
+                            @Override
+                            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                            }
+
+                            @Override
+                            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                            }
+
+                            @Override
+                            public void afterTextChanged(Editable s) {
+                                staffBs.get(0).setValue(s.toString().trim());
+                            }
+                        });
+                        item_b10.addTextChangedListener(new TextWatcher() {
+                            @Override
+                            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                            }
+
+                            @Override
+                            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                            }
+
+                            @Override
+                            public void afterTextChanged(Editable s) {
+                                staffBs.get(1).setName(s.toString().trim());
+                            }
+                        });
+                        item_b11.addTextChangedListener(new TextWatcher() {
+                            @Override
+                            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                            }
+
+                            @Override
+                            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                            }
+
+                            @Override
+                            public void afterTextChanged(Editable s) {
+                                staffBs.get(1).setValue(s.toString().trim());
+                            }
+                        });
+
+                    }
+
                         //装载燃气具
                         bAdapter.updata(staffQjs);
 
@@ -158,7 +287,49 @@ public class DetailActivity extends BaseActivity {
                         //用户未登录处理
                         reLogin();
                         break;
+                    case 6:
+                        //更新安检栏目
+                       new Thread(){
+                           @Override
+                           public void run() {
+                               super.run();
+                               DB.getInstance().updataStaffTxtItem(txtListMap, bean);
+                               parseTxtItem();
+                               detailHandler.sendEmptyMessage(61);
+                           }
+                       }.start();
+                        break;
+                    case 61:
+                        //控制安检条目
+                        if (dss.size() > SHOW_STAFF&&item9.getVisibility()==View.VISIBLE) {
+                            staffItemAdapter.updata(dss, SHOW_STAFF);
+                            item9.setVisibility(View.VISIBLE);
+                        } else {
+                            staffItemAdapter.updata(dss);
+                            item9.setVisibility(View.GONE);
+                        }
+                        break;
+                    case 7:
+                        //保存到本地
+                        new Thread(){
+                            @Override
+                            public void run() {
+                                super.run();
+                                //保存燃气具
+                                DB.getInstance().updateQjs(staffQjs,bean);
+                                DB.getInstance().updateTab(staffBs,bean);
+                                detailHandler.sendEmptyMessage(8);
+                            }
 
+                        }.start();
+                        break;
+                    case 8:
+                        if(headTips!=null){
+                            headTips.cancle();
+                            headTips = null;
+                        }
+                        NewToast.makeText(DetailActivity.this,"更新成功",Common.TTIME).show();
+                        break;
                 }
             }
         }
@@ -181,17 +352,14 @@ public class DetailActivity extends BaseActivity {
     private EditText item_b00,item_b01,item_b10,item_b11;
     private CheckBox item_b02,item_b12;
 
-    @Override
-    public void init() {
-
-    }
 
     public void ini() {
         back = (TextView) findViewById(R.id.back);
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AppManager.getAppManager().finishActivity(DetailActivity.this);
+               Common.copy();
+//                AppManager.getAppManager().finishActivity(DetailActivity.this);
             }
         });
         item0 = (TextView) findViewById(R.id.item0);
@@ -219,16 +387,28 @@ public class DetailActivity extends BaseActivity {
         item19 = (LinearLayout) findViewById(R.id.item19);
 
 
-        imageAdapter = new DetailImageAdapter(DetailActivity.this, staffImages);
+        imageAdapter = new DetailImageAdapter(DetailActivity.this, staffImages,imageLoader);
         item7.setAdapter(imageAdapter);
 
-        staffItemAdapter = new StaffItemAdapter(DetailActivity.this, dss);
+        staffItemAdapter = new StaffItemAdapter(DetailActivity.this, dss,bean,detailHandler);
         item8.setAdapter(staffItemAdapter);
 
         bAdapter = new DetailBAdapter(DetailActivity.this, staffQjs);
         item14.setAdapter(bAdapter);
         item_edit = (ImageView) findViewById(R.id.item_edit);
+        item7.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if(staffImages.get(position).getPath()!=null){
+                    DetailImageDlg dlg = new DetailImageDlg(DetailActivity.this,sharedUtils,imageLoader,staffImages.get(position),bean);
+                    dlg.showSheet();
+                }else{
+                    CommonPhotoPop.showSheet(DetailActivity.this,photoSelect,position);
+                }
 
+
+            }
+        });
 
         item9.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -259,6 +439,7 @@ public class DetailActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 StaffQj bItem = new StaffQj();
+                bItem.setI(-1);
                 staffQjs.add(bItem);
 
                 bAdapter.updata(staffQjs);
@@ -281,14 +462,106 @@ public class DetailActivity extends BaseActivity {
         item18.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                detailHandler.sendEmptyMessage(7);
                 Intent intent = new Intent(DetailActivity.this, StaffBtActivity.class);
                 intent.putExtra("obj",bean);
                 startActivity(intent);
             }
         });
+        item19.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(headTips==null){
+                    headTips = new HeadTips(DetailActivity.this,detailHandler);
+                    headTips.showSheet();
+                }
+            }
+        });
         load();
     }
+    int SELECT_INDEX = -1;
+    private TakePhoto takePhoto;
+    private PhotoSelect photoSelect = new PhotoSelect() {
+        private void init(){
 
+
+            int width = 1280;
+            int height = 800;
+            LubanOptions option=new LubanOptions.Builder()
+                    .setMaxHeight(height)
+                    .setMaxWidth(width)
+                    .setMaxSize(200*1024)
+                    .create();
+            CompressConfig config = CompressConfig.ofLuban(option);
+            config.enableReserveRaw(true);
+            takePhoto.onEnableCompress(config,true);
+
+            TakePhotoOptions.Builder builder=new TakePhotoOptions.Builder();
+            builder.setWithOwnGallery(true);//使用自带相册
+            builder.setCorrectImage(true);//纠正拍照角度
+            takePhoto.setTakePhotoOptions(builder.create());
+        }
+        @Override
+        public void camcer(int index) {
+            SELECT_INDEX = index;
+
+            File file=new File(Common.CACHE_STAFF_IMAGES+bean.getId()+"/"+System.currentTimeMillis()+".jpg");
+            if (!file.getParentFile().exists())file.getParentFile().mkdirs();
+            Uri imageUri = Uri.fromFile(file);
+            init();
+            takePhoto.onPickFromCapture(imageUri);
+        }
+
+        @Override
+        public void photos(int index) {
+            SELECT_INDEX = index;
+            init();
+            takePhoto.onPickMultiple(9);
+//            takePhoto.onPickFromGallery();
+        }
+    };
+
+    @Override
+    public void takeSuccess(final TResult result) {
+        super.takeSuccess(result);
+        new Thread(){
+            @Override
+            public void run() {
+                super.run();
+                ArrayList<TImage> imsge = result.getImages();
+              /*  CopyFile copyFile = new CopyFile();
+                for(int i=0;i<imsge.size();i++){
+                    TImage img = imsge.get(i);
+                    if(img.getCompressPath().startsWith("/data/data/")){
+                        //压缩至data下面，需要移动
+                        String fileName = img.getCompressPath().substring(img.getCompressPath().lastIndexOf("/")+1);
+                        copyFile.copyFile(img.getCompressPath(),Common.CACHE_STAFF_IMAGES+bean.getId()+"/"+fileName);
+                        img.setCompressPath(Common.CACHE_STAFF_IMAGES+bean.getId()+"/"+fileName);
+                        P.c(img.getCompressPath()+"复制到"+Common.CACHE_STAFF_IMAGES+bean.getId()+"/"+fileName);
+                    }
+
+                }*/
+            DB.getInstance().addStaffImages(staffImages.get(SELECT_INDEX),bean,imsge,detailHandler);
+
+            }
+        }.start();
+
+    }
+
+
+    @Override
+    public void takeFail(TResult result, String msg) {
+        super.takeFail(result, msg);
+        P.c("操作--"+msg);
+    }
+
+    @Override
+    public void takeCancel() {
+        super.takeCancel();
+        P.c("操--作");
+    }
+
+    private HeadTips headTips;
     private ArrayList<StaffImageItem> staffImages = new ArrayList<>();//图片
     private Map<String, Object> txtListMap = new HashMap<>();//未处理的栏目
     private ArrayList<DetailStaff> dss = new ArrayList<>();//栏目
@@ -297,6 +570,7 @@ public class DetailActivity extends BaseActivity {
 
     private void parseTxtItem() {
         //解析安检项目数据
+
         Set set = txtListMap.keySet();
         Iterator it = set.iterator();
         dss.clear();
@@ -331,9 +605,10 @@ public class DetailActivity extends BaseActivity {
             public void run() {
                 super.run();
                 DB.getInstance().updataStand(bean);
-                DB.getInstance().updataStaffImageItem(staffImages, bean);
-                DB.getInstance().updataStaffTxtItem(txtListMap, bean);
-                parseTxtItem();
+                detailHandler.sendEmptyMessage(6);
+
+                detailHandler.sendEmptyMessage(5);
+
                 DB.getInstance().updataStaffBs(staffBs,bean);
                 DB.getInstance().updataStaffQj(staffQjs,bean);
                 detailHandler.sendEmptyMessage(1);

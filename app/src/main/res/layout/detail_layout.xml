@@ -302,6 +302,7 @@
                         android:id="@+id/item8"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:listSelector="@color/no_color"
                         android:background="@color/no_color"
                         android:cacheColorHint="@color/no_color"
                         android:divider="@mipmap/line_gray"
@@ -557,7 +558,7 @@
                             android:ems="3"
                             android:gravity="center"
                             android:padding="2dp"
-                            android:text="表一"
+                            android:text="表二"
                             android:textColor="@color/font_normal"
                             android:textSize="13sp" />
                     </LinearLayout>

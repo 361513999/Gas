@@ -40,7 +40,7 @@
             android:gravity="center"
             android:paddingBottom="5dp"
             android:paddingTop="5dp"
-            android:text="指派组员"
+            android:text="立即提交"
             android:textColor="@color/white"
             android:textSize="14sp" />
         <TextView
@@ -53,21 +53,10 @@
             android:gravity="center"
             android:paddingBottom="5dp"
             android:paddingTop="5dp"
-            android:text="自己领取"
+            android:text="保存本地"
             android:textColor="@color/white"
             android:textSize="14sp" />
-        <TextView
-            android:id="@+id/item2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@color/cancle"
-            android:ems="5"
-            android:gravity="center"
-            android:paddingBottom="5dp"
-            android:paddingTop="5dp"
-            android:text="取消"
-            android:textColor="@color/white"
-            android:textSize="14sp" />
+
     </LinearLayout>
     </LinearLayout>
 </LinearLayout>
