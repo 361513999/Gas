@@ -1,6 +1,8 @@
 package com.hhkj.gas.www.adapter;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,9 +27,11 @@ public class Start1Adapter extends BaseAdapter {
     private Context context;
     private ArrayList<ReserItemBean> rbs;
     private SharedUtils sharedUtils;
-    public Start1Adapter(Context context, ArrayList<ReserItemBean> rbs,SharedUtils sharedUtils){
+    private Handler handler;
+    public Start1Adapter(Context context, ArrayList<ReserItemBean> rbs,SharedUtils sharedUtils,Handler handler){
         this.context = context;
         this.rbs = rbs;
+        this.handler = handler;
         this.sharedUtils = sharedUtils;
         inflater = LayoutInflater.from(context);
     }
@@ -122,7 +126,15 @@ public class Start1Adapter extends BaseAdapter {
             viewHolder.item4.setTextColor(context.getResources().getColor(R.color.font_normal));
             viewHolder.item4.setText(context.getString(R.string.nor_item_txt4,it.getTime()));
         }
-
+        convertView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Message msg = new Message();
+                msg.what = 7;
+                msg.arg1 = position;
+                handler.sendMessage(msg);
+            }
+        });
         return  convertView;
     }
 }

@@ -25,6 +25,7 @@
             android:gravity="center">
 
             <TextView
+                android:id="@+id/print"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:background="@drawable/shape_btn_blue"
@@ -62,6 +63,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_horizontal"
+                    android:textColor="@color/font_normal"
                     android:text="@string/staff_view_item0"
                     android:textSize="14sp" />
 
@@ -70,6 +72,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
                     android:gravity="center_horizontal"
+                    android:textColor="@color/font_normal"
                     android:text="@string/staff_view_item1"
                     android:textSize="18sp" />
 
@@ -79,7 +82,9 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:gravity="center_horizontal"
+                    android:textColor="@color/font_normal"
                     android:text="工作编号"
+                    android:layout_marginBottom="8dp"
                     android:textSize="14sp" />
 
                 <LinearLayout
@@ -94,6 +99,7 @@
                         android:orientation="horizontal">
 
                         <TextView
+                            android:id="@+id/item1"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
@@ -109,6 +115,7 @@
                             android:background="@color/detail_line" />
 
                         <TextView
+                            android:id="@+id/item2"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
@@ -126,6 +133,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
                         <TextView
+                            android:id="@+id/item3"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
@@ -149,6 +157,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:padding="5dp"
+                            android:id="@+id/item4"
                             android:text="客户地址"
                             android:textColor="@color/font_normal"
                             android:textSize="14sp" />
@@ -197,6 +206,10 @@
                             android:textColor="@color/font_normal"
                             android:textSize="14sp" />
                     </LinearLayout>
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/detail_line" />
                     <com.hhkj.gas.www.widget.InScrollListView
                         android:id="@+id/item5"
                         android:layout_width="match_parent"
@@ -241,7 +254,7 @@
                             android:background="@color/detail_line" />
                         <TextView
                             android:layout_width="0dp"
-                            android:layout_weight="5"
+                            android:layout_weight="3"
                             android:layout_height="wrap_content"
                             android:padding="5dp"
                             android:text="品牌型号"
@@ -256,7 +269,7 @@
                             android:layout_width="0dp"
                             android:layout_weight="3"
                             android:layout_height="wrap_content"
-                            android:ems="3"
+                            android:ems="2"
                             android:padding="5dp"
                             android:text="机表读数"
                             android:gravity="center"
@@ -276,6 +289,19 @@
                             android:textColor="@color/font_normal"
                             android:textSize="14sp" />
                     </LinearLayout>
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/detail_line" />
+                    <com.hhkj.gas.www.widget.InScrollListView
+                        android:id="@+id/item6"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:listSelector="@color/no_color"
+                        android:background="@color/no_color"
+                        android:cacheColorHint="@color/no_color"
+                        android:divider="@color/detail_line"
+                        android:dividerHeight="1dp" />
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
@@ -333,7 +359,85 @@
                             android:textColor="@color/font_normal"
                             android:textSize="14sp" />
                     </LinearLayout>
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/detail_line" />
+                    <com.hhkj.gas.www.widget.InScrollListView
+                        android:id="@+id/item7"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:listSelector="@color/no_color"
+                        android:background="@color/no_color"
+                        android:cacheColorHint="@color/no_color"
+                        android:divider="@color/detail_line"
+                        android:dividerHeight="1dp" />
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/detail_line" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:textColor="@color/font_normal"
+                        android:textSize="18sp"
+                        android:layout_gravity="center"
+                        android:text="检验结果:合格"/>
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/detail_line" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="14sp"
+                        android:textColor="@color/font_normal"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginLeft="3dp"
+                        android:text="施工申明:上述项目已完工,并检验合格。"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="14sp"
+                        android:textColor="@color/font_normal"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginLeft="3dp"
+                        android:text="施工员签名:"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="14sp"
+                        android:textColor="@color/font_normal"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginLeft="3dp"
+                        android:text="客户申明:本人确认上述工程已完成,承诺遵守政府相关管道燃气的法律、法规和规章,并依照珠海港兴管道天然气有限公司的相关指引,安全使用管道燃气。"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="14sp"
+                        android:textColor="@color/font_normal"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginLeft="3dp"
+                        android:layout_marginBottom="5dp"
+                        android:text="客户签名:"/>
                 </LinearLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="12sp"
+                    android:layout_marginTop="4dp"
+                    android:text="@string/staff_view_item2"
+                    android:textColor="@color/font_light"/>
+                <TextView
+                    android:layout_marginTop="4dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="12sp"
+                    android:layout_marginBottom="8dp"
+                    android:text="服务热线:7718888      抢险电话:2128866"
+                    android:textColor="@color/font_light"/>
             </LinearLayout>
         </com.hhkj.gas.www.widget.MyScroll>
     </LinearLayout>

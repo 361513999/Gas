@@ -315,8 +315,9 @@ public class DB {
                 StaffB item = new StaffB();
                 item.setI(getInt(cursor,"i"));
                 item.setId(getString(cursor,"id"));
-                item.setName(getString(cursor,"type"));
-                item.setValue(getString(cursor,"value"));
+
+                item.setName(cursor.isNull(cursor.getColumnIndex("type"))?"":getString(cursor,"type"));
+                item.setValue(cursor.isNull(cursor.getColumnIndex("value"))?"":getString(cursor,"value"));
                 if(cursor.isNull(cursor.getColumnIndex("chk"))){
                     item.setCheck(false);
                 }else{

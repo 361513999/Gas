@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.hhkj.gas.www.R;
@@ -89,8 +90,10 @@ public class DetailBt_Item5Adapter extends BaseAdapter {
             if(si.isCheck()){
                 viewHolder.t.setText(RIGHT);
                 viewHolder.f.setBackgroundResource(R.mipmap.ck_false);
+                viewHolder.f.setLayoutParams(new LinearLayout.LayoutParams(40,40));
             }else{
                 viewHolder.t.setBackgroundResource(R.mipmap.ck_false);
+                viewHolder.t.setLayoutParams(new LinearLayout.LayoutParams(40,40));
                 viewHolder.f.setText(RIGHT);
             }
         }else if(it.getItems()!=null){
@@ -114,8 +117,10 @@ public class DetailBt_Item5Adapter extends BaseAdapter {
             if(flag){
                 viewHolder.t.setText(RIGHT);
                 viewHolder.f.setBackgroundResource(R.mipmap.ck_false);
+                viewHolder.f.setLayoutParams(new LinearLayout.LayoutParams(40,40));
             }else{
                 viewHolder.t.setBackgroundResource(R.mipmap.ck_false);
+                viewHolder.t.setLayoutParams(new LinearLayout.LayoutParams(40,40));
                 viewHolder.f.setText(RIGHT);
             }
             viewHolder.item1.setText(it.getItems_tag()+":"+builder.toString());

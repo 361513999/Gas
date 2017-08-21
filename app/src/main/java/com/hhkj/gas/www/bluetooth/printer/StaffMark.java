@@ -112,17 +112,17 @@ public class StaffMark implements PrintDataMaker {
                     StaffB b0 =  staffBs.get(0);
                     String v0 = "";
                     String v1 = "";
-                    if(b0.getName().length()>=10){
+                    if(b0!=null&&b0.getName().length()>=10){
                         v0 =  b0.getName().substring(0,10);
                     }else{
                         v0 =  b0.getName()+printerWriter.getEmpOne(10-b0.getName().length());
                     }
-                    if(b0.getValue().length()>=8){
+                    if(b0!=null&&b0.getValue().length()>=8){
                         v1 =  b0.getValue().substring(0,8);
                     }else{
                         v1 =  b0.getValue()+printerWriter.getEmpOne(8-b0.getValue().length());
                     }
-                    String ck = b0.isCheck()?"正常":"不正常";
+                    String ck = b0!=null&&b0.isCheck()?"正常":"不正常";
                     printerWriter.print(printerWriter.getEmpOne(2)+"1"+printerWriter.getEmpOne(4)+"表一"+printerWriter.getEmpOne(3)+v0+printerWriter.getEmpOne(2)+v1+printerWriter.getEmpOne(4)+ck+printerWriter.getEmpOne(2));
                     printerWriter.printLineFeed();
                 }
@@ -130,17 +130,21 @@ public class StaffMark implements PrintDataMaker {
                     StaffB b0 =  staffBs.get(1);
                     String v0 = "";
                     String v1 = "";
-                    if(b0.getName().length()>=10){
+                    if(b0!=null&&b0.getName().length()>=10){
                         v0 =  b0.getName().substring(0,10);
                     }else{
                         v0 =  b0.getName()+printerWriter.getEmpOne(10-b0.getName().length());
                     }
-                    if(b0.getValue().length()>=8){
+                    if(b0!=null&&b0.getValue().length()>=8){
                         v1 =  b0.getValue().substring(0,8);
                     }else{
                         v1 =  b0.getValue()+printerWriter.getEmpOne(8-b0.getValue().length());
                     }
-                    String ck = b0.isCheck()?"正常":"不正常";
+                    String ck = "";
+                    if(v0.length()!=0){
+                        ck =b0.isCheck()?"正常":"不正常";
+                    }
+
                     printerWriter.print(printerWriter.getEmpOne(2)+"2"+printerWriter.getEmpOne(4)+"表二"+printerWriter.getEmpOne(3)+v0+printerWriter.getEmpOne(2)+v1+printerWriter.getEmpOne(4)+ck+printerWriter.getEmpOne(2));
                     printerWriter.printLineFeed();
                 }

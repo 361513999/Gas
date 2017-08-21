@@ -247,7 +247,7 @@ public class Start1Activity extends BaseActivity {
         pull_to_refresh_list.setOnHeaderRefreshListener(listHeadListener);
         pull_to_refresh_list.setOnFooterRefreshListener(listFootListener);
         gas_list = (ListView) findViewById(R.id.gas_list);
-        start1Adapter = new Start1Adapter(Start1Activity.this,ribs,sharedUtils);
+        start1Adapter = new Start1Adapter(Start1Activity.this,ribs,sharedUtils,startHandler);
         market_group = (RadioGroup) findViewById(R.id.market_group);
         market_group_item0 = (RadioButton) findViewById(R.id.market_group_item0);
         market_group_item1 = (RadioButton) findViewById(R.id.market_group_item1);
@@ -257,24 +257,7 @@ public class Start1Activity extends BaseActivity {
         nav_0 = (RadioButton) findViewById(R.id.nav_0);
         nav_1 = (RadioButton) findViewById(R.id.nav_1);
         gas_list.setAdapter(start1Adapter);
-        gas_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                ReserItemBean bean =  ribs.get(position);
-                if(DB.getInstance().isExitsId(bean.getId(),bean.getNo())==0){
-                    loadData(bean);
-                }else {
-                    //直接装载数据
 
-                    Message mg = new Message();
-                    mg.what = 6;
-                    mg.obj = bean;
-                    startHandler.sendMessage(mg);
-                }
-
-
-            }
-        });
         back = (TextView) findViewById(R.id.back);
 
         back.setOnClickListener(new View.OnClickListener() {
@@ -706,6 +689,20 @@ public class Start1Activity extends BaseActivity {
                         Intent intent = new Intent(Start1Activity.this,DetailActivity.class);
                         intent.putExtra("obj",obj);
                         startActivity(intent);
+                        break;
+                    case 7:
+                        int position = msg.arg1;
+                        ReserItemBean ba =  ribs.get(position);
+                        if(DB.getInstance().isExitsId(ba.getId(),ba.getNo())==0){
+                            loadData(ba);
+                        }else {
+                            //直接装载数据
+
+                            Message mg7 = new Message();
+                            mg7.what = 6;
+                            mg7.obj = ba;
+                            startHandler.sendMessage(mg7);
+                        }
                         break;
                 }
             }

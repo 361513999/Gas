@@ -18,6 +18,9 @@ import android.widget.TextView;
 
 import com.hhkj.gas.www.R;
 import com.hhkj.gas.www.adapter.DetailBt_Item5Adapter;
+import com.hhkj.gas.www.adapter.DetailBt_Item6Adapter;
+import com.hhkj.gas.www.adapter.DetailBt_Item7Adapter;
+import com.hhkj.gas.www.base.AppManager;
 import com.hhkj.gas.www.base.BaseActivity;
 import com.hhkj.gas.www.bean.DetailStaff;
 import com.hhkj.gas.www.bean.ReserItemBean;
@@ -86,7 +89,9 @@ public class StaffBtActivity extends BaseActivity  {
                     case 1:
                         staffMark = new StaffMark(StaffBtActivity.this,bean,staffImages,dss,staffBs,staffQjs);
                         item5Adapter.updata(dss);
-
+                        item7Adapter.updata(staffQjs);
+                        P.c("staffBs"+staffBs.size());
+                        item6Adapter.updata(staffBs);
                         break;
                 }
             }
@@ -144,19 +149,50 @@ public class StaffBtActivity extends BaseActivity  {
         }.start();
     }
 
-    private TextView back;
-    private InScrollListView item5;//安检项目
+    private TextView back,print;
+    private InScrollListView item5,item7,item6;//安检项目
     private DetailBt_Item5Adapter item5Adapter;
+    private DetailBt_Item7Adapter item7Adapter;
+    private DetailBt_Item6Adapter item6Adapter;
+    private TextView item0,item1,item2,item3,item4;
     @Override
     public void init() {
         item5 = (InScrollListView) findViewById(R.id.item5);
         item5Adapter = new DetailBt_Item5Adapter(StaffBtActivity.this,dss);
         item5.setAdapter(item5Adapter);
+
+        item6 = (InScrollListView) findViewById(R.id.item6);
+        item6Adapter = new DetailBt_Item6Adapter(StaffBtActivity.this,staffBs);
+        item6.setAdapter(item6Adapter);
+
+        item7Adapter = new DetailBt_Item7Adapter(StaffBtActivity.this,staffQjs);
+        item7 = (InScrollListView) findViewById(R.id.item7)
+        ;item7.setAdapter(item7Adapter);
+        item0 = (TextView) findViewById(R.id.item0);
+        item1 = (TextView) findViewById(R.id.item1);
+        item2 = (TextView) findViewById(R.id.item2);
+        item3 = (TextView) findViewById(R.id.item3);
+        item4= (TextView) findViewById(R.id.item4);
+        item0.setText("工作编号:"+bean.getNo());
+        item1.setText("客户姓名:"+bean.getName());
+        item2.setText("联系电话:"+bean.getTel());
+        item3.setText("预约时间:"+bean.getTime());
+        item4.setText("客户地址:"+bean.getAdd());
+        print = (TextView) findViewById(R.id.print);
+
+
         back = (TextView) findViewById(R.id.back);
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 //
+                AppManager.getAppManager().finishActivity(StaffBtActivity.this);
+
+            }
+        });
+        print.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
                 checkBluetooth();
             }
         });
