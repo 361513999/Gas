@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.hhkj.gas.www.R;
+import com.hhkj.gas.www.adapter.DetailBt_Item5Adapter;
 import com.hhkj.gas.www.base.BaseActivity;
 import com.hhkj.gas.www.bean.DetailStaff;
 import com.hhkj.gas.www.bean.ReserItemBean;
@@ -31,6 +32,7 @@ import com.hhkj.gas.www.bluetooth.printer.TestPrintDataMaker;
 import com.hhkj.gas.www.common.Common;
 import com.hhkj.gas.www.common.P;
 import com.hhkj.gas.www.db.DB;
+import com.hhkj.gas.www.widget.InScrollListView;
 import com.hhkj.gas.www.widget.NewToast;
 
 import java.lang.ref.WeakReference;
@@ -66,6 +68,7 @@ public class StaffBtActivity extends BaseActivity  {
         filter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
         registerReceiver(mReceiver,filter);
     }
+
     private StaffBtHandler staffBtHandler;
     private class StaffBtHandler extends Handler {
         WeakReference<StaffBtActivity> mLeakActivityRef;
@@ -82,6 +85,8 @@ public class StaffBtActivity extends BaseActivity  {
                 switch (msg.what){
                     case 1:
                         staffMark = new StaffMark(StaffBtActivity.this,bean,staffImages,dss,staffBs,staffQjs);
+                        item5Adapter.updata(dss);
+
                         break;
                 }
             }
@@ -140,8 +145,13 @@ public class StaffBtActivity extends BaseActivity  {
     }
 
     private TextView back;
+    private InScrollListView item5;//安检项目
+    private DetailBt_Item5Adapter item5Adapter;
     @Override
     public void init() {
+        item5 = (InScrollListView) findViewById(R.id.item5);
+        item5Adapter = new DetailBt_Item5Adapter(StaffBtActivity.this,dss);
+        item5.setAdapter(item5Adapter);
         back = (TextView) findViewById(R.id.back);
         back.setOnClickListener(new View.OnClickListener() {
             @Override

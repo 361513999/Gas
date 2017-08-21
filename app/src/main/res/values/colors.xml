@@ -22,4 +22,5 @@
     <color name="green_n">#44BB5C</color>
     <color name="login_edit">#E7E7E7</color>
     <color name="detail_red">#FF4C3E</color>
+    <color name="detail_line">#7F7F7F</color>
 </resources>

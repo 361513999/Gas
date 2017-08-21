@@ -46,8 +46,8 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:padding="5dp"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:padding="5dp">
 
         <com.hhkj.gas.www.widget.MyScroll
             android:layout_width="match_parent"
@@ -57,33 +57,282 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:gravity="center_horizontal"
-                            android:textSize="14sp"
-                            android:text="@string/staff_view_item0"/>
+
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_horizontal"
-                    android:textSize="18sp"
+                    android:text="@string/staff_view_item0"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:text="@string/staff_view_item1"/>
+                    android:gravity="center_horizontal"
+                    android:text="@string/staff_view_item1"
+                    android:textSize="18sp" />
+
                 <TextView
                     android:id="@+id/item0"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="center_horizontal"
-                    android:textSize="14sp"
                     android:layout_marginTop="8dp"
-                    android:text="工作编号"/>
+                    android:gravity="center_horizontal"
+                    android:text="工作编号"
+                    android:textSize="14sp" />
+
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="300dp"
-                    android:background="@drawable/shape_detail_bord">
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/shape_detail_bord"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:padding="5dp"
+                            android:text="客户"
+
+                            android:textColor="@color/font_normal"
+                            android:textSize="14sp" />
+
+                        <View
+                            android:layout_width="1dp"
+                            android:layout_height="match_parent"
+                            android:background="@color/detail_line" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:padding="5dp"
+                            android:text="电话"
+                            android:textColor="@color/font_normal"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/detail_line" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:padding="5dp"
+                            android:text="预约时间"
+                            android:textColor="@color/font_normal"
+                            android:textSize="14sp" />
+                    </LinearLayout>
 
 
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/detail_line" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:padding="5dp"
+                            android:text="客户地址"
+                            android:textColor="@color/font_normal"
+                            android:textSize="14sp" />
+
+                    </LinearLayout>
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/detail_line" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:ems="3"
+                            android:padding="5dp"
+                            android:text="序号"
+                            android:gravity="center"
+                            android:textColor="@color/font_normal"
+                            android:textSize="14sp" />
+                        <View
+                            android:layout_width="1dp"
+                            android:layout_height="match_parent"
+                            android:background="@color/detail_line" />
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:padding="5dp"
+                            android:gravity="center"
+                            android:text="项目"
+                            android:textColor="@color/font_normal"
+                            android:textSize="14sp" />
+                        <View
+                            android:layout_width="1dp"
+                            android:layout_height="match_parent"
+                            android:background="@color/detail_line" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                           android:ems="5"
+                            android:gravity="center"
+                            android:padding="5dp"
+                            android:text="检查情况"
+                            android:textColor="@color/font_normal"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+                    <com.hhkj.gas.www.widget.InScrollListView
+                        android:id="@+id/item5"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:listSelector="@color/no_color"
+                        android:background="@color/no_color"
+                        android:cacheColorHint="@color/no_color"
+                        android:divider="@color/detail_line"
+                        android:dividerHeight="1dp" />
+                    <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/detail_line" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:ems="3"
+                            android:padding="5dp"
+                            android:text="序号"
+                            android:gravity="center"
+                            android:textColor="@color/font_normal"
+                            android:textSize="14sp" />
+                        <View
+                            android:layout_width="1dp"
+                            android:layout_height="match_parent"
+                            android:background="@color/detail_line" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:ems="4"
+                            android:padding="5dp"
+                            android:text="燃气表"
+                            android:gravity="center"
+                            android:textColor="@color/font_normal"
+                            android:textSize="14sp" />
+                        <View
+                            android:layout_width="1dp"
+                            android:layout_height="match_parent"
+                            android:background="@color/detail_line" />
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_weight="5"
+                            android:layout_height="wrap_content"
+                            android:padding="5dp"
+                            android:text="品牌型号"
+                            android:gravity="center"
+                            android:textColor="@color/font_normal"
+                            android:textSize="14sp" />
+                        <View
+                            android:layout_width="1dp"
+                            android:layout_height="match_parent"
+                            android:background="@color/detail_line" />
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_weight="3"
+                            android:layout_height="wrap_content"
+                            android:ems="3"
+                            android:padding="5dp"
+                            android:text="机表读数"
+                            android:gravity="center"
+                            android:textColor="@color/font_normal"
+                            android:textSize="14sp" />
+                        <View
+                            android:layout_width="1dp"
+                            android:layout_height="match_parent"
+                            android:background="@color/detail_line" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:ems="5"
+                            android:padding="5dp"
+                            android:text="运行情况"
+                            android:gravity="center"
+                            android:textColor="@color/font_normal"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/detail_line" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:ems="3"
+                            android:padding="5dp"
+                            android:text="序号"
+                            android:gravity="center"
+                            android:textColor="@color/font_normal"
+                            android:textSize="14sp" />
+                        <View
+                            android:layout_width="1dp"
+                            android:layout_height="match_parent"
+                            android:background="@color/detail_line" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:ems="4"
+                            android:padding="5dp"
+                            android:text="燃气具"
+                            android:gravity="center"
+                            android:textColor="@color/font_normal"
+                            android:textSize="14sp" />
+                        <View
+                            android:layout_width="1dp"
+                            android:layout_height="match_parent"
+                            android:background="@color/detail_line" />
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_weight="5"
+                            android:layout_height="wrap_content"
+                            android:padding="5dp"
+                            android:text="安装位置"
+                            android:gravity="center"
+                            android:textColor="@color/font_normal"
+                            android:textSize="14sp" />
+
+                        <View
+                            android:layout_width="1dp"
+                            android:layout_height="match_parent"
+                            android:background="@color/detail_line" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:ems="5"
+                            android:padding="5dp"
+                            android:text="运行情况"
+                            android:gravity="center"
+                            android:textColor="@color/font_normal"
+                            android:textSize="14sp" />
+                    </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
         </com.hhkj.gas.www.widget.MyScroll>
