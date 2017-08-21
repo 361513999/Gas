@@ -46,12 +46,12 @@ public class StaffMark implements PrintDataMaker {
             //开始文字
             printerWriter.setAlignCenter();
             printerWriter.setEmphasizedOn();
-            printerWriter.print("珠海港兴管道天然气有限公司");
+            printerWriter.print(context.getString(R.string.staff_view_item0));
             printerWriter.setEmphasizedOff();
             printerWriter.printLineFeed();
             printerWriter.printLineFeed();
             printerWriter.setFontSize(1);
-            printerWriter.print("户内管安全检查工作单");
+            printerWriter.print(context.getString(R.string.staff_view_item1));
             printerWriter.printLineFeed();
             printerWriter.printLineFeed();
             printerWriter.setFontSize(0);
@@ -178,7 +178,7 @@ public class StaffMark implements PrintDataMaker {
             printerWriter.printLineFeed();
             printerWriter.printLineFeed();
             printerWriter.printLineFeed();
-            printerWriter.printAdd("营业厅:珠海斗门区湖心路诚丰新园2栋一楼1298-1304号商铺",4);
+            printerWriter.printAdd(context.getString(R.string.staff_view_item2),4);
             printerWriter.print("服务热线:7718888"+printerWriter.getEmp(4)+"抢险电话:2128866");
             printerWriter.printLineFeed();
             printerWriter.printLineFeed();

@@ -23,11 +23,11 @@ public class DetailImageAdapter extends BaseAdapter {
     private LayoutInflater inflater;
     private Context context;
     private ArrayList<StaffImageItem> rbs;
-    private ImageLoader imageLoader ;
-    public DetailImageAdapter(Context context, ArrayList<StaffImageItem> rbs, ImageLoader imageLoader ){
+
+    public DetailImageAdapter(Context context, ArrayList<StaffImageItem> rbs ){
         this.context = context;
         this.rbs = rbs;
-        this.imageLoader = imageLoader;
+
         inflater = LayoutInflater.from(context);
     }
     public void updata(ArrayList<StaffImageItem> rbs){
@@ -71,7 +71,7 @@ public class DetailImageAdapter extends BaseAdapter {
       if(it.getPath()==null){
           viewHolder.item0.setImageResource(R.mipmap.btn_add);
       }else{
-          imageLoader.displayImage("file://"+it.getPath(),viewHolder.item0);
+          ImageLoader.getInstance().displayImage("file://"+it.getPath(),viewHolder.item0);
       }
         viewHolder.txt.setText(it.getTag());
         return  convertView;

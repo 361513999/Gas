@@ -7,11 +7,20 @@ import java.io.Serializable;
  */
 
 public class StaffImageItem implements Serializable {
+    private int i;
     private String path;
     private String tag;
     private String id;
     public String getPath() {
         return path;
+    }
+
+    public void setI(int i) {
+        this.i = i;
+    }
+
+    public int getI() {
+        return i;
     }
 
     public void setPath(String path) {

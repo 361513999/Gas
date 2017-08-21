@@ -1,21 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:background="@color/white"
-    android:layout_height="match_parent">
+    android:orientation="vertical">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/title_heigh"
-        >
+        android:layout_height="@dimen/title_heigh">
+
         <TextView
             android:id="@+id/back"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
             android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
             android:layout_marginLeft="12dp"
-            android:background="@drawable/back_act"/>
+            android:background="@drawable/back_act" />
+
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -36,14 +38,54 @@
 
         </LinearLayout>
     </RelativeLayout>
+
     <View
         android:layout_width="match_parent"
-        android:background="@mipmap/line_gray"
-        android:layout_height="1dp"/>
+        android:layout_height="1dp"
+        android:background="@mipmap/line_gray" />
 
     <LinearLayout
         android:layout_width="match_parent"
+        android:padding="5dp"
         android:layout_height="match_parent">
 
+        <com.hhkj.gas.www.widget.MyScroll
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_horizontal"
+                            android:textSize="14sp"
+                            android:text="@string/staff_view_item0"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:textSize="18sp"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/staff_view_item1"/>
+                <TextView
+                    android:id="@+id/item0"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:textSize="14sp"
+                    android:layout_marginTop="8dp"
+                    android:text="工作编号"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="300dp"
+                    android:background="@drawable/shape_detail_bord">
+
+
+                </LinearLayout>
+            </LinearLayout>
+        </com.hhkj.gas.www.widget.MyScroll>
     </LinearLayout>
 </LinearLayout>

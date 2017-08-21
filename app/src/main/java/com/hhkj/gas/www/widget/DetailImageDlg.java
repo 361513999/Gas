@@ -33,26 +33,53 @@ public class DetailImageDlg {
 
     private  LayoutInflater inflater;
     private SharedUtils sharedUtils;
-    private ImageLoader imageLoader;
+
     private ReserItemBean bean;
     private StaffImageItem id;
-
-    public DetailImageDlg(Context context, SharedUtils sharedUtils,ImageLoader imageLoader,StaffImageItem id,ReserItemBean bean ) {
+    private Handler parentHandler;
+    private int position;
+    public DetailImageDlg(Context context, SharedUtils sharedUtils,StaffImageItem id,ReserItemBean bean,Handler parentHandler,int position ) {
         this.context = context;
         this.id = id;
         this.bean = bean;
+        this.parentHandler = parentHandler;
         this.sharedUtils = sharedUtils;
-            this.imageLoader = imageLoader;
+        this.position = position;
        inflater  = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
+    private void load(){
+        new Thread(){
+            @Override
+            public void run() {
+                super.run();
+                DB.getInstance().updataStaffImageDlgItem(rbs,id.getId(),bean);
+                handler.sendEmptyMessage(1);
+            }
+        }.start();
+    }
     private Handler handler = new Handler(){
         @Override
-        public void dispatchMessage(Message msg) {
+        public void dispatchMessage(final Message msg) {
             super.dispatchMessage(msg);
         switch (msg.what){
+            case 0:
+                load();
+                break;
             case 1:
                 dlgAdapter.updata(rbs);
+                break;
+            case 2:
+                //进行删除操作
+                DB.getInstance().removeStaffImageDlg(msg.arg1,handler);
+                break;
+            case 3:
+
+                Message msg9 = new Message();
+                msg9.what = 9;
+                msg9.arg1 = position;
+                parentHandler.sendMessage(msg9);
+                cancle();
                 break;
         }
         }
@@ -67,14 +94,7 @@ public class DetailImageDlg {
         final GridView childs_list = (GridView) layout.findViewById(R.id.childs_list);
         title.setText(id.getTag());
 
-        new Thread(){
-            @Override
-            public void run() {
-                super.run();
-                DB.getInstance().updataStaffImageDlgItem(rbs,id.getId(),bean);
-                handler.sendEmptyMessage(1);
-            }
-        }.start();
+        handler.sendEmptyMessage(0);
         childs_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -86,7 +106,7 @@ public class DetailImageDlg {
             public void onShow(DialogInterface arg0) {
                 // TODO Auto-generated method stub
                 P.c("弹出框长度"+layout.getWidth());
-                dlgAdapter = new DetailDlgAdapter(context,rbs,imageLoader, (layout.getWidth()-15)/3);
+                dlgAdapter = new DetailDlgAdapter(context,rbs, (layout.getWidth()-15)/3,handler);
                 childs_list.setAdapter(dlgAdapter);
             }
         });

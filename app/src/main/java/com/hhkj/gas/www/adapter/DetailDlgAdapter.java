@@ -2,6 +2,8 @@ package com.hhkj.gas.www.adapter;
 
 import android.content.Context;
 import android.graphics.Matrix;
+import android.os.Handler;
+import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,13 +29,13 @@ public class DetailDlgAdapter extends BaseAdapter {
     private LayoutInflater inflater;
     private Context context;
     private ArrayList<StaffImageItem> rbs;
-    private ImageLoader imageLoader ;
     private int HEIGHT ;
-    public DetailDlgAdapter(Context context, ArrayList<StaffImageItem> rbs, ImageLoader imageLoader,int HEIGHT ){
+    private Handler handler;
+    public DetailDlgAdapter(Context context, ArrayList<StaffImageItem> rbs, int HEIGHT,Handler handler ){
         this.context = context;
         this.rbs = rbs;
         this.HEIGHT = HEIGHT;
-        this.imageLoader = imageLoader;
+        this.handler = handler;
         inflater = LayoutInflater.from(context);
     }
     public void updata(ArrayList<StaffImageItem> rbs){
@@ -65,7 +67,7 @@ public class DetailDlgAdapter extends BaseAdapter {
         notifyDataSetChanged();
     }
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
         ViewHolder viewHolder;
         if (convertView == null
                 || convertView.getTag(R.mipmap.ic_launcher + position) == null) {
@@ -79,16 +81,30 @@ public class DetailDlgAdapter extends BaseAdapter {
             viewHolder = (ViewHolder) convertView.getTag(R.mipmap.ic_launcher
                     + position);
         }
-        P.c("HEIGHT"+HEIGHT);
         viewHolder.layout.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT,HEIGHT));
         if(position==0){
 //            viewHolder.item0.setImageResource(R.mipmap.btn_add);
 //            viewHolder.item0.setScaleType(ImageView.ScaleType.FIT_XY);
-            imageLoader.displayImage("drawable://"+R.mipmap.btn_add,viewHolder.item0);
+            ImageLoader.getInstance().displayImage("drawable://"+R.mipmap.btn_add,viewHolder.item0);
             viewHolder.txt.setVisibility(View.GONE);
+            viewHolder.item0.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                  handler.sendEmptyMessage(3);
+                }
+            });
         }else{
-            StaffImageItem it = rbs.get(position-1);
-            imageLoader.displayImage("file://"+it.getPath(),viewHolder.item0);
+            final StaffImageItem it = rbs.get(position-1);
+            ImageLoader.getInstance().displayImage("file://"+it.getPath(),viewHolder.item0);
+            viewHolder.txt.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Message msg = new Message();
+                    msg.what = 2;
+                    msg.arg1 = it.getI();
+                    handler.sendMessage(msg);
+                }
+            });
         }
 
         return  convertView;

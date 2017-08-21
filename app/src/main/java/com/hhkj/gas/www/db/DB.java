@@ -233,6 +233,7 @@ public class DB {
             cursor = db.rawQuery(sql, new String[] {id, bean.getId(),bean.getNo() });
             while(cursor.moveToNext()){
                 StaffImageItem item = new StaffImageItem();
+                item.setI(getInt(cursor,"i"));
                 item.setId(getString(cursor,"id"));
                 item.setTag(getString(cursor,"name"));
                 item.setPath(getString(cursor,"path"));
@@ -246,6 +247,12 @@ public class DB {
                 cursor.close();
                 cursor = null;
             }
+        }
+    }
+    public void removeStaffImageDlg(int i,Handler handler){
+        db.execSQL("delete from staff_stand_image_values where i=?",new Object[]{i});
+        if(handler!=null){
+            handler.sendEmptyMessage(0);
         }
     }
     /**

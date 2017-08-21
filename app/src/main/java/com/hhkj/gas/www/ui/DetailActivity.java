@@ -70,7 +70,7 @@ import java.util.Set;
  */
 
 public class DetailActivity extends TakePhotoActivity {
-    private ImageLoader imageLoader = ImageLoader.getInstance();
+
     private TextView back;
     private ReserItemBean bean;
     private DetailHandler detailHandler;
@@ -330,6 +330,11 @@ public class DetailActivity extends TakePhotoActivity {
                         }
                         NewToast.makeText(DetailActivity.this,"更新成功",Common.TTIME).show();
                         break;
+                    case 9:
+                        int position = msg.arg1;
+                        //打开对话框
+                        CommonPhotoPop.showSheet(DetailActivity.this,photoSelect,position);
+                        break;
                 }
             }
         }
@@ -387,7 +392,7 @@ public class DetailActivity extends TakePhotoActivity {
         item19 = (LinearLayout) findViewById(R.id.item19);
 
 
-        imageAdapter = new DetailImageAdapter(DetailActivity.this, staffImages,imageLoader);
+        imageAdapter = new DetailImageAdapter(DetailActivity.this, staffImages);
         item7.setAdapter(imageAdapter);
 
         staffItemAdapter = new StaffItemAdapter(DetailActivity.this, dss,bean,detailHandler);
@@ -400,7 +405,7 @@ public class DetailActivity extends TakePhotoActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if(staffImages.get(position).getPath()!=null){
-                    DetailImageDlg dlg = new DetailImageDlg(DetailActivity.this,sharedUtils,imageLoader,staffImages.get(position),bean);
+                    DetailImageDlg dlg = new DetailImageDlg(DetailActivity.this,sharedUtils,staffImages.get(position),bean,detailHandler,position);
                     dlg.showSheet();
                 }else{
                     CommonPhotoPop.showSheet(DetailActivity.this,photoSelect,position);

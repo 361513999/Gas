@@ -13,4 +13,8 @@
     <string name="nor_item_txt4">时间:%1$s</string>
     <string name="curr_status">当前状态:%1$s</string>
     <string name="curr_person">执行人:%1$s</string>
+    <string name="staff_view_item0">珠海港兴管道天然气有限公司</string>
+    <string name="staff_view_item1">户内管安全检查工作单</string>
+    <string name="staff_view_item2">营业厅:珠海斗门区湖心路诚丰新园2栋一楼1298-1304号商铺</string>
+    <string name="staff_view_item3"></string>
 </resources>

@@ -17,7 +17,7 @@ public abstract class BaseActivity extends Activity{
     /**
      * 返回键调用
      */
-    ImageLoader imageLoader = ImageLoader.getInstance();
+
     public SharedUtils sharedUtils;
     public LayoutInflater inflater;
 
