@@ -177,6 +177,7 @@ public class DB {
                bean.setTime(getString(cursor,"staffTime"));
                bean.setName(getString(cursor,"opt"));
                bean.setOrderStatus(getInt(cursor,"status"));
+               bean.setStaffTag(getString(cursor,"staffTag"));
 
            }
             cursor.close();
@@ -467,6 +468,10 @@ public class DB {
             handler.sendEmptyMessage(5);
         }
     }
-
+    /**无法安检
+     */
+    public void setStandCt(int status,String tag,ReserItemBean bean){
+        db.execSQL("update staff_stand set status=? ,staffTag = ? where staffId = ? and id = ?",new Object[]{status,tag,bean.getNo(),bean.getId()});
+    }
 
 }

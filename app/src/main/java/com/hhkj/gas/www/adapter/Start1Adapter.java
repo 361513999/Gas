@@ -87,7 +87,12 @@ public class Start1Adapter extends BaseAdapter {
        switch (it.getOrderStatus()){
            case 3:
                viewHolder.item_icon.setBackgroundResource(R.mipmap.icon_running);
-               viewHolder.item_tag.setText("进行中");
+               viewHolder.item_tag.setText("任务进行中");
+               break;
+           case 4:
+               viewHolder.item_icon.setBackgroundResource(R.mipmap.icon_audit);
+               viewHolder.item_tag.setText("审核中");
+
                break;
            case 6:
                //6重新安检中，7等待再次执行，8隐患整改中
@@ -95,11 +100,15 @@ public class Start1Adapter extends BaseAdapter {
                viewHolder.item_tag.setText("重新安检中");
                break;
            case 7:
+               viewHolder.item_icon.setBackgroundResource(R.mipmap.icon_performed_again);
+               viewHolder.item_tag.setText("等待再次执行");
                break;
            case 8:
                viewHolder.item_icon.setBackgroundResource(R.mipmap.icon_zhengtai);
                viewHolder.item_tag.setText("整改中");
                break;
+
+
        }
 
         if(it.getTime().equals("NON")){

@@ -37,7 +37,7 @@ public class HeadTips {
 
         TextView txt = (TextView) layout.findViewById(R.id.txt);
 //        txt.setText(type.equals("1")?"将刚领取的任务指派给组员":"将刚确认的任务指派给组员");
-        txt.setText("将选择的执行以下操作");
+        txt.setText("是否立即提交到服务器");
         item0.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

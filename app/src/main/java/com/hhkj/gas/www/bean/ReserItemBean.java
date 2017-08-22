@@ -22,6 +22,42 @@ public class ReserItemBean implements Serializable{
      * 安检员
      */
     private String StaffName;
+    private boolean isSend;
+    private String staffTag;
+    private String problem;
+    private int printCount;
+
+    public boolean isSend() {
+        return isSend;
+    }
+
+    public void setSend(boolean send) {
+        isSend = send;
+    }
+
+    public String getStaffTag() {
+        return staffTag;
+    }
+
+    public void setStaffTag(String staffTag) {
+        this.staffTag = staffTag;
+    }
+
+    public String getProblem() {
+        return problem;
+    }
+
+    public void setProblem(String problem) {
+        this.problem = problem;
+    }
+
+    public int getPrintCount() {
+        return printCount;
+    }
+
+    public void setPrintCount(int printCount) {
+        this.printCount = printCount;
+    }
 
     public String getStaffName() {
         return StaffName;

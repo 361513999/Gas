@@ -1,13 +1,17 @@
 package com.hhkj.gas.www.ui;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.text.Editable;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
 import android.text.TextWatcher;
+import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -140,9 +144,11 @@ public class DetailActivity extends TakePhotoActivity {
                         item7.setLayoutParams(params);
                         imageAdapter.updata(staffImages);
                         break;
-
-                    case 1:
-                        P.c("本地数据装载");
+                    case 70:
+                        DB.getInstance().updataStand(bean);
+                        detailHandler.sendEmptyMessage(71);
+                        break;
+                    case 71:
                         //装载基础数据
                         item0.setText(getString(R.string.nor_item_txt0, bean.getNo()));
                         item1.setText(getString(R.string.nor_item_txt1, bean.getName()));
@@ -158,17 +164,34 @@ public class DetailActivity extends TakePhotoActivity {
                             case 3:
                                 status = "进行中";
                                 break;
+                            case 4:
+                                status = "审核中";
+
+                                break;
                             case 6:
                                 status = "重新安检中";
+                                break;
+                            case 7:
+                                status = "等待再次执行";
                                 break;
                             case 8:
                                 status = "整改中";
                                 break;
 
+
                         }
-                        item5.setText(getString(R.string.curr_status, status));
+                        String vs = getString(R.string.curr_status, status);
+                        SpannableStringBuilder sbBuilder=new SpannableStringBuilder(vs);
+
+                        sbBuilder.setSpan
+                                (new ForegroundColorSpan(Color.parseColor("#0084ff")), 5, vs.length(), Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
+
+                        item5.setText(sbBuilder);
                         item6.setText(getString(R.string.curr_person, bean.getStaffName()));
                         //----------
+                        break;
+
+                    case 1:
 
                         //装载安检条目
 
@@ -289,6 +312,7 @@ public class DetailActivity extends TakePhotoActivity {
                         break;
                     case 6:
                         //更新安检栏目
+                        P.c("更新栏目");
                        new Thread(){
                            @Override
                            public void run() {
@@ -341,7 +365,7 @@ public class DetailActivity extends TakePhotoActivity {
     }
 
     private final int SHOW_STAFF = 5;
-    private TextView item0, item1, item2, item3, item4, item5, item6, item9, item13;
+    private TextView item0, item1, item2, item3, item4, item5, item6, item9, item10,item11,item12,item13;
     private ImageView item_edit;
     private GridView item7;
     private ImageView item15, item16;
@@ -357,14 +381,32 @@ public class DetailActivity extends TakePhotoActivity {
     private EditText item_b00,item_b01,item_b10,item_b11;
     private CheckBox item_b02,item_b12;
 
+    private boolean check(){
 
+        for(int i=0;i<dss.size();i++){
+            DetailStaff rb =  dss.get(i);
+            if(rb.getItem()!=null){
+                if(rb.getItem().isCheck()){
+                    return true;
+                }
+            }else if(rb.getItems()!=null){
+                for(int j=0;j<rb.getItems().size();j++){
+                    if(rb.getItems().get(j).isCheck()){
+                        return  true;
+                    }
+                }
+            }
+
+        }
+        return  false;
+    }
     public void ini() {
         back = (TextView) findViewById(R.id.back);
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-               Common.copy();
-//                AppManager.getAppManager().finishActivity(DetailActivity.this);
+//               Common.copy();
+                AppManager.getAppManager().finishActivity(DetailActivity.this);
             }
         });
         item0 = (TextView) findViewById(R.id.item0);
@@ -377,6 +419,9 @@ public class DetailActivity extends TakePhotoActivity {
         item7 = (GridView) findViewById(R.id.item7);
         item8 = (InScrollListView) findViewById(R.id.item8);
         item9 = (TextView) findViewById(R.id.item9);
+        item10 = (TextView) findViewById(R.id.item10);
+        item11 = (TextView) findViewById(R.id.item11);
+        item12 = (TextView) findViewById(R.id.item12);
         item13 = (TextView) findViewById(R.id.item13);
         item14 = (InScrollListView) findViewById(R.id.item14);
         item15 = (ImageView) findViewById(R.id.item15);
@@ -440,6 +485,35 @@ public class DetailActivity extends TakePhotoActivity {
                 changeTime.showSheet();
             }
         });
+        item10.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                    if(check()){
+                        //存在安全隐患
+                        P.c("什么情况");
+
+                    }else{
+                        //不存在不能进行
+                        NewToast.makeText(DetailActivity.this,"请勾选安检隐患条目",Common.TTIME).show();
+                    }
+            }
+        });
+        item11.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DB.getInstance().setStandCt(bean.getOrderStatus(),"Y",bean);
+                detailHandler.sendEmptyMessage(70);
+            }
+        });
+
+        item12.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(DetailActivity.this,StaffCtActivity.class);
+                intent.putExtra("obj",bean);
+                startActivityForResult(intent,100);
+            }
+        });
         item13.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -468,9 +542,16 @@ public class DetailActivity extends TakePhotoActivity {
             @Override
             public void onClick(View view) {
                 detailHandler.sendEmptyMessage(7);
-                Intent intent = new Intent(DetailActivity.this, StaffBtActivity.class);
-                intent.putExtra("obj",bean);
-                startActivity(intent);
+                P.c(bean.getProblem()+"bean.getStaffTag()"+bean.getStaffTag()+"=="+(bean.getStaffTag()==null));
+
+                if(bean.getStaffTag().equals("Y")){
+                    Intent intent = new Intent(DetailActivity.this, StaffBtActivity.class);
+                    intent.putExtra("obj",bean);
+                    startActivity(intent);
+                }else{
+                    NewToast.makeText(DetailActivity.this,"任务状态不合格,拒绝打印安检单",Common.TTIME).show();
+                }
+
             }
         });
         item19.setOnClickListener(new View.OnClickListener() {
@@ -484,6 +565,16 @@ public class DetailActivity extends TakePhotoActivity {
         });
         load();
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode==100&&resultCode==1000){
+            //更新基本信息
+            detailHandler.sendEmptyMessage(70);
+        }
+    }
+
     int SELECT_INDEX = -1;
     private TakePhoto takePhoto;
     private PhotoSelect photoSelect = new PhotoSelect() {
@@ -609,14 +700,14 @@ public class DetailActivity extends TakePhotoActivity {
             @Override
             public void run() {
                 super.run();
-                DB.getInstance().updataStand(bean);
+
                 detailHandler.sendEmptyMessage(6);
 
                 detailHandler.sendEmptyMessage(5);
 
                 DB.getInstance().updataStaffBs(staffBs,bean);
                 DB.getInstance().updataStaffQj(staffQjs,bean);
-                detailHandler.sendEmptyMessage(1);
+                detailHandler.sendEmptyMessage(70);
             }
         }.start();
     }
