@@ -74,18 +74,13 @@ public class DB {
         return cursor.getInt(cursor.getColumnIndex(indexName)) == 1 ? true
                 : false;
     }
-    /**
-     *是否本地存在这个任务单
-     * @param id
-     * @return
-     */
     public int isExitsId(String id,String staffId) {
         String sql = "select id from staff_stand where id=? and staffId=?";
         Cursor cursor = null;
         int count = 0;
         try {
-            cursor = db.rawQuery(sql, new String[] { id,staffId });
-              count = cursor.getCount();
+            cursor = db.rawQuery(sql, new String[] {id,staffId });
+            count = cursor.getCount();
             P.c("获得的数据是"+count);
 //            while (cursor.moveToNext()) {
 //
@@ -93,7 +88,7 @@ public class DB {
             cursor.close();
 
         } catch (Exception e) {
-
+            P.c("判断"+e.getMessage());
         } finally {
             if (cursor != null) {
                 cursor.close();
@@ -343,7 +338,7 @@ public class DB {
      * @param staffQjs
      * @param bean
      */
-    public void updataStaffQj(ArrayList<StaffQj> staffQjs,ReserItemBean bean){
+       public void updataStaffQj(ArrayList<StaffQj> staffQjs,ReserItemBean bean){
         String sql = "select * from staff_stand_qj where standId =? and staffId = ?";
         Cursor cursor = null;
 
@@ -364,6 +359,37 @@ public class DB {
                 staffQjs.add(item);
 
             }
+        } catch (Exception e) {
+
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+                cursor = null;
+            }
+        }
+    }
+
+    /**
+     *
+     * @param staffQjs
+     * @param bean
+     */
+    public void getStaffPrint(Map<String,String> map,ReserItemBean bean){
+        map.clear();
+        String sql = "select staffLine,personLine,personPhoto from staff_stand_line where standId = ? and staffId = ?";
+        Cursor cursor = null;
+
+        try {
+            cursor = db.rawQuery(sql, new String[] { bean.getId(),bean.getNo() });
+            int count = cursor.getCount();
+            if(count!=0){
+                if(cursor.moveToFirst()){
+                    map.put("staffLine",getString(cursor,"staffLine"));
+                    map.put("personLine",getString(cursor,"personLine"));
+                    map.put("personPhoto",getString(cursor,"personPhoto"));
+                }
+            }
+
         } catch (Exception e) {
 
         } finally {
@@ -473,5 +499,47 @@ public class DB {
     public void setStandCt(int status,String tag,ReserItemBean bean){
         db.execSQL("update staff_stand set status=? ,staffTag = ? where staffId = ? and id = ?",new Object[]{status,tag,bean.getNo(),bean.getId()});
     }
+    public void staff_print(ReserItemBean bean,boolean staffPrint,String path){
+            if(isExitsPrint(bean.getId(),bean.getNo())==0){
+                //添加
+                String sql = null;
+                if(staffPrint){
+                    sql = "insert into staff_stand_line(standId,staffId,staffLine) values(?,?,?)";
+                }else{
+                    sql = "insert into staff_stand_line(standId,staffId,personLine) values(?,?,?)";
+                }
+                db.execSQL(sql,new Object[]{bean.getId(),bean.getNo(),path});
+            }else{
+                String sql = null;
+                if(staffPrint){
+                    sql = "update staff_stand_line set staffLine=? where standId = ? and staffId = ?";
+                }else{
+                    sql = "update staff_stand_line set personLine=? where standId = ? and staffId = ?";
+                }
+                db.execSQL(sql,new Object[]{path,bean.getId(),bean.getNo()});
+            }
+    }
+    public int isExitsPrint(String id,String staffId) {
+        String sql = "select * from staff_stand_line where standId=? and staffId=?";
+        Cursor cursor = null;
+        int count = 0;
+        try {
+            cursor = db.rawQuery(sql, new String[] {id,staffId });
+            count = cursor.getCount();
+            P.c("获得的数据是"+count);
+//            while (cursor.moveToNext()) {
+//
+//            }
+            cursor.close();
 
+        } catch (Exception e) {
+            P.c("判断"+e.getMessage());
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+                cursor = null;
+            }
+        }
+        return count;
+    }
 }

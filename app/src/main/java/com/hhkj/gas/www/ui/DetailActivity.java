@@ -1,5 +1,6 @@
 package com.hhkj.gas.www.ui;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
@@ -59,7 +60,10 @@ import com.jph.takephoto.model.LubanOptions;
 import com.jph.takephoto.model.TImage;
 import com.jph.takephoto.model.TResult;
 import com.jph.takephoto.model.TakePhotoOptions;
+import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -96,10 +100,12 @@ public class DetailActivity extends TakePhotoActivity {
         CommonLogin login = new CommonLogin(this,sharedUtils);
         login.showSheet();
     }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.detail_layout);
+
         takePhoto = getTakePhoto();
         sharedUtils = new SharedUtils(Common.config);
         inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
@@ -192,7 +198,7 @@ public class DetailActivity extends TakePhotoActivity {
                         break;
 
                     case 1:
-
+                        P.c("何时装载");
                         //装载安检条目
 
                         //装载燃气表
@@ -295,8 +301,10 @@ public class DetailActivity extends TakePhotoActivity {
 
                         //装载燃气具
                         bAdapter.updata(staffQjs);
-
-
+                        //装载签名
+                        ImageLoader.getInstance().displayImage("file://"+printMap.get("staffLine"),item15);
+                    ImageLoader.getInstance().displayImage("file://"+printMap.get("personLine"),item16);
+                    ImageLoader.getInstance().displayImage("file://"+printMap.get("personPhoto"),item17);
                         break;
                     case 2:
                         //装载数据操作
@@ -352,6 +360,7 @@ public class DetailActivity extends TakePhotoActivity {
                             headTips.cancle();
                             headTips = null;
                         }
+
                         NewToast.makeText(DetailActivity.this,"更新成功",Common.TTIME).show();
                         break;
                     case 9:
@@ -368,7 +377,7 @@ public class DetailActivity extends TakePhotoActivity {
     private TextView item0, item1, item2, item3, item4, item5, item6, item9, item10,item11,item12,item13;
     private ImageView item_edit;
     private GridView item7;
-    private ImageView item15, item16;
+    private ImageView item15, item16,item17;
     private LinearLayout item18, item19;
     //图片
     private DetailImageAdapter imageAdapter;
@@ -405,8 +414,8 @@ public class DetailActivity extends TakePhotoActivity {
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//               Common.copy();
-                AppManager.getAppManager().finishActivity(DetailActivity.this);
+               Common.copy();
+//                AppManager.getAppManager().finishActivity(DetailActivity.this);
             }
         });
         item0 = (TextView) findViewById(R.id.item0);
@@ -426,6 +435,7 @@ public class DetailActivity extends TakePhotoActivity {
         item14 = (InScrollListView) findViewById(R.id.item14);
         item15 = (ImageView) findViewById(R.id.item15);
         item16 = (ImageView) findViewById(R.id.item16);
+        item17 = (ImageView) findViewById(R.id.item17);
         item_b00 = (EditText) findViewById(R.id.item_b00);
         item_b01 = (EditText) findViewById(R.id.item_b01);
         item_b10 = (EditText) findViewById(R.id.item_b10);
@@ -528,14 +538,18 @@ public class DetailActivity extends TakePhotoActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(DetailActivity.this, CommonLineActivity.class);
-                startActivity(intent);
+                intent.putExtra("obj",bean);
+                intent.putExtra("staffPrint",true);
+                startActivityForResult(intent,101);
             }
         });
         item16.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(DetailActivity.this, CommonLineActivity.class);
-                startActivity(intent);
+                intent.putExtra("obj",bean);
+                intent.putExtra("staffPrint",false);
+               startActivityForResult(intent,102);
             }
         });
         item18.setOnClickListener(new View.OnClickListener() {
@@ -569,9 +583,17 @@ public class DetailActivity extends TakePhotoActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
         if(requestCode==100&&resultCode==1000){
             //更新基本信息
             detailHandler.sendEmptyMessage(70);
+        }else if(requestCode==101&&resultCode==1000){
+            //安检员
+            P.c("返回的地址"+data.getStringExtra("path"));
+            ImageLoader.getInstance().displayImage("file://"+data.getStringExtra("path"),item15);
+        }else if(requestCode==102&&resultCode==1000){
+            //客户签名
+            ImageLoader.getInstance().displayImage("file://"+data.getStringExtra("path"),item16);
         }
     }
 
@@ -694,19 +716,18 @@ public class DetailActivity extends TakePhotoActivity {
             }
         }
     }
-
+    private Map<String,String> printMap = new HashMap<>();
     private void load() {
         new Thread() {
             @Override
             public void run() {
                 super.run();
-
                 detailHandler.sendEmptyMessage(6);
-
                 detailHandler.sendEmptyMessage(5);
-
                 DB.getInstance().updataStaffBs(staffBs,bean);
                 DB.getInstance().updataStaffQj(staffQjs,bean);
+                DB.getInstance().getStaffPrint(printMap,bean);
+                detailHandler.sendEmptyMessage(1);
                 detailHandler.sendEmptyMessage(70);
             }
         }.start();
