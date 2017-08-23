@@ -499,26 +499,66 @@ public class DB {
     public void setStandCt(int status,String tag,ReserItemBean bean){
         db.execSQL("update staff_stand set status=? ,staffTag = ? where staffId = ? and id = ?",new Object[]{status,tag,bean.getNo(),bean.getId()});
     }
-    public void staff_print(ReserItemBean bean,boolean staffPrint,String path){
+    public void staff_print(ReserItemBean bean,int staffPrint,String path){
             if(isExitsPrint(bean.getId(),bean.getNo())==0){
                 //添加
                 String sql = null;
-                if(staffPrint){
-                    sql = "insert into staff_stand_line(standId,staffId,staffLine) values(?,?,?)";
-                }else{
-                    sql = "insert into staff_stand_line(standId,staffId,personLine) values(?,?,?)";
+                switch (staffPrint){
+                    case  0:
+                        sql = "insert into staff_stand_line(standId,staffId,staffLine) values(?,?,?)";
+                        break;
+                    case  1:
+                        sql = "insert into staff_stand_line(standId,staffId,personLine) values(?,?,?)";
+                        break;
+                    case  2:
+                        sql = "insert into staff_stand_line(standId,staffId,personPhoto) values(?,?,?)";
+                        break;
                 }
+
                 db.execSQL(sql,new Object[]{bean.getId(),bean.getNo(),path});
             }else{
                 String sql = null;
-                if(staffPrint){
-                    sql = "update staff_stand_line set staffLine=? where standId = ? and staffId = ?";
-                }else{
-                    sql = "update staff_stand_line set personLine=? where standId = ? and staffId = ?";
+
+                switch (staffPrint){
+                    case  0:
+                        sql = "update staff_stand_line set staffLine=? where standId = ? and staffId = ?";
+                        break;
+                    case  1:
+                        sql = "update staff_stand_line set personLine=? where standId = ? and staffId = ?";
+                        break;
+                    case  2:
+                        sql = "update staff_stand_line set personPhoto=? where standId = ? and staffId = ?";
+                        break;
                 }
+
+
                 db.execSQL(sql,new Object[]{path,bean.getId(),bean.getNo()});
             }
     }
+    public boolean getCanSend(){
+        String sql = "select staffTag from staff_stand where id=? and staffid=?";
+        Cursor cursor = null;
+        String result = null;
+        try {
+            cursor = db.rawQuery(sql, new String[] { });
+            if(cursor.getCount()!=0) {
+
+                if (cursor.moveToFirst()){
+                    result = getString(cursor,"staffTag");
+                }
+
+            }
+        } catch (Exception e) {
+
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+                cursor = null;
+            }
+        }
+    }
+
+
     public int isExitsPrint(String id,String staffId) {
         String sql = "select * from staff_stand_line where standId=? and staffId=?";
         Cursor cursor = null;

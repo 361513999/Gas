@@ -24,7 +24,7 @@ import java.io.IOException;
 
 public class CommonLineActivity extends BaseActivity {
     private ReserItemBean bean;
-    private boolean staffPrint;
+    private int staffPrint;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,7 +32,7 @@ public class CommonLineActivity extends BaseActivity {
         Intent intent = getIntent();
         if(intent.hasExtra("obj")){
             bean = (ReserItemBean) intent.getSerializableExtra("obj");
-            staffPrint = intent.getBooleanExtra("staffPrint",false);
+            staffPrint = intent.getIntExtra("staffPrint",-1);
         }
     }
     private TextView back,cancle,sure;

@@ -196,7 +196,12 @@ public class DetailActivity extends TakePhotoActivity {
                         item6.setText(getString(R.string.curr_person, bean.getStaffName()));
                         //----------
                         break;
-
+                    case 11:
+                        DB.getInstance().updataStaffBs(staffBs,bean);
+                        DB.getInstance().updataStaffQj(staffQjs,bean);
+                        DB.getInstance().getStaffPrint(printMap,bean);
+                        detailHandler.sendEmptyMessage(1);
+                        break;
                     case 1:
                         P.c("何时装载");
                         //装载安检条目
@@ -539,7 +544,7 @@ public class DetailActivity extends TakePhotoActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(DetailActivity.this, CommonLineActivity.class);
                 intent.putExtra("obj",bean);
-                intent.putExtra("staffPrint",true);
+                intent.putExtra("staffPrint",0);
                 startActivityForResult(intent,101);
             }
         });
@@ -548,8 +553,15 @@ public class DetailActivity extends TakePhotoActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(DetailActivity.this, CommonLineActivity.class);
                 intent.putExtra("obj",bean);
-                intent.putExtra("staffPrint",false);
+                intent.putExtra("staffPrint",1);
                startActivityForResult(intent,102);
+            }
+        });
+        item17.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //固定-2为客户点单
+                CommonPhotoPop.showSheet(DetailActivity.this,photoSelect,-2);
             }
         });
         item18.setOnClickListener(new View.OnClickListener() {
@@ -622,7 +634,6 @@ public class DetailActivity extends TakePhotoActivity {
         @Override
         public void camcer(int index) {
             SELECT_INDEX = index;
-
             File file=new File(Common.CACHE_STAFF_IMAGES+bean.getId()+"/"+System.currentTimeMillis()+".jpg");
             if (!file.getParentFile().exists())file.getParentFile().mkdirs();
             Uri imageUri = Uri.fromFile(file);
@@ -634,7 +645,12 @@ public class DetailActivity extends TakePhotoActivity {
         public void photos(int index) {
             SELECT_INDEX = index;
             init();
-            takePhoto.onPickMultiple(9);
+            if(index==-2){
+                takePhoto.onPickMultiple(1);
+            }else{
+                takePhoto.onPickMultiple(9);
+            }
+
 //            takePhoto.onPickFromGallery();
         }
     };
@@ -642,11 +658,21 @@ public class DetailActivity extends TakePhotoActivity {
     @Override
     public void takeSuccess(final TResult result) {
         super.takeSuccess(result);
-        new Thread(){
-            @Override
-            public void run() {
-                super.run();
-                ArrayList<TImage> imsge = result.getImages();
+        if(SELECT_INDEX==-2){
+            //签名部分
+            ArrayList<TImage> imsge = result.getImages();
+            if(imsge.size()!=0){
+                DB.getInstance().staff_print(bean,2,imsge.get(0).getCompressPath());
+                detailHandler.sendEmptyMessage(11);
+            }
+
+        }else{
+            //图片部分
+            new Thread(){
+                @Override
+                public void run() {
+                    super.run();
+                    ArrayList<TImage> imsge = result.getImages();
               /*  CopyFile copyFile = new CopyFile();
                 for(int i=0;i<imsge.size();i++){
                     TImage img = imsge.get(i);
@@ -659,10 +685,12 @@ public class DetailActivity extends TakePhotoActivity {
                     }
 
                 }*/
-            DB.getInstance().addStaffImages(staffImages.get(SELECT_INDEX),bean,imsge,detailHandler);
+                    DB.getInstance().addStaffImages(staffImages.get(SELECT_INDEX),bean,imsge,detailHandler);
 
-            }
-        }.start();
+                }
+            }.start();
+        }
+
 
     }
 
@@ -724,10 +752,7 @@ public class DetailActivity extends TakePhotoActivity {
                 super.run();
                 detailHandler.sendEmptyMessage(6);
                 detailHandler.sendEmptyMessage(5);
-                DB.getInstance().updataStaffBs(staffBs,bean);
-                DB.getInstance().updataStaffQj(staffQjs,bean);
-                DB.getInstance().getStaffPrint(printMap,bean);
-                detailHandler.sendEmptyMessage(1);
+                detailHandler.sendEmptyMessage(11);
                 detailHandler.sendEmptyMessage(70);
             }
         }.start();
