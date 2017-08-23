@@ -102,13 +102,7 @@ public class DetailImageDlg {
             }
         });
 
-        dlg.setOnCancelListener(new OnCancelListener() {
-            @Override
-            public void onCancel(DialogInterface dialog) {
-                P.c("cancel弹出框");
-                parentHandler.sendEmptyMessage(5);
-            }
-        });
+
         dlg.setOnShowListener(new OnShowListener() {
             @Override
             public void onShow(DialogInterface arg0) {
@@ -132,7 +126,7 @@ public class DetailImageDlg {
             @Override
             public void onCancel(DialogInterface arg0) {
                 // TODO Auto-generated method stub
-
+                parentHandler.sendEmptyMessage(5);
             }
         });
         dlg.setContentView(layout);
