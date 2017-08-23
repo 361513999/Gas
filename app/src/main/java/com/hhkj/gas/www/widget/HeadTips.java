@@ -13,6 +13,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.hhkj.gas.www.R;
+import com.hhkj.gas.www.bean.StaffImageItem;
+import com.hhkj.gas.www.common.Common;
+import com.hhkj.gas.www.common.P;
+import com.hhkj.gas.www.db.DB;
+
+import java.util.ArrayList;
 
 
 public class HeadTips {
@@ -22,11 +28,21 @@ public class HeadTips {
 
     private  LayoutInflater inflater;
     private Handler handler;
-    public HeadTips(Context context,Handler handler) {
+    private ArrayList<StaffImageItem> staffImageItems;
+    public HeadTips(Context context,Handler handler,ArrayList<StaffImageItem> staffImageItems) {
         this.context = context;
         this.handler  = handler;
+        this.staffImageItems = staffImageItems;
        inflater  = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    }
+    private boolean isImage(){
+        for(int i=-0;i<staffImageItems.size();i++){
+           if(staffImageItems.get(i).getPath()==null){
+               return  false;
+           }
+        }
+        return  true;
     }
     public Dialog showSheet() {
         dlg = new IDialog(context, R.style.load_pop_style);
@@ -41,13 +57,30 @@ public class HeadTips {
         item0.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //立即提交
+                if(isImage()){
+                   if( DB.getInstance().getCanSend()){
+                       P.c("可以发送");
+                   }else {
+                       NewToast.makeText(context,"请确认签名和安检单状态", Common.TTIME).show();
+                   }
+                }else{
+                    NewToast.makeText(context,"至少每项上传一张安检图片", Common.TTIME).show();
+                }
 
+            }
+        });
+        item1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //本地更新
             }
         });
         item1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 handler.sendEmptyMessage(7);
+                cancle();
             }
         });
 

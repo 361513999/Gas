@@ -101,6 +101,14 @@ public class DetailImageDlg {
 
             }
         });
+
+        dlg.setOnCancelListener(new OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                P.c("cancel弹出框");
+                parentHandler.sendEmptyMessage(5);
+            }
+        });
         dlg.setOnShowListener(new OnShowListener() {
             @Override
             public void onShow(DialogInterface arg0) {

@@ -38,10 +38,10 @@ public class DBHelper extends SQLiteOpenHelper{
     //详情页基本信息数据
 		//0创建中，1等待确认执行，2尚未被领取，3任务执行中，4现场完成，5任务完成，6重新安检中，7等待再次执行，8隐患整改中，9隐患已解除
         //isSend 是否提交, problem 隐患单号  staffTag N 不合格   Y 合格  O 无法安检
-    db.execSQL("create table staff_stand(i integer primary key autoincrement,id varchar,staffId varchar,staffName varchar,staffTel varchar,staffAdd varchar,staffTime varchar,opt varchar,status int,statudName varchar,printCount int,isSend boolean,staffTag varchar,problem varchar)");
+    db.execSQL("create table staff_stand(i integer primary key autoincrement,id varchar,staffId varchar,staffName varchar,staffTel varchar,staffAdd varchar,staffTime varchar,opt varchar,status int,statudName varchar,printCount int,isSend boolean,staffTag varchar,problem varchar,send boolean)");
 	//拍照列表信息
      db.execSQL("create table staff_stand_image(i integer primary key autoincrement,id varchar,standId varchar,staffId varchar,name varchar,path varchar)");
-		db.execSQL("create table staff_stand_image_values(i integer primary key autoincrement,id varchar,standId varchar,staffId varchar,name varchar,path varchar)");
+	db.execSQL("create table staff_stand_image_values(i integer primary key autoincrement,id varchar,standId varchar,staffId varchar,name varchar,path varchar,send boolean)");
 
 		//拍照信息数据表
         //安检条目 grp 分组  chk是否选中
@@ -50,7 +50,7 @@ public class DBHelper extends SQLiteOpenHelper{
 		db.execSQL("create table staff_stand_tab(i integer primary key autoincrement,id varchar,standId varchar,staffId varchar,type varchar,value varchar,chk boolean)");
 		//燃气具
 		db.execSQL("create table staff_stand_qj(i integer primary key autoincrement,id varchar,standId varchar,staffId varchar,name varchar,position varchar,chk boolean)");
-		db.execSQL("CREATE TABLE staff_stand_line(i integer primary key autoincrement,standId varchar,staffId varchar,staffLine varchar,personLine varchar,personPhoto varchar)");
+		db.execSQL("CREATE TABLE staff_stand_line(i integer primary key autoincrement,standId varchar,staffId varchar,staffLine varchar,personLine varchar,personPhoto varchar,send boolean)");
 
     db.setTransactionSuccessful();
 	db.endTransaction();

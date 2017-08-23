@@ -109,8 +109,8 @@ public class DB {
     public void addStaff(ReserItemBean stand, ArrayList<StaffImageItem> staffImages, ArrayList<DetailStaff> dss, ArrayList<StaffB> staffBs, ArrayList<StaffQj> staffQjs){
 
             db.beginTransaction();
-            db.execSQL("insert into staff_stand(id,staffId,staffName,staffTel,staffAdd,staffTime,opt,status) values(?,?,?,?,?,?,?,?)", new Object[]{stand.getId(), stand.getNo(), stand.getStaffName()
-                    , stand.getTel(), stand.getAdd(), stand.getTime(), stand.getName(), stand.getOrderStatus()
+            db.execSQL("insert into staff_stand(id,staffId,staffName,staffTel,staffAdd,staffTime,opt,status,send) values(?,?,?,?,?,?,?,?,?)", new Object[]{stand.getId(), stand.getNo(), stand.getStaffName()
+                    , stand.getTel(), stand.getAdd(), stand.getTime(), stand.getName(), stand.getOrderStatus(),false
             });
             //安检图
             int imageLen = staffImages.size();
@@ -488,7 +488,7 @@ public class DB {
      */
     public void addStaffImages(StaffImageItem item, ReserItemBean bean, ArrayList<TImage> images,Handler handler){
         for(int i=0;i<images.size();i++){
-            db.execSQL("insert into staff_stand_image_values(id,standId,staffId,name,path) values(?,?,?,?,?)",new Object[]{item.getId(),bean.getId(),bean.getNo(),item.getTag(),images.get(i).getCompressPath()});
+            db.execSQL("insert into staff_stand_image_values(id,standId,staffId,name,path,send) values(?,?,?,?,?,?)",new Object[]{item.getId(),bean.getId(),bean.getNo(),item.getTag(),images.get(i).getCompressPath(),false});
         }
         if(handler!=null){
             handler.sendEmptyMessage(5);
@@ -505,17 +505,17 @@ public class DB {
                 String sql = null;
                 switch (staffPrint){
                     case  0:
-                        sql = "insert into staff_stand_line(standId,staffId,staffLine) values(?,?,?)";
+                        sql = "insert into staff_stand_line(standId,staffId,staffLine,send) values(?,?,?,?)";
                         break;
                     case  1:
-                        sql = "insert into staff_stand_line(standId,staffId,personLine) values(?,?,?)";
+                        sql = "insert into staff_stand_line(standId,staffId,personLine,send) values(?,?,?,?)";
                         break;
                     case  2:
-                        sql = "insert into staff_stand_line(standId,staffId,personPhoto) values(?,?,?)";
+                        sql = "insert into staff_stand_line(standId,staffId,personPhoto,send) values(?,?,?,?)";
                         break;
                 }
 
-                db.execSQL(sql,new Object[]{bean.getId(),bean.getNo(),path});
+                db.execSQL(sql,new Object[]{bean.getId(),bean.getNo(),path,false});
             }else{
                 String sql = null;
 
@@ -536,15 +536,15 @@ public class DB {
             }
     }
     public boolean getCanSend(){
-        String sql = "select staffTag from staff_stand where id=? and staffid=?";
+        String sql = "select count(*) from staff_stand_line as l join staff_stand as s on s.id = l.standId and s.staffTag ='Y'";
         Cursor cursor = null;
-        String result = null;
+        boolean result = false;
         try {
             cursor = db.rawQuery(sql, new String[] { });
             if(cursor.getCount()!=0) {
 
                 if (cursor.moveToFirst()){
-                    result = getString(cursor,"staffTag");
+                    result = true;
                 }
 
             }
@@ -556,6 +556,7 @@ public class DB {
                 cursor = null;
             }
         }
+        return  result;
     }
 
 
@@ -582,4 +583,30 @@ public class DB {
         }
         return count;
     }
+    public boolean standIsend(ReserItemBean bean){
+//select send from staff_stand where id=? and staffId = ?
+        String sql = "select send from staff_stand where id=? and staffId = ?";
+        Cursor cursor = null;
+        int count = 0;
+        try {
+            cursor = db.rawQuery(sql, new String[] {bean.getId(),bean.getNo()});
+            count = cursor.getCount();
+            if(count!=0){
+                if(cursor.moveToFirst()){
+                    return  getBoolean(cursor,"send");
+                }
+            }
+            cursor.close();
+
+        } catch (Exception e) {
+
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+                cursor = null;
+            }
+        }
+        return  false;
+    }
+
 }

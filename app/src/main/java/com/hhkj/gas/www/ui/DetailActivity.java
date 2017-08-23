@@ -25,6 +25,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.hhkj.gas.www.R;
 import com.hhkj.gas.www.adapter.DetailBAdapter;
+import com.hhkj.gas.www.adapter.DetailBt_Item6Adapter;
 import com.hhkj.gas.www.adapter.DetailImageAdapter;
 import com.hhkj.gas.www.adapter.StaffItemAdapter;
 import com.hhkj.gas.www.base.AppManager;
@@ -64,6 +65,12 @@ import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
+import com.zc.http.okhttp.OkHttpUtils;
+import com.zc.http.okhttp.callback.StringCallback;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -72,6 +79,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+
+import okhttp3.Call;
+import okhttp3.MediaType;
 
 /**
  * Created by cloor on 2017/8/15.
@@ -361,10 +371,7 @@ public class DetailActivity extends TakePhotoActivity {
                         }.start();
                         break;
                     case 8:
-                        if(headTips!=null){
-                            headTips.cancle();
-                            headTips = null;
-                        }
+
 
                         NewToast.makeText(DetailActivity.this,"更新成功",Common.TTIME).show();
                         break;
@@ -373,10 +380,88 @@ public class DetailActivity extends TakePhotoActivity {
                         //打开对话框
                         CommonPhotoPop.showSheet(DetailActivity.this,photoSelect,position);
                         break;
+                    case 10:
+                        //提交数据到服务器
+                            if(!DB.getInstance().standIsend(bean)){
+                                //基础数据未上传
+
+                            }else{
+
+                            }
+                        break;
                 }
             }
         }
     }
+    private void sendStand(){
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("toKen",sharedUtils.getStringValue("token"));
+            jsonObject.put("cls","Gas.SecurityOrder");
+            jsonObject.put("method","SubmitOrderDtl");
+            JSONObject object = new JSONObject();
+            object.put("OrderId",bean.getId());
+            JSONArray array0 = new JSONArray();
+            for(int i=0;i<dss.size();i++){
+                DetailStaff item = dss.get(i);
+                JSONObject obj = new JSONObject();
+                if(item.getItems()!=null){
+                    obj.put("Id",item.getItem().getId());
+                    if(item.getItem()==null){
+                        obj.put("Status",false);
+                    }else {
+                        obj.put("Status",item.getItem().isCheck());
+                    }
+                    array0.put(obj);
+                }else if(item.getItems()!=null){
+                   ArrayList<StaffTxtItem> staffs =  item.getItems();
+                    for(int j=0;j<staffs.size();j++){
+                        JSONObject obj0 = new JSONObject();
+                        StaffTxtItem si= staffs.get(j);
+
+                            obj0.put("Id",si.getId());
+                            if(item.getItem()==null){
+                                obj0.put("Status",false);
+                            }else {
+                                obj0.put("Status",si.isCheck());
+                            }
+                        array0.put(obj0);
+                    }
+                }
+            }
+            object.put("Dtls",array0.toString());
+            jsonObject.put("param",object.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        OkHttpUtils.postString().url(U.VISTER(U.BASE_URL)+U.LIST).mediaType(MediaType.parse("application/json; charset=utf-8")).content(jsonObject.toString()).build().execute(new StringCallback() {
+            @Override
+            public void onError(Call call, Exception e, int id) {
+
+            }
+
+            @Override
+            public void onResponse(String response, int id) {
+                try {
+                    JSONObject jsonObject = new JSONObject(FileUtils.formatJson(response));
+                    if(jsonObject.getBoolean("Success")){
+
+                    }else {
+                        if(jsonObject.getString("Result").equals(Common.UNLOGIN)){
+                            NewToast.makeText(DetailActivity.this, "未登录", 1000).show();
+                            detailHandler.sendEmptyMessage(4);
+                        }
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
+    }
+
+
 
     private final int SHOW_STAFF = 5;
     private TextView item0, item1, item2, item3, item4, item5, item6, item9, item10,item11,item12,item13;
@@ -386,7 +471,7 @@ public class DetailActivity extends TakePhotoActivity {
     private LinearLayout item18, item19;
     //图片
     private DetailImageAdapter imageAdapter;
-    private LoadView loadView;
+
     private InScrollListView item8, item14;
     //安检条目
     private StaffItemAdapter staffItemAdapter;
@@ -570,7 +655,7 @@ public class DetailActivity extends TakePhotoActivity {
                 detailHandler.sendEmptyMessage(7);
                 P.c(bean.getProblem()+"bean.getStaffTag()"+bean.getStaffTag()+"=="+(bean.getStaffTag()==null));
 
-                if(bean.getStaffTag().equals("Y")){
+                if(bean.getStaffTag()!=null&&bean.getStaffTag().equals("Y")){
                     Intent intent = new Intent(DetailActivity.this, StaffBtActivity.class);
                     intent.putExtra("obj",bean);
                     startActivity(intent);
@@ -583,10 +668,10 @@ public class DetailActivity extends TakePhotoActivity {
         item19.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(headTips==null){
-                    headTips = new HeadTips(DetailActivity.this,detailHandler);
+
+                    HeadTips headTips = new HeadTips(DetailActivity.this,detailHandler,staffImages);
                     headTips.showSheet();
-                }
+
             }
         });
         load();
@@ -707,7 +792,7 @@ public class DetailActivity extends TakePhotoActivity {
         P.c("操--作");
     }
 
-    private HeadTips headTips;
+
     private ArrayList<StaffImageItem> staffImages = new ArrayList<>();//图片
     private Map<String, Object> txtListMap = new HashMap<>();//未处理的栏目
     private ArrayList<DetailStaff> dss = new ArrayList<>();//栏目

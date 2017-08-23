@@ -3,7 +3,9 @@ package com.hhkj.gas.www.widget;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
+import android.os.Handler;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +16,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.hhkj.gas.www.R;
+import com.hhkj.gas.www.common.P;
 import com.hhkj.gas.www.inter.PhotoSelect;
 
 public class CommonPhotoPop {
@@ -37,8 +40,8 @@ public class CommonPhotoPop {
         camer.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                select.camcer(index);
 
+                select.camcer(index);
                 dlg.dismiss();
             }
         });
@@ -46,9 +49,10 @@ public class CommonPhotoPop {
             @Override
             public void onClick(View v) {
                     select.photos(index);
-                dlg.dismiss();
+                    dlg.dismiss();
             }
         });
+
         mCancel.setOnClickListener(new OnClickListener() {
 
             @Override
