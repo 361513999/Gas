@@ -5,6 +5,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Handler;
 
 import com.hhkj.gas.www.bean.DetailStaff;
+import com.hhkj.gas.www.bean.ImageRdy;
 import com.hhkj.gas.www.bean.ReserItemBean;
 import com.hhkj.gas.www.bean.StaffB;
 import com.hhkj.gas.www.bean.StaffImageItem;
@@ -15,6 +16,7 @@ import com.hhkj.gas.www.common.P;
 import com.jph.takephoto.model.TImage;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -339,6 +341,7 @@ public class DB {
      * @param bean
      */
        public void updataStaffQj(ArrayList<StaffQj> staffQjs,ReserItemBean bean){
+           staffQjs.clear();
         String sql = "select * from staff_stand_qj where standId =? and staffId = ?";
         Cursor cursor = null;
 
@@ -515,7 +518,7 @@ public class DB {
                         break;
                 }
 
-                db.execSQL(sql,new Object[]{bean.getId(),bean.getNo(),path,false});
+                db.execSQL(sql,new Object[]{bean.getId(),bean.getNo(),path,0});
             }else{
                 String sql = null;
 
@@ -608,5 +611,86 @@ public class DB {
         }
         return  false;
     }
+    public ArrayList<ImageRdy> photoIsend(ReserItemBean bean){
+        ArrayList<ImageRdy> irs = new ArrayList<ImageRdy>();
+        String sql = "select id,path from staff_stand_image_values  where send=0 and standId = ? and staffId = ?;";
+        Cursor cursor = null;
+        int count = 0;
+        try {
+            cursor = db.rawQuery(sql, new String[] {bean.getId(),bean.getNo()});
+            count = cursor.getCount();
+            if(count!=0){
+                while(cursor.moveToNext()){
+                    ImageRdy rdy = new ImageRdy();
+                    rdy.setId(getString(cursor,"id"));
+                    rdy.setPath(getString(cursor,"path"));
+                    irs.add(rdy);
+                }
+            }
+            cursor.close();
 
+        } catch (Exception e) {
+
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+                cursor = null;
+            }
+        }
+      return  irs;
+    }
+
+
+    public Map<String,String> linePrint(ReserItemBean bean) {
+        Map<String,String> map  = new HashMap<>();
+        String sql = "select staffLine,personLine,personPhoto, send from staff_stand_line  where standId=? and staffId=?";
+        Cursor cursor = null;
+
+        try {
+            cursor = db.rawQuery(sql, new String[] {bean.getId(),bean.getNo() });
+            if(cursor.moveToFirst()){
+                map.put("staffLine",getString(cursor,"staffLine"));
+                map.put("personLine",getString(cursor,"personLine"));
+                map.put("personPhoto",getString(cursor,"personPhoto"));
+                map.put("send",getString(cursor,"send"));
+            }
+            cursor.close();
+
+        } catch (Exception e) {
+            P.c("判断"+e.getMessage());
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+                cursor = null;
+            }
+        }
+        return map;
+    }
+
+    /**
+     * 修改图片组发送情况
+     * @param bean
+     * @param path
+     */
+    public void changeSIV(ReserItemBean bean,String path){
+        db.execSQL("update staff_stand_image_values set send =?   where standId = ? and staffId = ? and path = ?",new Object[]{true,bean.getId(),bean.getNo(),path});
+    }
+
+    /**
+     *修改签名组发送情况
+     * @param bean
+     * @param path
+     */
+    public void changeLS(ReserItemBean bean,int path){
+        db.execSQL("update staff_stand_line set send =?   where standId = ? and staffId = ?",new Object[]{path,bean.getId(),bean.getNo()});
+    }
+
+    /**
+     * 修改基本信息
+     * @param bean
+     * @param path
+     */
+    public void changeSs(ReserItemBean bean){
+        db.execSQL("update staff_stand set send =?   where id = ? and staffId = ?",new Object[]{true,bean.getId(),bean.getNo()});
+    }
 }

@@ -203,7 +203,7 @@ public class Start2Activity extends BaseActivity {
             jsonObject.put("method","GetSelfOrder");
             JSONObject pms = new JSONObject();
             //0 自己和下属的，还包括未领取的，1自己和下属的，2未领取的
-            pms.put("OrderStatus","4,5");
+            pms.put("OrderStatus","5");
             pms.put("OrderType",type);
             pms.put("Index",CURRENT_PAGE);
             pms.put("Size",Common.SHOW_NUM);

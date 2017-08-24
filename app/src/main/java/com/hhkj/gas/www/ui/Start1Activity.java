@@ -343,7 +343,7 @@ public class Start1Activity extends BaseActivity {
             jsonObject.put("method","GetSelfOrder");
             JSONObject pms = new JSONObject();
             //0 自己和下属的，还包括未领取的，1自己和下属的，2未领取的
-            pms.put("OrderStatus","3,6,7,8");
+            pms.put("OrderStatus","3,4,6,7,8");
             pms.put("OrderType",type);
             pms.put("Index",CURRENT_PAGE);
             pms.put("Size",Common.SHOW_NUM);
@@ -677,7 +677,7 @@ public class Start1Activity extends BaseActivity {
                             }
                         }
                         DB.getInstance().addStaff(bean,staffImages,dss,staffBs,staffQjs);
-                        Common.copy();
+//                        Common.copy();
                         Message mg = new Message();
                         mg.what = 6;
                         mg.obj = bean;

@@ -50,7 +50,7 @@ public class DBHelper extends SQLiteOpenHelper{
 		db.execSQL("create table staff_stand_tab(i integer primary key autoincrement,id varchar,standId varchar,staffId varchar,type varchar,value varchar,chk boolean)");
 		//燃气具
 		db.execSQL("create table staff_stand_qj(i integer primary key autoincrement,id varchar,standId varchar,staffId varchar,name varchar,position varchar,chk boolean)");
-		db.execSQL("CREATE TABLE staff_stand_line(i integer primary key autoincrement,standId varchar,staffId varchar,staffLine varchar,personLine varchar,personPhoto varchar,send boolean)");
+		db.execSQL("CREATE TABLE staff_stand_line(i integer primary key autoincrement,standId varchar,staffId varchar,staffLine varchar,personLine varchar,personPhoto varchar,send int)");
 
     db.setTransactionSuccessful();
 	db.endTransaction();

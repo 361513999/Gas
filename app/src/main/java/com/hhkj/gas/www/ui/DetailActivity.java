@@ -2,6 +2,8 @@ package com.hhkj.gas.www.ui;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -13,6 +15,7 @@ import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -31,6 +34,7 @@ import com.hhkj.gas.www.adapter.StaffItemAdapter;
 import com.hhkj.gas.www.base.AppManager;
 import com.hhkj.gas.www.base.BaseActivity;
 import com.hhkj.gas.www.bean.DetailStaff;
+import com.hhkj.gas.www.bean.ImageRdy;
 import com.hhkj.gas.www.bean.ReserItemBean;
 
 import com.hhkj.gas.www.bean.StaffB;
@@ -54,6 +58,7 @@ import com.hhkj.gas.www.widget.HeadTips;
 import com.hhkj.gas.www.widget.InScrollListView;
 import com.hhkj.gas.www.widget.LoadView;
 import com.hhkj.gas.www.widget.NewToast;
+import com.hhkj.gas.www.widget.UploadTips;
 import com.jph.takephoto.app.TakePhoto;
 import com.jph.takephoto.app.TakePhotoActivity;
 import com.jph.takephoto.compress.CompressConfig;
@@ -72,6 +77,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -209,8 +215,17 @@ public class DetailActivity extends TakePhotoActivity {
                     case 11:
                         DB.getInstance().updataStaffBs(staffBs,bean);
                         DB.getInstance().updataStaffQj(staffQjs,bean);
-                        DB.getInstance().getStaffPrint(printMap,bean);
                         detailHandler.sendEmptyMessage(1);
+                        break;
+                    case 12:
+                        DB.getInstance().getStaffPrint(printMap,bean);
+                        detailHandler.sendEmptyMessage(22);
+                        break;
+                    case 22:
+                        //装载签名
+                        ImageLoader.getInstance().displayImage("file://"+printMap.get("staffLine"),item15);
+                        ImageLoader.getInstance().displayImage("file://"+printMap.get("personLine"),item16);
+                        ImageLoader.getInstance().displayImage("file://"+printMap.get("personPhoto"),item17);
                         break;
                     case 1:
                         P.c("何时装载");
@@ -316,10 +331,7 @@ public class DetailActivity extends TakePhotoActivity {
 
                         //装载燃气具
                         bAdapter.updata(staffQjs);
-                        //装载签名
-                        ImageLoader.getInstance().displayImage("file://"+printMap.get("staffLine"),item15);
-                    ImageLoader.getInstance().displayImage("file://"+printMap.get("personLine"),item16);
-                    ImageLoader.getInstance().displayImage("file://"+printMap.get("personPhoto"),item17);
+
                         break;
                     case 2:
                         //装载数据操作
@@ -382,18 +394,148 @@ public class DetailActivity extends TakePhotoActivity {
                         break;
                     case 10:
                         //提交数据到服务器
-                            if(!DB.getInstance().standIsend(bean)){
-                                //基础数据未上传
-
+                        if(uploadTips==null){
+                            uploadTips = new UploadTips(DetailActivity.this);
+                            uploadTips.showSheet();
+                        }
+                          /*  */
+                            ArrayList<ImageRdy> irs = DB.getInstance().photoIsend(bean);
+                            if(irs.size()!=0){
+                                //有未完成的单据
+                                sendImage(irs);
                             }else{
+                                //进行查询
+                                Map<String,String> map = DB.getInstance().linePrint(bean);
+                                if(!map.get("send").equals("3")){
+                                    sendImage(map);
 
+                                }else{
+                                    //签名上传完毕
+                                    if(!DB.getInstance().standIsend(bean)){
+                                        //基础数据未上传
+                                        sendStand();
+                                    }else{
+                                        //完成任务单
+                                        cancelUp();
+                                        NewToast.makeText(DetailActivity.this,"上传完毕",Common.TTIME).show();
+                                    }
+                                }
                             }
+
                         break;
                 }
             }
         }
     }
+    private UploadTips uploadTips;
+    private void changeText(String txt){
+        if(uploadTips!=null){
+            uploadTips.setText("正在上传:"+txt);
+        }
+    }
+    private void cancelUp(){
+        if(uploadTips!=null){
+            uploadTips.cancle();
+            uploadTips= null;
+        }
+    }
+    private String getFile(String path){
+        File file = new File(path);
+        if(file!=null){
+            return  file.getName();
+        }
+        return  "";
+    }
+    private String Bitmap2StrByBase64(Bitmap bit){
+        ByteArrayOutputStream bos=new ByteArrayOutputStream();
+        bit.compress(Bitmap.CompressFormat.JPEG, 40, bos);//参数100表示不压缩
+        byte[] bytes=bos.toByteArray();
+        return Base64.encodeToString(bytes, Base64.DEFAULT);
+    }
+    private void sendImage(final Object o) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("orderId", bean.getId());
+            jsonObject.put("toKen", sharedUtils.getStringValue("token"));
+            if (o instanceof ArrayList) {
+                ArrayList<ImageRdy> irs = (ArrayList<ImageRdy>) o;
+                ImageRdy ir = irs.get(0);
+                jsonObject.put("dtlId", ir.getId());
+                jsonObject.put("type", 1);
+                jsonObject.put("base64", Bitmap2StrByBase64(BitmapFactory.decodeFile(ir.getPath())));
+                changeText(getFile(ir.getPath()));
+
+            } else if (o instanceof Map) {
+                //签名部分
+                Map map = (Map) o;
+                jsonObject.put("dtlId", "");
+                if (map.get("send").equals("0")) {
+                    //提交
+                    jsonObject.put("type", 3);
+                    String path  =map.get("staffLine").toString();
+                    jsonObject.put("base64", Bitmap2StrByBase64(BitmapFactory.decodeFile(path)));
+                    changeText(getFile(path));
+                } else if (map.get("send").equals("1")) {
+                    jsonObject.put("type", 4);
+                    String path  =map.get("personLine").toString();
+                    changeText(getFile(path));
+                    jsonObject.put("base64", Bitmap2StrByBase64(BitmapFactory.decodeFile(path)));
+                } else if (map.get("send").equals("2")) {
+                    jsonObject.put("type", 4);
+
+                    String path  =map.get("personPhoto").toString();
+                    changeText(getFile(path));
+                    jsonObject.put("base64", Bitmap2StrByBase64(BitmapFactory.decodeFile(path)));
+                }
+
+            }
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        OkHttpUtils.postString().url(U.VISTER(U.BASE_URL) + U.STAFF_IMAGE).mediaType(MediaType.parse("application/json; charset=utf-8")).content(jsonObject.toString()).build().execute(new StringCallback() {
+            @Override
+            public void onError(Call call, Exception e, int id) {
+
+                cancelUp();
+            }
+
+            @Override
+            public void onResponse(String response, int id) {
+
+                try {
+                    JSONObject jsonObject = new JSONObject(FileUtils.formatJson(response));
+                    if(jsonObject.getBoolean("Success")){
+                            if(o instanceof ArrayList){
+                                //图片组
+                                ArrayList<ImageRdy> irs = (ArrayList<ImageRdy>) o;
+                                ImageRdy ir = irs.get(0);
+                                 DB.getInstance().changeSIV(bean,ir.getPath());
+                                detailHandler.sendEmptyMessage(10);
+
+                            }else  if(o instanceof  Map){
+                                //签名组
+                                Map map = (Map) o;
+                                int send =  Integer.parseInt(map.get("send").toString())+1;
+                                DB.getInstance().changeLS(bean,send);
+                                detailHandler.sendEmptyMessage(10);
+                            }
+
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+        });
+    }
+
+
     private void sendStand(){
+        String create = "00000000-0000-0000-0000-000000000000";
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("toKen",sharedUtils.getStringValue("token"));
@@ -401,24 +543,28 @@ public class DetailActivity extends TakePhotoActivity {
             jsonObject.put("method","SubmitOrderDtl");
             JSONObject object = new JSONObject();
             object.put("OrderId",bean.getId());
+            //安检条目
+            changeText("基本信息");
             JSONArray array0 = new JSONArray();
             for(int i=0;i<dss.size();i++){
                 DetailStaff item = dss.get(i);
                 JSONObject obj = new JSONObject();
-                if(item.getItems()!=null){
+                if(item.getItem()!=null){
                     obj.put("Id",item.getItem().getId());
                     if(item.getItem()==null){
                         obj.put("Status",false);
                     }else {
                         obj.put("Status",item.getItem().isCheck());
                     }
+                    obj.put("ItemType",0);
                     array0.put(obj);
                 }else if(item.getItems()!=null){
                    ArrayList<StaffTxtItem> staffs =  item.getItems();
                     for(int j=0;j<staffs.size();j++){
                         JSONObject obj0 = new JSONObject();
                         StaffTxtItem si= staffs.get(j);
-
+                        obj0.put("ItemType",0);
+                        obj0.put("ItemGroup",item.getItems_tag());
                             obj0.put("Id",si.getId());
                             if(item.getItem()==null){
                                 obj0.put("Status",false);
@@ -429,16 +575,42 @@ public class DetailActivity extends TakePhotoActivity {
                     }
                 }
             }
-            object.put("Dtls",array0.toString());
+            //燃气具
+            for(int i=0;i<staffQjs.size();i++){
+                JSONObject obj = new JSONObject();
+                StaffQj sf = staffQjs.get(i);
+                obj.put("Id",sf.getId()==null?create:sf.getId());
+                obj.put("ItemName",sf.getName());
+                obj.put("ItemGroup",sf.getPosition());
+                obj.put("ItemType",2);
+                obj.put("Status",sf.isCheck());
+                array0.put(obj);
+            }
+            //---燃气表
+              JSONArray array1 = new JSONArray();
+            for(int i=0;i< staffBs.size();i++){
+                StaffB sb  = staffBs.get(i);
+                if(sb.getName()!=null&&sb.getValue()!=null){
+                    JSONObject obj = new JSONObject();
+                    obj.put("Id",sb.getId()==null?create:sb.getId());
+                    obj.put("TabCode",sb.getName());
+                    obj.put("TabQty",sb.getValue());
+                    obj.put("UseStatus",sb.isCheck());
+                    array1.put(obj);
+                }
+
+            }
+            object.put("Dtls",array0);
+            object.put("Tabs",array1);
+            P.c(object.toString());
             jsonObject.put("param",object.toString());
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
         OkHttpUtils.postString().url(U.VISTER(U.BASE_URL)+U.LIST).mediaType(MediaType.parse("application/json; charset=utf-8")).content(jsonObject.toString()).build().execute(new StringCallback() {
             @Override
             public void onError(Call call, Exception e, int id) {
-
+                cancelUp();
             }
 
             @Override
@@ -446,7 +618,10 @@ public class DetailActivity extends TakePhotoActivity {
                 try {
                     JSONObject jsonObject = new JSONObject(FileUtils.formatJson(response));
                     if(jsonObject.getBoolean("Success")){
+                        //解析成功
+                        DB.getInstance().changeSs(bean);
 
+                        detailHandler.sendEmptyMessage(10);
                     }else {
                         if(jsonObject.getString("Result").equals(Common.UNLOGIN)){
                             NewToast.makeText(DetailActivity.this, "未登录", 1000).show();
@@ -504,8 +679,8 @@ public class DetailActivity extends TakePhotoActivity {
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-               Common.copy();
-//                AppManager.getAppManager().finishActivity(DetailActivity.this);
+//               Common.copy();
+                AppManager.getAppManager().finishActivity(DetailActivity.this);
             }
         });
         item0 = (TextView) findViewById(R.id.item0);
@@ -669,7 +844,7 @@ public class DetailActivity extends TakePhotoActivity {
             @Override
             public void onClick(View v) {
 
-                    HeadTips headTips = new HeadTips(DetailActivity.this,detailHandler,staffImages);
+                    HeadTips headTips = new HeadTips(DetailActivity.this,detailHandler,staffImages,bean);
                     headTips.showSheet();
 
             }
@@ -748,7 +923,7 @@ public class DetailActivity extends TakePhotoActivity {
             ArrayList<TImage> imsge = result.getImages();
             if(imsge.size()!=0){
                 DB.getInstance().staff_print(bean,2,imsge.get(0).getCompressPath());
-                detailHandler.sendEmptyMessage(11);
+                detailHandler.sendEmptyMessage(12);
             }
 
         }else{
@@ -813,6 +988,7 @@ public class DetailActivity extends TakePhotoActivity {
                 StaffTxtItem item = (StaffTxtItem) obj;
                 DetailStaff ds = new DetailStaff();
                 ds.setItem(item);
+                P.c("item"+item.getId());
                 dss.add(ds);
 
             } else if (obj instanceof ArrayList) {
@@ -838,6 +1014,8 @@ public class DetailActivity extends TakePhotoActivity {
                 detailHandler.sendEmptyMessage(6);
                 detailHandler.sendEmptyMessage(5);
                 detailHandler.sendEmptyMessage(11);
+                detailHandler.sendEmptyMessage(12);
+
                 detailHandler.sendEmptyMessage(70);
             }
         }.start();
