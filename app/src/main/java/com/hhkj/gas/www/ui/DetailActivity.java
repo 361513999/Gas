@@ -703,7 +703,7 @@ public class DetailActivity extends TakePhotoActivity {
                 if(builder.length()!=0){
                     String valu = builder.toString();
                     tt.setId(id);
-                    tt.setTxt(rb.getItems_tag()+":"+valu.substring(0,valu.length()-1));
+                    tt.setTxt(rb.getItems_tag()+"："+valu.substring(0,valu.length()-1));
                     item.add(tt);
                 }
             }
@@ -806,10 +806,13 @@ public class DetailActivity extends TakePhotoActivity {
                     if(check()){
                         //存在安全隐患
                         P.c("什么情况");
-                        createProblem();
-//                        Intent intent = new Intent(DetailActivity.this,DetailProblemActivity.class);
-//                        intent.putExtra("obj",bean);
-//                        startActivity(intent);
+
+                        if(!DB.getInstance().isExitPro(bean)){
+                            createProblem();
+                        }
+                        Intent intent = new Intent(DetailActivity.this,DetailProblemActivity.class);
+                        intent.putExtra("obj",bean);
+                        startActivity(intent);
 
 
                     }else{

@@ -17,4 +17,6 @@
     <string name="staff_view_item1">户内管安全检查工作单</string>
     <string name="staff_view_item2">营业厅:珠海斗门区湖心路诚丰新园2栋一楼1298-1304号商铺</string>
     <string name="staff_view_item3"></string>
+    <string name="staff_view_item4">隐患整改通知单</string>
+    <string name="staff_view_item5">我司安检时发现您户内因下列几项已违反国家有关法规、企业安全标准的相关条款，危及燃气管网安全及户内用气安全：</string>
 </resources>

@@ -249,7 +249,16 @@
                     android:text="隐患内容"
                     android:textColor="@color/white"
                     android:textSize="9sp" />
-
+                <com.hhkj.gas.www.widget.InScrollListView
+                    android:id="@+id/pro_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:background="@color/no_color"
+                    android:cacheColorHint="@color/no_color"
+                    android:divider="@color/no_color"
+                    android:dividerHeight="0dp" />
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
@@ -348,6 +357,12 @@
                     </LinearLayout>
 
                 </LinearLayout>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginBottom="20dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@mipmap/bg_line" />
             </LinearLayout>
 
 

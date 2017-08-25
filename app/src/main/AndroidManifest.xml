@@ -66,9 +66,8 @@
         <activity android:name=".ui.DetailProblemActivity"/>
 
 
-        <activity android:name=".ui.StaffBtActivity" >
-
-        </activity>
+        <activity android:name=".ui.StaffBtActivity" />
+        <activity android:name=".ui.DetailProBtActivity"/>
         <activity android:name=".ui.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>

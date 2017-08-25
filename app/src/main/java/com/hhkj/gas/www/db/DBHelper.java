@@ -55,7 +55,7 @@ public class DBHelper extends SQLiteOpenHelper{
 		db.execSQL("CREATE TABLE staff_stand_pr_s(i integer primary key autoincrement,proNo varchar,startTime varchar,endTime varchar,standId varchar,staffId varchar,staffLine varchar,personLine varchar,personPhoto varchar,send int);");
   		//安检单列表
 		db.execSQL("CREATE TABLE staff_stand_pr_l(i integer primary key autoincrement,standId varchar,staffId varchar,txtNo varchar,txtView varchar)");
-
+		db.execSQL("CREATE TABLE staff_stand_pr_l_values(i integer primary key autoincrement,standId varchar,staffId varchar,txtNo varchar,path varchar,send boolean)");
     db.setTransactionSuccessful();
 	db.endTransaction();
 	}
@@ -69,6 +69,7 @@ public class DBHelper extends SQLiteOpenHelper{
         db.execSQL("DROP TABLE IF EXISTS staff_stand_qj");
 		db.execSQL("DROP TABLE IF EXISTS staff_stand_line");
 		db.execSQL("DROP TABLE IF EXISTS staff_stand_pr_s");
+		db.execSQL("DROP TABLE IF EXISTS staff_stand_pr_l_values");
 		db.setTransactionSuccessful();
 		db.endTransaction();
 		//此处是删除数据表，在实际的业务中一般是需要数据备份的

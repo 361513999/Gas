@@ -48,8 +48,8 @@ public class CommonPhotoPop {
         photo.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                    select.photos(index);
-                    dlg.dismiss();
+                select.photos(index);
+                dlg.dismiss();
             }
         });
 

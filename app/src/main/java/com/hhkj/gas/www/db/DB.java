@@ -704,4 +704,93 @@ public class DB {
 
     }
 
+
+    public boolean isExitPro(ReserItemBean bean){
+//select send from staff_stand where id=? and staffId = ?
+        String sql = "select * from staff_stand_pr_l where standId = ? and staffId = ?";
+        Cursor cursor = null;
+        int count = 0;
+        boolean isExit = false;
+        try {
+            cursor = db.rawQuery(sql, new String[] {bean.getId(),bean.getNo()});
+            count = cursor.getCount();
+            if(count!=0){
+                isExit = true;
+            }
+            cursor.close();
+
+        } catch (Exception e) {
+
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+                cursor = null;
+            }
+        }
+        return  isExit;
+    }
+    /**
+     * 读取隐患单数据
+     */
+    public void getProblemList(ArrayList<StaffTxtItem> stb,ReserItemBean bean){
+        stb.clear();;
+        String sql = "select standId,staffId,txtNo,txtView from staff_stand_pr_l where standId = ? and staffId = ?";
+        Cursor cursor = null;
+
+        try {
+            cursor = db.rawQuery(sql, new String[] {bean.getId(),bean.getNo()});
+                while(cursor.moveToNext()){
+                    StaffTxtItem rdy = new StaffTxtItem();
+                    rdy.setId(getString(cursor,"txtNo"));
+                    rdy.setTxt(getString(cursor,"txtView"));
+                    stb.add(rdy);
+                }
+
+            cursor.close();
+
+        } catch (Exception e) {
+
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+                cursor = null;
+            }
+        }
+        //开始进行再次读取
+        for(int i=0;i<stb.size();i++){
+            setProblemList(stb.get(i),bean);
+        }
+
+    }
+    private void setProblemList(StaffTxtItem stb,ReserItemBean bean){
+        String sql = "select path from staff_stand_pr_l_values where standId = ? and staffId = ? and txtNo =?";
+        Cursor cursor = null;
+        ArrayList<StaffImageItem> imgs = new ArrayList<>();
+        try {
+            cursor = db.rawQuery(sql, new String[] {bean.getId(),bean.getNo(),stb.getId()});
+            while(cursor.moveToNext()){
+                StaffImageItem rdy = new StaffImageItem();
+                rdy.setPath(getString(cursor,"path"));
+                imgs.add(rdy);
+            }
+            cursor.close();
+            stb.setImageItems(imgs);
+        } catch (Exception e) {
+
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+                cursor = null;
+            }
+        }
+    }
+    public void addDetailProImages(String item, ReserItemBean bean, ArrayList<TImage> images,Handler handler){
+        for(int i=0;i<images.size();i++){
+            db.execSQL("insert into staff_stand_pr_l_values(standId,staffId,txtNo,path,send) values(?,?,?,?,?)",new Object[]{bean.getId(),bean.getNo(),item,images.get(i).getCompressPath(),false});
+        }
+        if(handler!=null){
+            handler.sendEmptyMessage(50);
+        }
+    }
+
 }
