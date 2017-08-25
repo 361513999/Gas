@@ -664,8 +664,9 @@ public class DetailActivity extends TakePhotoActivity {
                     return true;
                 }
             }else if(rb.getItems()!=null){
-                for(int j=0;j<rb.getItems().size();j++){
-                    if(rb.getItems().get(j).isCheck()){
+                ArrayList<StaffTxtItem> temps = rb.getItems();
+                for(int j=0;j<temps.size();j++){
+                    if(temps.get(j).isCheck()){
                         return  true;
                     }
                 }
@@ -674,13 +675,52 @@ public class DetailActivity extends TakePhotoActivity {
         }
         return  false;
     }
+
+    /**
+     * 创建隐患单
+     */
+    private void createProblem(){
+        ArrayList<StaffTxtItem> item = new ArrayList<>();
+        for(int i=0;i<dss.size();i++){
+            DetailStaff rb =  dss.get(i);
+            if(rb.getItem()!=null){
+                if(rb.getItem().isCheck()){
+                    item.add(rb.getItem());
+                }
+            }else if(rb.getItems()!=null){
+                StaffTxtItem tt = new StaffTxtItem();
+                StringBuilder builder  = new StringBuilder();
+                ArrayList<StaffTxtItem> temps = rb.getItems();
+                String id = null;
+                for(int j=0;j<temps.size();j++){
+                    if(temps.get(j).isCheck()){
+                        if(id==null){
+                            id = temps.get(j).getId();
+                        }
+                        builder.append(temps.get(j).getTxt()+"、");
+                    }
+                }
+                if(builder.length()!=0){
+                    String valu = builder.toString();
+                    tt.setId(id);
+                    tt.setTxt(rb.getItems_tag()+":"+valu.substring(0,valu.length()-1));
+                    item.add(tt);
+                }
+            }
+
+        }
+        DB.getInstance().addProblem(bean,item);
+
+
+    }
+
     public void ini() {
         back = (TextView) findViewById(R.id.back);
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//               Common.copy();
-                AppManager.getAppManager().finishActivity(DetailActivity.this);
+               Common.copy();
+//                AppManager.getAppManager().finishActivity(DetailActivity.this);
             }
         });
         item0 = (TextView) findViewById(R.id.item0);
@@ -766,6 +806,11 @@ public class DetailActivity extends TakePhotoActivity {
                     if(check()){
                         //存在安全隐患
                         P.c("什么情况");
+                        createProblem();
+//                        Intent intent = new Intent(DetailActivity.this,DetailProblemActivity.class);
+//                        intent.putExtra("obj",bean);
+//                        startActivity(intent);
+
 
                     }else{
                         //不存在不能进行

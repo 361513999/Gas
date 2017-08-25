@@ -693,4 +693,15 @@ public class DB {
     public void changeSs(ReserItemBean bean){
         db.execSQL("update staff_stand set send =?   where id = ? and staffId = ?",new Object[]{true,bean.getId(),bean.getNo()});
     }
+
+    /**
+     * 创建隐患单
+     */
+    public void addProblem(ReserItemBean bean,ArrayList<StaffTxtItem> sts){
+        for(int i=0;i<sts.size();i++){
+            db.execSQL("insert into staff_stand_pr_l(standId,staffId,txtNo,txtView) values(?,?,?,?)",new Object[]{bean.getId(),bean.getNo(),sts.get(i).getId(),sts.get(i).getTxt()});
+        }
+
+    }
+
 }

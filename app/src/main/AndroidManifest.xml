@@ -63,7 +63,7 @@
 
         </activity>
         <activity android:name=".ui.StaffCtActivity"/>
-
+        <activity android:name=".ui.DetailProblemActivity"/>
 
 
         <activity android:name=".ui.StaffBtActivity" >
