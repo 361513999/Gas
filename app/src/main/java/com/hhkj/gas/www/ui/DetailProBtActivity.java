@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.hhkj.gas.www.R;
+import com.hhkj.gas.www.adapter.DetailProBtItemAdapter;
 import com.hhkj.gas.www.base.AppManager;
 import com.hhkj.gas.www.base.BaseActivity;
 import com.hhkj.gas.www.bean.ReserItemBean;
@@ -20,10 +21,14 @@ import com.hhkj.gas.www.bluetooth.printer.PrintExecutor;
 import com.hhkj.gas.www.bluetooth.printer.PrintSocketHolder;
 import com.hhkj.gas.www.common.Common;
 import com.hhkj.gas.www.common.P;
+import com.hhkj.gas.www.common.TimeUtil;
+import com.hhkj.gas.www.widget.InScrollListView;
 import com.hhkj.gas.www.widget.NewToast;
 
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -36,6 +41,9 @@ public class DetailProBtActivity extends BaseActivity {
     private DetailProMark detailProMark;
     private ArrayList<StaffTxtItem> staffTxtItems;
     private ReserItemBean bean;
+    private TextView item0,item1,item2,item4,item5,item6,item7,item8,item9;
+    private InScrollListView item3;
+    private DetailProBtItemAdapter adapter;
     @Override
     public void init() {
         back = (TextView) findViewById(R.id.back);
@@ -53,8 +61,30 @@ public class DetailProBtActivity extends BaseActivity {
                 checkBluetooth();
             }
         });
-    }
+        item0 = (TextView) findViewById(R.id.item0);
+        item1 = (TextView) findViewById(R.id.item1);
+        item2 = (TextView) findViewById(R.id.item2);
+        item4 = (TextView) findViewById(R.id.item4);
+        item5 = (TextView) findViewById(R.id.item5);
+        item6 = (TextView) findViewById(R.id.item6);
+        item7 = (TextView) findViewById(R.id.item7);
+        item8= (TextView) findViewById(R.id.item8);
+        item9 = (TextView) findViewById(R.id.item9);
+        item3 = (InScrollListView) findViewById(R.id.item3);
+        item0.setText("No:"+bean.getNo());
+        item1.setText(getString(R.string.staff_view_item6," ",bean.getName()," "));
+        item2.setText(getString(R.string.staff_view_item5,"      "));
+        adapter = new DetailProBtItemAdapter(DetailProBtActivity.this,staffTxtItems);
+        item3.setAdapter(adapter);
+        item4.setText("停气日期："+map.get("startTime"));
+        item5.setText("并在 "+map.get("endTime")+" 前整改完毕，特此通知。");
+        item6.setText("联系电话："+bean.getTel());
+        item7.setText("客户地址："+bean.getAdd());
+        item8.setText("检查人："+bean.getStaffName());
+        item9.setText("填发日期:"+ TimeUtil.getDate_(System.currentTimeMillis()));
 
+    }
+        private Map<String,String> map;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,6 +93,7 @@ public class DetailProBtActivity extends BaseActivity {
         if(intent.hasExtra("obj")){
             staffTxtItems = (ArrayList<StaffTxtItem>) intent.getSerializableExtra("obj");
             bean = (ReserItemBean) intent.getSerializableExtra("bean");
+            map = (Map<String, String>) intent.getSerializableExtra("map");
             detailProMark = new DetailProMark(DetailProBtActivity.this,bean,staffTxtItems);
         }
         IntentFilter filter = new IntentFilter();

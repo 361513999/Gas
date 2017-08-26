@@ -25,6 +25,8 @@ import java.io.IOException;
 public class CommonLineActivity extends BaseActivity {
     private ReserItemBean bean;
     private int staffPrint;
+    private int from = 0;
+    private String tag ;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,7 +34,13 @@ public class CommonLineActivity extends BaseActivity {
         Intent intent = getIntent();
         if(intent.hasExtra("obj")){
             bean = (ReserItemBean) intent.getSerializableExtra("obj");
+        }
+        if(intent.hasExtra("staffPrint")){
             staffPrint = intent.getIntExtra("staffPrint",-1);
+        }
+        if(intent.hasExtra("from")){
+            from = intent.getIntExtra("from",-1);
+            tag = intent.getStringExtra("tag");
         }
     }
     private TextView back,cancle,sure;
@@ -63,7 +71,12 @@ public class CommonLineActivity extends BaseActivity {
                         if (!file.getParentFile().exists())file.getParentFile().mkdirs();
                         line.save(path, true, 10);
                         //保存数据库
-                        DB.getInstance().staff_print(bean,staffPrint,path);
+                        if(from==1){
+                            DB.getInstance().prother(tag,path,bean);
+                        }else{
+                            DB.getInstance().staff_print(bean,staffPrint,path);
+                        }
+
                         Intent intent = new Intent();
                         intent.putExtra("path",path);
                         setResult(1000,intent);

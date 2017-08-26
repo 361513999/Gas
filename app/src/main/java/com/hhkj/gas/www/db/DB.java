@@ -701,6 +701,7 @@ public class DB {
         for(int i=0;i<sts.size();i++){
             db.execSQL("insert into staff_stand_pr_l(standId,staffId,txtNo,txtView) values(?,?,?,?)",new Object[]{bean.getId(),bean.getNo(),sts.get(i).getId(),sts.get(i).getTxt()});
         }
+        db.execSQL("insert into staff_stand_pr_s(standId,staffId) values(?,?)",new Object[]{bean.getId(),bean.getNo()});
 
     }
 
@@ -784,6 +785,14 @@ public class DB {
             }
         }
     }
+
+    /**
+     * 添加隐患图片列表
+     * @param item
+     * @param bean
+     * @param images
+     * @param handler
+     */
     public void addDetailProImages(String item, ReserItemBean bean, ArrayList<TImage> images,Handler handler){
         for(int i=0;i<images.size();i++){
             db.execSQL("insert into staff_stand_pr_l_values(standId,staffId,txtNo,path,send) values(?,?,?,?,?)",new Object[]{bean.getId(),bean.getNo(),item,images.get(i).getCompressPath(),false});
@@ -793,4 +802,41 @@ public class DB {
         }
     }
 
+    /**
+     * 操作隐患列表的其他数据
+     */
+    public void prother(String colName,String value,ReserItemBean bean){
+            db.execSQL("update staff_stand_pr_s set "+colName+" = ? where standId=? and staffId = ?",new Object[]{value,bean.getId(),bean.getNo()});
+    }
+
+    /**
+     * 获得隐患其他数据
+     */
+    public void getProStand(Map<String,String> map ,ReserItemBean bean){
+        map.clear();
+        String sql = "select startTime,endTime,staffLine,personLine,personPhoto from staff_stand_pr_s where standId = ? and staffId = ?";
+        Cursor cursor = null;
+
+        try {
+            cursor = db.rawQuery(sql, new String[] {bean.getId(),bean.getNo()});
+            if(cursor.getCount()!=0){
+                if(cursor.moveToFirst()){
+                    map.put("startTime",getString(cursor,"startTime")==null?"____-__-__":getString(cursor,"startTime"));
+                    map.put("endTime",getString(cursor,"endTime")==null?"____-__-__":getString(cursor,"endTime"));
+                    map.put("staffLine",getString(cursor,"staffLine"));
+                    map.put("personLine",getString(cursor,"personLine"));
+                    map.put("personPhoto",getString(cursor,"personPhoto"));
+                }
+            }
+            cursor.close();
+
+        } catch (Exception e) {
+
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+                cursor = null;
+            }
+        }
+    }
 }

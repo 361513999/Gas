@@ -61,9 +61,9 @@ public class DetailProMark implements PrintDataMaker {
             printerWriter.setAlignLeft();
             //开始写客户
             printerWriter.writeH(70);
-            printerWriter.printL("尊敬的: "+bean.getName() +" 业主:");
+            printerWriter.printL(context.getString(R.string.staff_view_item6," ",bean.getName()," "));
 
-            printerWriter.print(printerWriter.getEmp(2)+context.getString(R.string.staff_view_item5));
+            printerWriter.print( context.getString(R.string.staff_view_item5," "));
             printerWriter.printLineFeed();
             printerWriter.setEmphasizedOn();
             for(int i=0;i<staffTxtItems.size();i++){
