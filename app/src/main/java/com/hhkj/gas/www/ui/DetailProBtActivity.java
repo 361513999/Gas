@@ -94,7 +94,7 @@ public class DetailProBtActivity extends BaseActivity {
             staffTxtItems = (ArrayList<StaffTxtItem>) intent.getSerializableExtra("obj");
             bean = (ReserItemBean) intent.getSerializableExtra("bean");
             map = (Map<String, String>) intent.getSerializableExtra("map");
-            detailProMark = new DetailProMark(DetailProBtActivity.this,bean,staffTxtItems);
+            detailProMark = new DetailProMark(DetailProBtActivity.this,bean,staffTxtItems,map);
         }
         IntentFilter filter = new IntentFilter();
         filter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);

@@ -54,7 +54,7 @@ public class Start1Adapter extends BaseAdapter {
         return position;
     }
     private class ViewHolder {
-        TextView item0,item1,item2,item3,item4,item_tag;
+        TextView item0,item1,item2,item3,item4,item_tag,item5;
         ImageView item_icon,item_edit;
     }
 
@@ -72,6 +72,7 @@ public class Start1Adapter extends BaseAdapter {
             viewHolder.item2 = (TextView) convertView.findViewById(R.id.item2);
             viewHolder.item3 = (TextView) convertView.findViewById(R.id.item3);
             viewHolder.item4 = (TextView) convertView.findViewById(R.id.item4);
+            viewHolder.item5 = (TextView) convertView.findViewById(R.id.item5);
             viewHolder.item_edit = (ImageView) convertView.findViewById(R.id.item_edit);
             convertView.setTag(R.mipmap.ic_launcher + position);
         } else {
@@ -80,6 +81,9 @@ public class Start1Adapter extends BaseAdapter {
         }
 
         final ReserItemBean it = rbs.get(position);
+        if(sharedUtils.getBooleanValue("head")){
+            viewHolder.item5.setText("(指派给:"+it.getStaffName()+")");
+        }
         viewHolder.item0.setText(context.getString(R.string.nor_item_txt0,it.getNo()));
         viewHolder.item1.setText(context.getString(R.string.nor_item_txt1,it.getName()));
         viewHolder.item2.setText(context.getString(R.string.nor_item_txt2,it.getTel()));

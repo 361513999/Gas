@@ -36,7 +36,14 @@ public class HeadTips {
         this.handler  = handler;
         this.bean = bean;
         this.staffImageItems = staffImageItems;
-       inflater  = (LayoutInflater) context
+        inflater  = (LayoutInflater) context
+                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    }
+    public HeadTips(Context context, Handler handler,ReserItemBean bean) {
+        this.context = context;
+        this.bean = bean;
+        this.handler  = handler;
+         inflater  = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
     private boolean isImage(){
@@ -61,22 +68,39 @@ public class HeadTips {
             @Override
             public void onClick(View view) {
                 //立即提交
-                if(bean.getStaffTag()!=null&&bean.getStaffTag().equals("Y")){
-                    if(isImage()){
+                if(staffImageItems==null){
+                    //是隐患单
+                    if(DB.getInstance().canProStand(bean)){
+                        handler.sendEmptyMessage(10);
+                        cancle();
+                    }else {
+                        NewToast.makeText(context,"请签名及确定整改日期",Common.TTIME).show();
+                    }
 
-                        if( DB.getInstance().getCanSend()){
-                            P.c("可以发送");
-                            handler.sendEmptyMessage(10);
-                            cancle();
-                        }else {
-                            NewToast.makeText(context,"请确认签名和安检单状态", Common.TTIME).show();
+                }else{
+                    if(bean.getStaffTag()!=null&&bean.getStaffTag().equals("Y")){
+                        if(isImage()){
+
+                            if( DB.getInstance().getCanSend()){
+                                P.c("可以发送");
+                                if(DB.getInstance().canLinePrint(bean)){
+                                    handler.sendEmptyMessage(10);
+                                    cancle();
+                                }else{
+                                    NewToast.makeText(context,"请签名",Common.TTIME).show();
+                                }
+
+                            }else {
+                                NewToast.makeText(context,"请确认签名和安检单状态", Common.TTIME).show();
+                            }
+                        }else{
+                            NewToast.makeText(context,"至少每项上传一张安检图片", Common.TTIME).show();
                         }
                     }else{
-                        NewToast.makeText(context,"至少每项上传一张安检图片", Common.TTIME).show();
+                        NewToast.makeText(context,"安检项目不合格", Common.TTIME).show();
                     }
-                }else{
-                    NewToast.makeText(context,"安检项目不合格", Common.TTIME).show();
                 }
+
 
 
             }

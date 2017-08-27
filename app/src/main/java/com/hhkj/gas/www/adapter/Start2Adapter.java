@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.hhkj.gas.www.R;
 import com.hhkj.gas.www.bean.ReserItemBean;
+import com.hhkj.gas.www.common.SharedUtils;
 
 import java.util.ArrayList;
 
@@ -21,9 +22,11 @@ public class Start2Adapter extends BaseAdapter {
     private LayoutInflater inflater;
     private Context context;
     private ArrayList<ReserItemBean> rbs;
-    public Start2Adapter(Context context, ArrayList<ReserItemBean> rbs){
+    private SharedUtils sharedUtils;
+    public Start2Adapter(Context context, ArrayList<ReserItemBean> rbs,  SharedUtils sharedUtils){
         this.context = context;
         this.rbs = rbs;
+        this.sharedUtils =sharedUtils;
         inflater = LayoutInflater.from(context);
     }
     public void updata(ArrayList<ReserItemBean> rbs){
@@ -45,7 +48,7 @@ public class Start2Adapter extends BaseAdapter {
         return position;
     }
     private class ViewHolder {
-        TextView item0,item1,item2,item3,item4;
+        TextView item0,item1,item2,item3,item4,item5;
 
     }
 
@@ -73,7 +76,10 @@ public class Start2Adapter extends BaseAdapter {
         viewHolder.item1.setText(context.getString(R.string.nor_item_txt1,it.getName()));
         viewHolder.item2.setText(context.getString(R.string.nor_item_txt2,it.getTel()));
         viewHolder.item3.setText(context.getString(R.string.nor_item_txt3,it.getAdd()));
-
+        viewHolder.item5 = (TextView) convertView.findViewById(R.id.item5);
+        if(sharedUtils.getBooleanValue("head")){
+            viewHolder.item5.setText("(指派给:"+it.getStaffName()+")");
+        }
         if(it.getTime().equals("待定")){
             viewHolder.item4.setTextColor(context.getResources().getColor(R.color.rd_p));
         }else{

@@ -454,13 +454,15 @@ public class DetailActivity extends TakePhotoActivity {
     }
     private void sendImage(final Object o) {
         JSONObject jsonObject = new JSONObject();
+        String dtlId = null;
         try {
             jsonObject.put("orderId", bean.getId());
             jsonObject.put("toKen", sharedUtils.getStringValue("token"));
             if (o instanceof ArrayList) {
                 ArrayList<ImageRdy> irs = (ArrayList<ImageRdy>) o;
                 ImageRdy ir = irs.get(0);
-                jsonObject.put("dtlId", ir.getId());
+                dtlId = ir.getId();
+                jsonObject.put("dtlId", dtlId);
                 jsonObject.put("type", 1);
                 jsonObject.put("base64", Bitmap2StrByBase64(BitmapFactory.decodeFile(ir.getPath())));
                 changeText(getFile(ir.getPath()));
@@ -495,6 +497,7 @@ public class DetailActivity extends TakePhotoActivity {
             e.printStackTrace();
         }
 
+        final String finalDtlId = dtlId;
         OkHttpUtils.postString().url(U.VISTER(U.BASE_URL) + U.STAFF_IMAGE).mediaType(MediaType.parse("application/json; charset=utf-8")).content(jsonObject.toString()).build().execute(new StringCallback() {
             @Override
             public void onError(Call call, Exception e, int id) {
@@ -512,7 +515,7 @@ public class DetailActivity extends TakePhotoActivity {
                                 //图片组
                                 ArrayList<ImageRdy> irs = (ArrayList<ImageRdy>) o;
                                 ImageRdy ir = irs.get(0);
-                                 DB.getInstance().changeSIV(bean,ir.getPath());
+                                 DB.getInstance().changeSIV(bean,ir.getPath(), finalDtlId);
                                 detailHandler.sendEmptyMessage(10);
 
                             }else  if(o instanceof  Map){
@@ -824,17 +827,27 @@ public class DetailActivity extends TakePhotoActivity {
         item11.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DB.getInstance().setStandCt(bean.getOrderStatus(),"Y",bean);
-                detailHandler.sendEmptyMessage(70);
+                if(bean.getStaffTag()!=null&&bean.getStaffTag().equals("N")){
+                    NewToast.makeText(DetailActivity.this,"请先解除隐患",Common.TTIME).show();
+                }else{
+                    DB.getInstance().setStandCt(bean.getOrderStatus(),"Y",bean);
+                    detailHandler.sendEmptyMessage(70);
+                }
+
             }
         });
 
         item12.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(DetailActivity.this,StaffCtActivity.class);
-                intent.putExtra("obj",bean);
-                startActivityForResult(intent,100);
+                if(bean.getStaffTag()!=null&&bean.getStaffTag().equals("N")){
+                    NewToast.makeText(DetailActivity.this,"请先解除隐患",Common.TTIME).show();
+                }else {
+                    Intent intent = new Intent(DetailActivity.this,StaffCtActivity.class);
+                    intent.putExtra("obj",bean);
+                    startActivityForResult(intent,100);
+                }
+
             }
         });
         item13.setOnClickListener(new View.OnClickListener() {

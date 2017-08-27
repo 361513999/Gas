@@ -10,10 +10,12 @@ import com.hhkj.gas.www.bean.StaffImageItem;
 import com.hhkj.gas.www.bean.StaffQj;
 import com.hhkj.gas.www.bean.StaffTxtItem;
 import com.hhkj.gas.www.common.P;
+import com.hhkj.gas.www.common.TimeUtil;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Administrator on 2017/8/17/017.
@@ -71,9 +73,9 @@ public class DetailProMark implements PrintDataMaker {
             }
             printerWriter.setEmphasizedOff();
             printerWriter.printLineFeed();
-            printerWriter.print("停气日期:2017-08-08");
+            printerWriter.print("停气日期: "+map.get("startTime"));
             printerWriter.printLineFeed();
-            printerWriter.print("并在:2017-08-08前整改完毕，特此通知。");
+            printerWriter.print("并在: "+map.get("endTime")+" 前整改完毕，特此通知。");
             printerWriter.printLineFeed();
             printerWriter.print("联系电话："+bean.getTel());
             printerWriter.printLineFeed();
@@ -86,7 +88,7 @@ public class DetailProMark implements PrintDataMaker {
             printerWriter.print("检查人："+bean.getStaffName());
             printerWriter.printLineFeed();
             printerWriter.setAlignRight();
-            printerWriter.print("填发日期：2017-08-08");
+            printerWriter.print("填发日期："+TimeUtil.getDate_(System.currentTimeMillis()));
             printerWriter.printLineFeed();
             printerWriter.setAlignCenter();
             printerWriter.printLineFeed();
@@ -109,11 +111,11 @@ public class DetailProMark implements PrintDataMaker {
     private Context context;
     private ReserItemBean bean;
     private ArrayList<StaffTxtItem> staffTxtItems;
-
-    public DetailProMark(Context context, ReserItemBean bean, ArrayList<StaffTxtItem> staffTxtItems  ){
+    private Map<String,String> map ;
+    public DetailProMark(Context context, ReserItemBean bean, ArrayList<StaffTxtItem> staffTxtItems,Map<String,String> map  ){
         this.context = context;
         this.bean = bean;
         this.staffTxtItems = staffTxtItems;
-
+        this.map = map;
     }
 }

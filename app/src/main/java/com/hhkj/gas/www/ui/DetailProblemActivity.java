@@ -1,6 +1,8 @@
 package com.hhkj.gas.www.ui;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -9,6 +11,7 @@ import android.os.Message;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
+import android.util.Base64;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,17 +23,26 @@ import android.widget.TextView;
 import com.hhkj.gas.www.R;
 import com.hhkj.gas.www.adapter.DetailProItemAdapter;
 import com.hhkj.gas.www.base.AppManager;
+import com.hhkj.gas.www.bean.DetailStaff;
+import com.hhkj.gas.www.bean.ImageRdy;
 import com.hhkj.gas.www.bean.ReserItemBean;
+import com.hhkj.gas.www.bean.StaffB;
+import com.hhkj.gas.www.bean.StaffQj;
 import com.hhkj.gas.www.bean.StaffTxtItem;
 import com.hhkj.gas.www.common.Common;
+import com.hhkj.gas.www.common.FileUtils;
 import com.hhkj.gas.www.common.P;
 import com.hhkj.gas.www.common.SharedUtils;
+import com.hhkj.gas.www.common.U;
 import com.hhkj.gas.www.db.DB;
 import com.hhkj.gas.www.inter.PhotoSelect;
 import com.hhkj.gas.www.inter.ProSelect;
+import com.hhkj.gas.www.widget.CommonLogin;
 import com.hhkj.gas.www.widget.CommonPhotoPop;
+import com.hhkj.gas.www.widget.HeadTips;
 import com.hhkj.gas.www.widget.InScrollListView;
 import com.hhkj.gas.www.widget.NewToast;
+import com.hhkj.gas.www.widget.UploadTips;
 import com.jph.takephoto.app.TakePhoto;
 import com.jph.takephoto.app.TakePhotoActivity;
 import com.jph.takephoto.compress.CompressConfig;
@@ -39,7 +51,14 @@ import com.jph.takephoto.model.TImage;
 import com.jph.takephoto.model.TResult;
 import com.jph.takephoto.model.TakePhotoOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.zc.http.okhttp.OkHttpUtils;
+import com.zc.http.okhttp.callback.StringCallback;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.Serializable;
 import java.lang.ref.WeakReference;
@@ -50,6 +69,8 @@ import java.util.Map;
 import java.util.Objects;
 
 import library.view.GregorianLunarCalendarOneView;
+import okhttp3.Call;
+import okhttp3.MediaType;
 
 /**
  * Created by Administrator on 2017/8/25/025.
@@ -117,7 +138,7 @@ public class DetailProblemActivity extends TakePhotoActivity {
         }
     };
     private LinearLayout layout;
-    private TextView itme8,itme7;
+    private TextView itme8,itme7,item19_v;
     private ImageView item15,item16,item17;
     private void init(){
         back = (TextView) findViewById(R.id.back);
@@ -143,6 +164,7 @@ public class DetailProblemActivity extends TakePhotoActivity {
 
         item18 = (LinearLayout) findViewById(R.id.item18);
         item19 = (LinearLayout) findViewById(R.id.item19);
+        item19_v = (TextView) findViewById(R.id.item19_v);
         pro_list = (InScrollListView) findViewById(R.id.pro_list);
         itemAdapter = new DetailProItemAdapter(DetailProblemActivity.this, txtItems, new ProSelect() {
             @Override
@@ -196,6 +218,19 @@ public class DetailProblemActivity extends TakePhotoActivity {
                 startActivity(intent);
             }
         });
+        item19.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(isCan()){
+                    HeadTips headTips = new HeadTips(DetailProblemActivity.this,detailProblemHandler,bean);
+                    headTips.showSheet();
+                }else{
+                    NewToast.makeText(DetailProblemActivity.this,"每项至少存在一张隐患图",Common.TTIME).show();
+                }
+            }
+        });
+
+
         itme7.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -210,6 +245,14 @@ public class DetailProblemActivity extends TakePhotoActivity {
                 showDataPop(dataPopupWindow,layout);
             }
         });
+    }
+    private boolean isCan(){
+        for(int i=0;i<txtItems.size();i++){
+            if(txtItems.get(i).getImageItems().size()==0){
+                return  false;
+            }
+        }
+        return  true;
     }
     private Map<String ,String> proStand = new HashMap<>();
     private View dataPop;
@@ -308,7 +351,13 @@ public class DetailProblemActivity extends TakePhotoActivity {
             }
         }
     }
-
+    /**
+     * 重新登录
+     */
+    public void reLogin(){
+        CommonLogin login = new CommonLogin(this,sharedUtils);
+        login.showSheet();
+    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -335,6 +384,10 @@ public class DetailProblemActivity extends TakePhotoActivity {
             super.dispatchMessage(msg);
             if (mLeakActivityRef.get() != null) {
                 switch (msg.what){
+                    case 4:
+                        //用户未登录处理
+                        reLogin();
+                        break;
                     case 50:
                         DB.getInstance().getProblemList(txtItems,bean);
                         detailProblemHandler.sendEmptyMessage(51);
@@ -352,6 +405,12 @@ public class DetailProblemActivity extends TakePhotoActivity {
                         ImageLoader.getInstance().displayImage("file://"+proStand.get("staffLine"),item15);
                         ImageLoader.getInstance().displayImage("file://"+proStand.get("personLine"),item16);
                         ImageLoader.getInstance().displayImage("file://"+proStand.get("personPhoto"),item17);
+                        String No = proStand.get("proNo");
+                        if(No==null){
+                            item19_v.setText("提交隐患");
+                        }else{
+                            item19_v.setText("解除隐患");
+                        }
                         break;
                     case 70:
                         DB.getInstance().updataStand(bean);
@@ -399,10 +458,207 @@ public class DetailProblemActivity extends TakePhotoActivity {
                         item6.setText(getString(R.string.curr_person, bean.getStaffName()));
                         //----------
                         break;
+                    case 10:
+                        if(uploadTips==null){
+                            uploadTips = new UploadTips(DetailProblemActivity.this);
+                            uploadTips.showSheet();
+                        }
+                        ArrayList<ImageRdy> irs = DB.getInstance().photoProIsend(bean);
+                        if(irs.size()!=0){
+                            //有未完成的单据
+                            sendImage(irs);
+                        }else{
+                            //进行查询
+                            Map<String,String> map = DB.getInstance().ProLinePrint(bean);
+                            if(!map.get("send").equals("3")){
+                                sendImage(map);
+
+                            }else{
+                                //签名上传完毕
+
+                                if(map.get("proNo")==null){
+                                    //基础数据未上传
+                                   P.c("上传基础数据");
+                                    sendStand(map);
+                                }else{
+                                    //完成任务单
+                                    cancelUp();
+                                    detailProblemHandler.sendEmptyMessage(60);
+                                    detailProblemHandler.sendEmptyMessage(70);
+                                    NewToast.makeText(DetailProblemActivity.this,"上传完毕",Common.TTIME).show();
+                                }
+                            }
+                        }
+                        break;
                 }
             }
         }
     }
+    private UploadTips uploadTips;
+    private void changeText(String txt){
+        if(uploadTips!=null){
+            uploadTips.setText("正在上传:"+txt);
+        }
+    }
+    private void cancelUp(){
+        if(uploadTips!=null){
+            uploadTips.cancle();
+            uploadTips= null;
+        }
+    }
+    private String getFile(String path){
+        File file = new File(path);
+        if(file!=null){
+            return  file.getName();
+        }
+        return  "";
+    }
+    private String Bitmap2StrByBase64(Bitmap bit){
+        ByteArrayOutputStream bos=new ByteArrayOutputStream();
+        bit.compress(Bitmap.CompressFormat.JPEG, 40, bos);//参数100表示不压缩
+        byte[] bytes=bos.toByteArray();
+        return Base64.encodeToString(bytes, Base64.DEFAULT);
+    }
+    private void sendImage(final Object o) {
+        JSONObject jsonObject = new JSONObject();
+        String dtlId = null;
+        try {
+            jsonObject.put("orderId", bean.getId());
+            jsonObject.put("toKen", sharedUtils.getStringValue("token"));
+            if (o instanceof ArrayList) {
+                ArrayList<ImageRdy> irs = (ArrayList<ImageRdy>) o;
+                ImageRdy ir = irs.get(0);
+                dtlId = ir.getId();
+                jsonObject.put("dtlId", dtlId);
+                jsonObject.put("type", 1);
+                jsonObject.put("base64", Bitmap2StrByBase64(BitmapFactory.decodeFile(ir.getPath())));
+                changeText(getFile(ir.getPath()));
+
+            } else if (o instanceof Map) {
+                //签名部分
+                Map map = (Map) o;
+                jsonObject.put("dtlId", "");
+                if (map.get("send").equals("0")) {
+                    //提交
+                    jsonObject.put("type", 3);
+                    String path  =map.get("staffLine").toString();
+                    jsonObject.put("base64", Bitmap2StrByBase64(BitmapFactory.decodeFile(path)));
+                    changeText(getFile(path));
+                } else if (map.get("send").equals("1")) {
+                    jsonObject.put("type", 4);
+                    String path  =map.get("personLine").toString();
+                    changeText(getFile(path));
+                    jsonObject.put("base64", Bitmap2StrByBase64(BitmapFactory.decodeFile(path)));
+                } else if (map.get("send").equals("2")) {
+                    jsonObject.put("type", 4);
+
+                    String path  =map.get("personPhoto").toString();
+                    changeText(getFile(path));
+                    jsonObject.put("base64", Bitmap2StrByBase64(BitmapFactory.decodeFile(path)));
+                }
+
+            }
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        final String finalDtlId = dtlId;
+        OkHttpUtils.postString().url(U.VISTER(U.BASE_URL) + U.PROBLEM_IMAGE).mediaType(MediaType.parse("application/json; charset=utf-8")).content(jsonObject.toString()).build().execute(new StringCallback() {
+            @Override
+            public void onError(Call call, Exception e, int id) {
+
+                cancelUp();
+            }
+
+            @Override
+            public void onResponse(String response, int id) {
+
+                try {
+                    JSONObject jsonObject = new JSONObject(FileUtils.formatJson(response));
+                    if(jsonObject.getBoolean("Success")){
+                        if(o instanceof ArrayList){
+                            //图片组
+                            ArrayList<ImageRdy> irs = (ArrayList<ImageRdy>) o;
+                            ImageRdy ir = irs.get(0);
+                            DB.getInstance().changePSIV(bean,ir.getPath(), finalDtlId);
+                            detailProblemHandler.sendEmptyMessage(10);
+
+                        }else  if(o instanceof  Map){
+                            //签名组
+                            Map map = (Map) o;
+                            int send =  Integer.parseInt(map.get("send").toString())+1;
+                            DB.getInstance().changePLS(bean,send);
+                            detailProblemHandler.sendEmptyMessage(10);
+                        }
+
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+        });
+    }
+
+    /**
+     * 提交基本数据
+     */
+    private void sendStand(final Map<String,String> map){
+        String create = "00000000-0000-0000-0000-000000000000";
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("toKen",sharedUtils.getStringValue("token"));
+            jsonObject.put("cls","Gas.RiskOrder");
+            jsonObject.put("method","SubmitRiskOrder");
+            JSONObject object = new JSONObject();
+            object.put("OrderId",bean.getId());
+            object.put("StopDate",map.get("startTime"));
+            object.put("endTime",map.get("endTime"));
+            //安检条目
+            jsonObject.put("param",object.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        OkHttpUtils.postString().url(U.VISTER(U.BASE_URL)+U.LIST).mediaType(MediaType.parse("application/json; charset=utf-8")).content(jsonObject.toString()).build().execute(new StringCallback() {
+            @Override
+            public void onError(Call call, Exception e, int id) {
+                cancelUp();
+            }
+
+            @Override
+            public void onResponse(String response, int id) {
+                try {
+                    JSONObject jsonObject = new JSONObject(FileUtils.formatJson(response));
+                    if(jsonObject.getBoolean("Success")){
+
+                        if(map.get("proNo")==null){
+                            //证明是整改中
+                            DB.getInstance().changePLSB(bean);
+                            DB.getInstance().setStandCt(8,"N",bean);
+                        }else{
+                            //解除整改
+                                P.c("解除隐患");
+                            DB.getInstance().setStandCt(7,null,bean);
+                        }
+                        detailProblemHandler.sendEmptyMessage(10);
+                    }else {
+                        if(jsonObject.getString("Result").equals(Common.UNLOGIN)){
+                            NewToast.makeText(DetailProblemActivity.this, "未登录", 1000).show();
+                            detailProblemHandler.sendEmptyMessage(4);
+                        }
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
+    }
+
+
     @Override
     protected void onStart() {
         super.onStart();

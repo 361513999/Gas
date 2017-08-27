@@ -14,6 +14,7 @@ public class U {
     public static final String LIST = "Post";
     public static final String Get = "Get";
     public static final String STAFF_IMAGE = "SubmitOrderImage";
+    public static final String PROBLEM_IMAGE= "SubmitRiskImage";
     public static String VISTER(String url){
         SharedUtils sharedUtils = new SharedUtils(Common.config);
         String ip = sharedUtils.getStringValue("IP");

@@ -116,7 +116,7 @@ public class BaseApplication extends Application {
 			saveCatchInfo2File(ex);
 			// 如果报错就不进行重启
 //			android.os.Process.killProcess(android.os.Process.myPid());
-		System.exit(0);
+		//System.exit(0);
 		}
 
 	};

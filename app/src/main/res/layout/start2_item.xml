@@ -10,8 +10,10 @@
             android:layout_width="match_parent"
             android:background="@mipmap/img_bg"
             android:layout_height="150dp">
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
                 <LinearLayout
-
                     android:gravity="center"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent">
@@ -80,6 +82,21 @@
                     </LinearLayout>
 
                 </LinearLayout>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:gravity="right"
+                android:padding="5dp"
+                android:layout_height="match_parent">
+                <TextView
+                    android:id="@+id/item5"
+                    android:layout_width="wrap_content"
+                    android:textSize="12sp"
+                    android:layout_alignParentTop="true"
+                    android:textColor="@color/rd_p"
+                    android:layout_height="wrap_content" />
+            </RelativeLayout>
+        </FrameLayout>
+
         </LinearLayout>
     </LinearLayout>
     

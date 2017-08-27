@@ -110,7 +110,7 @@ public class Start2Activity extends BaseActivity {
         pull_to_refresh_list.setOnHeaderRefreshListener(listHeadListener);
         pull_to_refresh_list.setOnFooterRefreshListener(listFootListener);
         gas_list = (ListView) findViewById(R.id.gas_list);
-        start2Adapter = new Start2Adapter(Start2Activity.this,ribs);
+        start2Adapter = new Start2Adapter(Start2Activity.this,ribs,sharedUtils);
         market_group = (RadioGroup) findViewById(R.id.market_group);
         market_group_item1 = (RadioButton) findViewById(R.id.market_group_item1);
         market_group_item2 = (RadioButton) findViewById(R.id.market_group_item2);

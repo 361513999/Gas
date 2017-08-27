@@ -611,6 +611,12 @@ public class DB {
         }
         return  false;
     }
+
+    /**
+     * 未上传的安检图片
+     * @param bean
+     * @return
+     */
     public ArrayList<ImageRdy> photoIsend(ReserItemBean bean){
         ArrayList<ImageRdy> irs = new ArrayList<ImageRdy>();
         String sql = "select id,path from staff_stand_image_values  where send=0 and standId = ? and staffId = ?;";
@@ -666,14 +672,45 @@ public class DB {
         }
         return map;
     }
+    public boolean canLinePrint(ReserItemBean bean) {
+
+        String sql = "select staffLine,personLine,personPhoto, send from staff_stand_line  where standId=? and staffId=?";
+        Cursor cursor = null;
+
+        try {
+            cursor = db.rawQuery(sql, new String[] {bean.getId(),bean.getNo() });
+            if(cursor.moveToFirst()){
+                if(getString(cursor,"staffLine")==null){
+                    return  false;
+                }
+                if(getString(cursor,"personLine")==null){
+                    return  false;
+                }
+                if(getString(cursor,"personPhoto")==null){
+                    return  false;
+                }
+            }
+            cursor.close();
+
+        } catch (Exception e) {
+            P.c("判断"+e.getMessage());
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+                cursor = null;
+            }
+        }
+        return true;
+    }
+
 
     /**
      * 修改图片组发送情况
      * @param bean
      * @param path
      */
-    public void changeSIV(ReserItemBean bean,String path){
-        db.execSQL("update staff_stand_image_values set send =?   where standId = ? and staffId = ? and path = ?",new Object[]{true,bean.getId(),bean.getNo(),path});
+    public void changeSIV(ReserItemBean bean,String path,String id){
+        db.execSQL("update staff_stand_image_values set send =?   where standId = ? and staffId = ? and path = ? and id=?",new Object[]{true,bean.getId(),bean.getNo(),path,id});
     }
 
     /**
@@ -701,7 +738,7 @@ public class DB {
         for(int i=0;i<sts.size();i++){
             db.execSQL("insert into staff_stand_pr_l(standId,staffId,txtNo,txtView) values(?,?,?,?)",new Object[]{bean.getId(),bean.getNo(),sts.get(i).getId(),sts.get(i).getTxt()});
         }
-        db.execSQL("insert into staff_stand_pr_s(standId,staffId) values(?,?)",new Object[]{bean.getId(),bean.getNo()});
+        db.execSQL("insert into staff_stand_pr_s(standId,staffId,send) values(?,?,?)",new Object[]{bean.getId(),bean.getNo(),0});
 
     }
 
@@ -814,13 +851,14 @@ public class DB {
      */
     public void getProStand(Map<String,String> map ,ReserItemBean bean){
         map.clear();
-        String sql = "select startTime,endTime,staffLine,personLine,personPhoto from staff_stand_pr_s where standId = ? and staffId = ?";
+        String sql = "select proNo,startTime,endTime,staffLine,personLine,personPhoto from staff_stand_pr_s where standId = ? and staffId = ?";
         Cursor cursor = null;
 
         try {
             cursor = db.rawQuery(sql, new String[] {bean.getId(),bean.getNo()});
             if(cursor.getCount()!=0){
                 if(cursor.moveToFirst()){
+                    map.put("proNo",getString(cursor,"proNo"));
                     map.put("startTime",getString(cursor,"startTime")==null?"____-__-__":getString(cursor,"startTime"));
                     map.put("endTime",getString(cursor,"endTime")==null?"____-__-__":getString(cursor,"endTime"));
                     map.put("staffLine",getString(cursor,"staffLine"));
@@ -838,5 +876,130 @@ public class DB {
                 cursor = null;
             }
         }
+    }
+
+    public boolean canProStand(ReserItemBean bean){
+
+        String sql = "select proNo,startTime,endTime,staffLine,personLine,personPhoto from staff_stand_pr_s where standId = ? and staffId = ?";
+        Cursor cursor = null;
+
+        try {
+            cursor = db.rawQuery(sql, new String[] {bean.getId(),bean.getNo()});
+            if(cursor.getCount()!=0){
+                if(cursor.moveToFirst()){
+
+                    if(getString(cursor,"startTime")==null){
+                        return  false;
+                    }
+                    if(getString(cursor,"endTime")==null){
+                        return  false;
+                    }
+
+                    if(getString(cursor,"staffLine")==null){
+                        return  false;
+                    }
+                    if(getString(cursor,"personLine")==null){
+                        return  false;
+                    }
+                    if(getString(cursor,"personPhoto")==null){
+                        return  false;
+                    }
+
+
+                }
+            }
+            cursor.close();
+
+        } catch (Exception e) {
+
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+                cursor = null;
+            }
+        }
+        return  true;
+    }
+    /**
+     * 修改隐患单图片组发送情况
+     * @param bean
+     * @param path
+     */
+    public void changePSIV(ReserItemBean bean,String path,String id){
+        db.execSQL("update staff_stand_pr_l_values set send =?   where standId = ? and staffId = ? and path = ? and txtNo=?",new Object[]{true,bean.getId(),bean.getNo(),path,id});
+    }
+
+    /**
+     *修改隐患单签名组发送情况
+     * @param bean
+     * @param path
+     */
+    public void changePLS(ReserItemBean bean,int path){
+        db.execSQL("update staff_stand_pr_s set send =?   where standId = ? and staffId = ?",new Object[]{path,bean.getId(),bean.getNo()});
+    }
+    public void changePLSB(ReserItemBean bean){
+        db.execSQL("update staff_stand_pr_s set proNo =1   where standId = ? and staffId = ?",new Object[]{bean.getId(),bean.getNo()});
+    }
+    /**
+     * 未上传的隐患图片
+     * @param bean
+     * @return
+     */
+    public ArrayList<ImageRdy> photoProIsend(ReserItemBean bean){
+        ArrayList<ImageRdy> irs = new ArrayList<ImageRdy>();
+        String sql = "select txtNo,path from staff_stand_pr_l_values  where send=0 and standId = ? and staffId = ?;";
+        Cursor cursor = null;
+        int count = 0;
+        try {
+            cursor = db.rawQuery(sql, new String[] {bean.getId(),bean.getNo()});
+            count = cursor.getCount();
+            if(count!=0){
+                while(cursor.moveToNext()){
+                    ImageRdy rdy = new ImageRdy();
+                    rdy.setId(getString(cursor,"txtNo"));
+                    rdy.setPath(getString(cursor,"path"));
+                    irs.add(rdy);
+                }
+            }
+            cursor.close();
+
+        } catch (Exception e) {
+
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+                cursor = null;
+            }
+        }
+        return  irs;
+    }
+    public Map<String,String> ProLinePrint(ReserItemBean bean) {
+        Map<String,String> map  = new HashMap<>();
+        String sql = "select startTime,endTime,proNo,staffLine,personLine,personPhoto,send from staff_stand_pr_s  where standId=? and staffId=?";
+        Cursor cursor = null;
+
+        try {
+            cursor = db.rawQuery(sql, new String[] {bean.getId(),bean.getNo() });
+            if(cursor.moveToFirst()){
+                map.put("proNo",getString(cursor,"proNo"));
+                map.put("startTime",getString(cursor,"startTime"));
+                map.put("endTime",getString(cursor,"endTime"));
+                map.put("staffLine",getString(cursor,"staffLine"));
+                map.put("personLine",getString(cursor,"personLine"));
+                map.put("personPhoto",getString(cursor,"personPhoto"));
+                map.put("send",getString(cursor,"send"));
+
+            }
+            cursor.close();
+
+        } catch (Exception e) {
+            P.c("判断"+e.getMessage());
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+                cursor = null;
+            }
+        }
+        return map;
     }
 }
