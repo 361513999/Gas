@@ -22,7 +22,7 @@ public class Common {
     public static final String DB_NAME = "store.gas";
     public static final int DB_VERSION = 1;
     public static final String UNLOGIN = "login";
-    public static final int SHOW_NUM = 4;
+    public static final int SHOW_NUM = 1;
     public static final String STAFF_IMAGE = "IMAGES/";
     public static final String CACHE_STAFF_IMAGES = SD+STAFF_IMAGE;
     public static void copy(){

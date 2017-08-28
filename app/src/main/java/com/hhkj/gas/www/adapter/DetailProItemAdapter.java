@@ -95,7 +95,7 @@ public class DetailProItemAdapter extends BaseAdapter {
         int index = position+1;
         int imageLen = it.getImageItems().size();
         viewHolder. item3.setNumColumns(imageLen);
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(FileUtils.dip2px(context, 110) * imageLen, LinearLayout.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(FileUtils.dip2px(context, 90) * imageLen, LinearLayout.LayoutParams.WRAP_CONTENT);
         viewHolder.item3.setLayoutParams(params);
         DetailProImageAdapter adapter = new DetailProImageAdapter(context,it.getImageItems());
         viewHolder.item3.setAdapter(adapter);

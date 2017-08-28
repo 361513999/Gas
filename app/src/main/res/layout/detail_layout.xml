@@ -344,7 +344,6 @@
                         android:layout_toLeftOf="@+id/item11"
                         android:background="@color/detail_red"
                         android:ems="5"
-
                         android:gravity="center"
                         android:paddingBottom="4dp"
                         android:paddingTop="4dp"

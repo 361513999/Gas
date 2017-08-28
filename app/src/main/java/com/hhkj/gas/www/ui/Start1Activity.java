@@ -83,7 +83,11 @@ public class Start1Activity extends BaseActivity {
                 @Override
                 public void run() {
                     pull_to_refresh_list.onHeaderRefreshComplete();
-
+                    isMore = false;
+                    CURRENT_PAGE = 1;
+                    SHOWNUM = ribs.size()==0?SHOWNUM:ribs.size();
+                    ribs.clear();
+                    loadList();
                 }
             },runTime);
         }
@@ -324,7 +328,7 @@ public class Start1Activity extends BaseActivity {
       //  loadList(CURRENT_PAGE);
     }
 
-
+    private int SHOWNUM = Common.SHOW_NUM;
     private   ArrayList<ReserItemBean> ribs = new ArrayList<>();
     private int CURRENT_PAGE = 1;
     private RequestCall requestCall;
@@ -343,10 +347,10 @@ public class Start1Activity extends BaseActivity {
             jsonObject.put("method","GetSelfOrder");
             JSONObject pms = new JSONObject();
             //0 自己和下属的，还包括未领取的，1自己和下属的，2未领取的
-            pms.put("OrderStatus","3,4,6,7,8");
+            pms.put("OrderStatus","3,4,6,7,8,9");
             pms.put("OrderType",type);
             pms.put("Index",CURRENT_PAGE);
-            pms.put("Size",Common.SHOW_NUM);
+            pms.put("Size",SHOWNUM);
             jsonObject.put("param",pms.toString());
         } catch (JSONException e) {
             e.printStackTrace();
@@ -381,7 +385,7 @@ public class Start1Activity extends BaseActivity {
                     String result = jsonObject.getString("Result");
                     JSONArray jsonArray = new JSONArray(result);
                     int len = jsonArray.length();
-                    if(len<Common.SHOW_NUM){
+                    if(len<SHOWNUM){
                         isMore = false;
                         startHandler.sendEmptyMessage(2);
                     }else{
@@ -396,7 +400,7 @@ public class Start1Activity extends BaseActivity {
                         ib.setName(object.getString("CName"));
                         ib.setNo(object.getString("OrderCode"));
                         ib.setTel(object.getString("MobilePhone"));
-                        ib.setOrderStatus(object.getInt("OrderStatus"));
+                        ib.setOrderStatus(object.getInt("OrderStatus")==9?7:object.getInt("OrderStatus"));
 //                        int type = Integer.parseInt(getCheckedId());
                         ib.setStaffName(object.getString("StaffName"));
                         int type = object.getInt("OrderType");

@@ -476,17 +476,9 @@ public class DetailProblemActivity extends TakePhotoActivity {
                             }else{
                                 //签名上传完毕
 
-                                if(map.get("proNo")==null){
-                                    //基础数据未上传
-                                   P.c("上传基础数据");
+
                                     sendStand(map);
-                                }else{
-                                    //完成任务单
-                                    cancelUp();
-                                    detailProblemHandler.sendEmptyMessage(60);
-                                    detailProblemHandler.sendEmptyMessage(70);
-                                    NewToast.makeText(DetailProblemActivity.this,"上传完毕",Common.TTIME).show();
-                                }
+
                             }
                         }
                         break;
@@ -568,7 +560,7 @@ public class DetailProblemActivity extends TakePhotoActivity {
         OkHttpUtils.postString().url(U.VISTER(U.BASE_URL) + U.PROBLEM_IMAGE).mediaType(MediaType.parse("application/json; charset=utf-8")).content(jsonObject.toString()).build().execute(new StringCallback() {
             @Override
             public void onError(Call call, Exception e, int id) {
-
+                P.c("失败"+e.getMessage());
                 cancelUp();
             }
 
@@ -614,9 +606,10 @@ public class DetailProblemActivity extends TakePhotoActivity {
             jsonObject.put("cls","Gas.RiskOrder");
             jsonObject.put("method","SubmitRiskOrder");
             JSONObject object = new JSONObject();
+            object.put("RiskId",map.get("proNo")==null?"":map.get("proNo"));
             object.put("OrderId",bean.getId());
             object.put("StopDate",map.get("startTime"));
-            object.put("endTime",map.get("endTime"));
+            object.put("EndDate",map.get("endTime"));
             //安检条目
             jsonObject.put("param",object.toString());
         } catch (JSONException e) {
@@ -636,14 +629,28 @@ public class DetailProblemActivity extends TakePhotoActivity {
 
                         if(map.get("proNo")==null){
                             //证明是整改中
-                            DB.getInstance().changePLSB(bean);
+                            DB.getInstance().changePLSB(bean,jsonObject.getString("Result"));
                             DB.getInstance().setStandCt(8,"N",bean);
                         }else{
                             //解除整改
                                 P.c("解除隐患");
-                            DB.getInstance().setStandCt(7,null,bean);
+                            if(map.get("bis").equals("1")){
+                                //已结解除过
+                                P.c("无需处理");
+                            }else{
+                                DB.getInstance().setStandCt(7,null,bean);
+                                DB.getInstance().resetItem(bean);
+                                DB.getInstance().changePLSBI(bean,true);
+                            }
+
+
                         }
-                        detailProblemHandler.sendEmptyMessage(10);
+
+                        detailProblemHandler.sendEmptyMessage(60);
+                        detailProblemHandler.sendEmptyMessage(70);
+                        NewToast.makeText(DetailProblemActivity.this,"上传完毕",Common.TTIME).show();
+                        cancelUp();
+
                     }else {
                         if(jsonObject.getString("Result").equals(Common.UNLOGIN)){
                             NewToast.makeText(DetailProblemActivity.this, "未登录", 1000).show();

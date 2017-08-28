@@ -502,6 +502,9 @@ public class DB {
     public void setStandCt(int status,String tag,ReserItemBean bean){
         db.execSQL("update staff_stand set status=? ,staffTag = ? where staffId = ? and id = ?",new Object[]{status,tag,bean.getNo(),bean.getId()});
     }
+    public void resetItem(ReserItemBean bean){
+        db.execSQL("update staff_stand_item set chk=? where  standId=? and staffId = ? ",new Object[]{false,bean.getId(),bean.getNo()});
+    }
     public void staff_print(ReserItemBean bean,int staffPrint,String path){
             if(isExitsPrint(bean.getId(),bean.getNo())==0){
                 //添加
@@ -851,7 +854,7 @@ public class DB {
      */
     public void getProStand(Map<String,String> map ,ReserItemBean bean){
         map.clear();
-        String sql = "select proNo,startTime,endTime,staffLine,personLine,personPhoto from staff_stand_pr_s where standId = ? and staffId = ?";
+        String sql = "select proNo,startTime,endTime,staffLine,personLine,personPhoto,bis from staff_stand_pr_s where standId = ? and staffId = ?";
         Cursor cursor = null;
 
         try {
@@ -864,6 +867,7 @@ public class DB {
                     map.put("staffLine",getString(cursor,"staffLine"));
                     map.put("personLine",getString(cursor,"personLine"));
                     map.put("personPhoto",getString(cursor,"personPhoto"));
+                    map.put("bis",getString(cursor,"bis")==null?"0":"1");
                 }
             }
             cursor.close();
@@ -937,8 +941,11 @@ public class DB {
     public void changePLS(ReserItemBean bean,int path){
         db.execSQL("update staff_stand_pr_s set send =?   where standId = ? and staffId = ?",new Object[]{path,bean.getId(),bean.getNo()});
     }
-    public void changePLSB(ReserItemBean bean){
-        db.execSQL("update staff_stand_pr_s set proNo =1   where standId = ? and staffId = ?",new Object[]{bean.getId(),bean.getNo()});
+    public void changePLSB(ReserItemBean bean,String value){
+        db.execSQL("update staff_stand_pr_s set proNo =?   where standId = ? and staffId = ?",new Object[]{value,bean.getId(),bean.getNo()});
+    }
+    public void changePLSBI(ReserItemBean bean,boolean value){
+        db.execSQL("update staff_stand_pr_s set bis =?   where standId = ? and staffId = ?",new Object[]{value,bean.getId(),bean.getNo()});
     }
     /**
      * 未上传的隐患图片
@@ -975,7 +982,7 @@ public class DB {
     }
     public Map<String,String> ProLinePrint(ReserItemBean bean) {
         Map<String,String> map  = new HashMap<>();
-        String sql = "select startTime,endTime,proNo,staffLine,personLine,personPhoto,send from staff_stand_pr_s  where standId=? and staffId=?";
+        String sql = "select startTime,endTime,proNo,staffLine,personLine,personPhoto,send,bis from staff_stand_pr_s  where standId=? and staffId=?";
         Cursor cursor = null;
 
         try {
@@ -988,6 +995,8 @@ public class DB {
                 map.put("personLine",getString(cursor,"personLine"));
                 map.put("personPhoto",getString(cursor,"personPhoto"));
                 map.put("send",getString(cursor,"send"));
+                map.put("bis",getString(cursor,"bis")==null?"0":"1");
+
 
             }
             cursor.close();

@@ -162,7 +162,7 @@ public class DetailActivity extends TakePhotoActivity {
                         //控制图片
                         int imageLen = staffImages.size();
                         item7.setNumColumns(imageLen);
-                        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(FileUtils.dip2px(DetailActivity.this, 110) * imageLen, LinearLayout.LayoutParams.WRAP_CONTENT);
+                        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(FileUtils.dip2px(DetailActivity.this, 90) * imageLen, LinearLayout.LayoutParams.WRAP_CONTENT);
                         item7.setLayoutParams(params);
                         imageAdapter.updata(staffImages);
                         break;
@@ -806,22 +806,23 @@ public class DetailActivity extends TakePhotoActivity {
         item10.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                    if(check()){
-                        //存在安全隐患
-                        P.c("什么情况");
 
-                        if(!DB.getInstance().isExitPro(bean)){
-                            createProblem();
-                        }
-                        Intent intent = new Intent(DetailActivity.this,DetailProblemActivity.class);
-                        intent.putExtra("obj",bean);
-                        startActivity(intent);
+                if(check()){
+                    //存在安全隐患
+                    P.c("什么情况");
 
-
-                    }else{
-                        //不存在不能进行
-                        NewToast.makeText(DetailActivity.this,"请勾选安检隐患条目",Common.TTIME).show();
+                    if(!DB.getInstance().isExitPro(bean)){
+                        createProblem();
                     }
+                    Intent intent = new Intent(DetailActivity.this,DetailProblemActivity.class);
+                    intent.putExtra("obj",bean);
+                    startActivity(intent);
+
+
+                }else{
+                    //不存在不能进行
+                    NewToast.makeText(DetailActivity.this,"请勾选安检隐患条目",Common.TTIME).show();
+                }
             }
         });
         item11.setOnClickListener(new View.OnClickListener() {
@@ -910,8 +911,15 @@ public class DetailActivity extends TakePhotoActivity {
 
             }
         });
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         load();
     }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
