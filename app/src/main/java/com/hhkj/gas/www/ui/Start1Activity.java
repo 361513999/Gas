@@ -327,7 +327,7 @@ public class Start1Activity extends BaseActivity {
 
       //  loadList(CURRENT_PAGE);
     }
-
+    private String AreaId = "Guid.Empty";
     private int SHOWNUM = Common.SHOW_NUM;
     private   ArrayList<ReserItemBean> ribs = new ArrayList<>();
     private int CURRENT_PAGE = 1;
@@ -349,6 +349,7 @@ public class Start1Activity extends BaseActivity {
             //0 自己和下属的，还包括未领取的，1自己和下属的，2未领取的
             pms.put("OrderStatus","3,4,6,7,8,9");
             pms.put("OrderType",type);
+           pms.put("AreaId",AreaId);
             pms.put("Index",CURRENT_PAGE);
             pms.put("Size",SHOWNUM);
             jsonObject.put("param",pms.toString());
@@ -464,6 +465,17 @@ public class Start1Activity extends BaseActivity {
         area_list = (ListView) areaPop.findViewById(R.id.area_list);
         areasAdapter = new AreasAdapter(Start1Activity.this,rbs);
         area_list.setAdapter(areasAdapter);
+        area_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                isMore = false;
+                CURRENT_PAGE = 1;
+                SHOWNUM = Common.SHOW_NUM;
+                AreaId = rbs.get(i).getId();
+                loadList();
+                disDataPop(areaPopupWindow,areaPop,new Object[]{area_list,areasAdapter});
+            }
+        });
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("toKen",sharedUtils.getStringValue("token"));
@@ -511,7 +523,7 @@ public class Start1Activity extends BaseActivity {
                             JSONObject object = jsonArray.getJSONObject(i);
                             AreaBean ab = new AreaBean();
                             ab.setName(object.getString("AreaName"));
-                            ab.setId(object.getString("AreaCode"));
+                            ab.setId(object.getString("AreaCode")==null?"Guid.Empty":object.getString("AreaCode"));
                             rbs.add(ab);
                         }
                         startHandler.sendEmptyMessage(3);
