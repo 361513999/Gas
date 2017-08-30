@@ -24,7 +24,9 @@ public class Common {
     public static final String UNLOGIN = "login";
     public static final int SHOW_NUM = 1;
     public static final String STAFF_IMAGE = "IMAGES/";
+    public static final String COMMON_DEFAULT = "00000000-0000-0000-0000-000000000000";
     public static final String CACHE_STAFF_IMAGES = SD+STAFF_IMAGE;
+
     public static void copy(){
         CopyFile cf = new CopyFile();
         cf.copyFile("data/data/com.hhkj.gas.www/databases/"+Common.DB_NAME,Common.BASE_DIR +"/droid4xshare/2.db");

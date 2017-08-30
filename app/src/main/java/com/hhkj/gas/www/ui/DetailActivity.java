@@ -538,7 +538,7 @@ public class DetailActivity extends TakePhotoActivity {
 
 
     private void sendStand(){
-        String create = "00000000-0000-0000-0000-000000000000";
+
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("toKen",sharedUtils.getStringValue("token"));
@@ -582,7 +582,7 @@ public class DetailActivity extends TakePhotoActivity {
             for(int i=0;i<staffQjs.size();i++){
                 JSONObject obj = new JSONObject();
                 StaffQj sf = staffQjs.get(i);
-                obj.put("Id",sf.getId()==null?create:sf.getId());
+                obj.put("Id",sf.getId()==null?Common.COMMON_DEFAULT:sf.getId());
                 obj.put("ItemName",sf.getName());
                 obj.put("ItemGroup",sf.getPosition());
                 obj.put("ItemType",2);
@@ -595,7 +595,7 @@ public class DetailActivity extends TakePhotoActivity {
                 StaffB sb  = staffBs.get(i);
                 if(sb.getName()!=null&&sb.getValue()!=null){
                     JSONObject obj = new JSONObject();
-                    obj.put("Id",sb.getId()==null?create:sb.getId());
+                    obj.put("Id",sb.getId()==null?Common.COMMON_DEFAULT:sb.getId());
                     obj.put("TabCode",sb.getName());
                     obj.put("TabQty",sb.getValue());
                     obj.put("UseStatus",sb.isCheck());

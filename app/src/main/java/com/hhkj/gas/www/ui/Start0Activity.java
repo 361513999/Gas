@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.IdRes;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
@@ -70,11 +71,31 @@ public class Start0Activity extends BaseActivity {
                 @Override
                 public void run() {
                     pull_to_refresh_list.onHeaderRefreshComplete();
+                    initListReq(ribs.size()==0?SHOWNUM:ribs.size(),null,null,null);
+                    loadList();
 
                 }
             },runTime);
         }
     };
+
+    /**
+     * 列表请求初始化
+     * @param num
+     */
+    private void initListReq(int num,String AreaId,String beginDate,String endDate){
+        isMore = true;
+        CURRENT_PAGE = 1;
+        SHOWNUM = num;
+        this.AreaId = AreaId==null?Common.COMMON_DEFAULT:AreaId;
+        this.BeginDate = beginDate;
+        this.EndDate = endDate;
+        ribs.clear();
+    }
+    private int  SHOWNUM  = Common.SHOW_NUM;
+    private String AreaId = Common.COMMON_DEFAULT;
+    private String BeginDate = null;
+    private String EndDate = null;
     private PullToRefreshView.OnFooterRefreshListener listFootListener = new PullToRefreshView.OnFooterRefreshListener() {
         @Override
         public void onFooterRefresh(PullToRefreshView view) {
@@ -155,9 +176,7 @@ public class Start0Activity extends BaseActivity {
         nav_grp.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, @IdRes int i) {
-                ribs.clear();
-                CURRENT_PAGE = 1;
-                isMore = true;
+               initListReq(Common.SHOW_NUM,null,null,null);
                 loadList();
                 /*get_layout.setVisibility(View.GONE);
                 start0Adapter.changeItem(false);
@@ -342,6 +361,12 @@ public class Start0Activity extends BaseActivity {
             if(type==0){
                 pms.put("OrderType",type);
             }
+
+            pms.put("AreaId",AreaId);
+            if(BeginDate!=null&&EndDate!=null){
+                pms.put("BeginDate",BeginDate);
+                pms.put("EndDate",EndDate);
+            }
             pms.put("Index",CURRENT_PAGE);
             pms.put("Size",Common.SHOW_NUM);
             jsonObject.put("param",pms.toString());
@@ -447,6 +472,15 @@ public class Start0Activity extends BaseActivity {
         area_list = (ListView) areaPop.findViewById(R.id.area_list);
         areasAdapter = new AreasAdapter(Start0Activity.this,rbs);
         area_list.setAdapter(areasAdapter);
+        area_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+                initListReq(Common.SHOW_NUM, rbs.get(i).getId(),null,null);
+                loadList();
+                disDataPop(areaPopupWindow,areaPop,new Object[]{area_list,areasAdapter});
+            }
+        });
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("toKen",sharedUtils.getStringValue("token"));
@@ -494,7 +528,7 @@ public class Start0Activity extends BaseActivity {
                             JSONObject object = jsonArray.getJSONObject(i);
                             AreaBean ab = new AreaBean();
                             ab.setName(object.getString("AreaName"));
-                            ab.setId(object.getString("AreaCode"));
+                            ab.setId(object.getString("Id")==null?Common.COMMON_DEFAULT:object.getString("Id"));
                             rbs.add(ab);
                         }
                         startHandler.sendEmptyMessage(3);
@@ -551,14 +585,26 @@ public class Start0Activity extends BaseActivity {
                 GregorianLunarCalendarView.CalendarData calendarData1 = mGLCView1.getCalendarData();
                 Calendar calendar1 = calendarData1.getCalendar();
                 //相同是0   第一个大于第二个是1   第一个小于第二个是-1
-                String showToast = calendar0.getTime().compareTo(calendar1.getTime())+"start : " + calendar0.get(Calendar.YEAR) + "-"
+//                String showToast = calendar0.getTime().compareTo(calendar1.getTime())+"start : " + calendar0.get(Calendar.YEAR) + "-"
+//                        + (calendar0.get(Calendar.MONTH) + 1) + "-"
+//                        + calendar0.get(Calendar.DAY_OF_MONTH)+"---end"+calendar1.get(Calendar.YEAR) + "-"
+//                        + (calendar1.get(Calendar.MONTH) + 1) + "-"
+//                        + calendar1.get(Calendar.DAY_OF_MONTH);
+
+                String begin =   calendar0.get(Calendar.YEAR) + "-"
                         + (calendar0.get(Calendar.MONTH) + 1) + "-"
-                        + calendar0.get(Calendar.DAY_OF_MONTH)+"---end"+calendar1.get(Calendar.YEAR) + "-"
+                        + calendar0.get(Calendar.DAY_OF_MONTH);
+                String end = calendar1.get(Calendar.YEAR) + "-"
                         + (calendar1.get(Calendar.MONTH) + 1) + "-"
                         + calendar1.get(Calendar.DAY_OF_MONTH);
-
-                NewToast.makeText(Start0Activity.this,showToast,1000).show();
-
+                if(begin.compareTo(end)==1){
+                    NewToast.makeText(Start0Activity.this,"结束时间小于起始时间",Common.TTIME).show();
+                    return;
+                }
+                //时间筛选
+                initListReq(Common.SHOW_NUM,null,begin,end);
+                loadList();
+                disDataPop(dataPopupWindow,dataPop,null);
             }
         });
         View diss = dataPop.findViewById(R.id.diss);
