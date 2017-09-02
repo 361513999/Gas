@@ -313,6 +313,10 @@ public class Start1Activity extends BaseActivity {
 
                 switch (checkedId){
                     case R.id.market_group_item0:
+                        if(market_group_item0.isChecked()){
+                            statusPop();
+                            showDataPop(statusPopupWindow,drop);
+                        }
                         break;
                     case R.id.market_group_item2:
                         if(market_group_item2.isChecked()){
@@ -327,6 +331,12 @@ public class Start1Activity extends BaseActivity {
                             showDataPop(areaPopupWindow,drop);
                         }
 
+                        break;
+                    case R.id.market_group_item3:
+                        if(market_group_item3.isChecked()){
+                            sortPop();
+                            showDataPop(sortPopupWindow,drop);
+                        }
                         break;
                 }
             }
@@ -458,15 +468,84 @@ public class Start1Activity extends BaseActivity {
     /**
      * 关于区域的pop
      */
-
-
+private void add(ArrayList<AreaBean> rbs,String name,String id){
+    AreaBean ab = new AreaBean();
+    ab.setName(name);
+    ab.setId(id);
+    rbs.add(ab);
+}
+private void statusPop(){
+    statusPop = inflater.inflate(R.layout.area_list_layout,null);
+    statusPopupWindow = new PopupWindow(statusPop,LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.MATCH_PARENT);
+    statusPopupWindow.setBackgroundDrawable(getResources().getDrawable(
+            R.color.bcolor));
+    statusPopupWindow.setAnimationStyle(android.R.style.TextAppearance_DeviceDefault_Widget_TextView_PopupMenu);
+    statusPopupWindow.update();
+    statusPopupWindow.setTouchable(true);
+    statusPopupWindow.setFocusable(true);
+    statusList = (ListView) statusPop.findViewById(R.id.area_list);
+      ArrayList<AreaBean> rbs = new ArrayList<>();
+     add(rbs,"任务进行中","3");
+    add(rbs,"审核中","4");
+    add(rbs,"重新安检中","6");
+    add(rbs,"等待再次执行","7");
+    add(rbs,"整改中","8");
+    statusAdapter = new AreasAdapter(Start1Activity.this,rbs);
+    statusList.setAdapter(statusAdapter);
+    statusList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+            disDataPop(statusPopupWindow,statusPop,null);
+        }
+    });
+    View diss = statusPop.findViewById(R.id.diss);
+    diss.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            disDataPop(statusPopupWindow,statusPop,null);
+        }
+    });
+}
+private void sortPop(){
+    {
+        sortPop = inflater.inflate(R.layout.area_list_layout,null);
+        sortPopupWindow = new PopupWindow(sortPop,LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.MATCH_PARENT);
+        sortPopupWindow.setBackgroundDrawable(getResources().getDrawable(
+                R.color.bcolor));
+        sortPopupWindow.setAnimationStyle(android.R.style.TextAppearance_DeviceDefault_Widget_TextView_PopupMenu);
+        sortPopupWindow.update();
+        sortPopupWindow.setTouchable(true);
+        sortPopupWindow.setFocusable(true);
+        sortList = (ListView) sortPop.findViewById(R.id.area_list);
+        ArrayList<AreaBean> rbs = new ArrayList<>();
+        add(rbs,"单号由低到高","StaffCode asc");
+        add(rbs,"单号由高到低","StaffCode desc");
+        add(rbs,"时间由低到高","SecurityTime asc");
+        add(rbs,"时间由高到低","SecurityTime desc");
+        sortAdapter = new AreasAdapter(Start1Activity.this,rbs);
+        sortList.setAdapter(sortAdapter);
+        sortList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                disDataPop(sortPopupWindow,sortPop,null);
+            }
+        });
+        View diss = sortPop.findViewById(R.id.diss);
+        diss.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                disDataPop(sortPopupWindow,sortPop,null);
+            }
+        });
+    }
+}
     /**
      * 关于时间的pop
      */
-    private View dataPop,areaPop;
-    private PopupWindow dataPopupWindow,areaPopupWindow;
-    private ListView area_list;
-    private AreasAdapter areasAdapter;
+    private View dataPop,areaPop,statusPop,sortPop;
+    private PopupWindow dataPopupWindow,areaPopupWindow,statusPopupWindow,sortPopupWindow;
+    private ListView area_list,statusList,sortList;
+    private AreasAdapter areasAdapter,statusAdapter,sortAdapter;
     private ArrayList<AreaBean> rbs = new ArrayList<>();
     private void areaPop(){
 
