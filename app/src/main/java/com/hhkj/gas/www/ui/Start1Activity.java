@@ -83,7 +83,7 @@ public class Start1Activity extends BaseActivity {
                 @Override
                 public void run() {
                     pull_to_refresh_list.onHeaderRefreshComplete();
-                    initListReq(ribs.size()==0?SHOWNUM:ribs.size(),null,null,null);
+                    initListReq(ribs.size()==0?SHOWNUM:ribs.size(),null,null,null,null,null,null);
                     loadList();
                 }
             },runTime);
@@ -94,12 +94,15 @@ public class Start1Activity extends BaseActivity {
      * 列表请求初始化
      * @param num
      */
-    private void initListReq(int num,String AreaId,String beginDate,String endDate){
+    private void initListReq(int num,String AreaId,String beginDate,String endDate,String OrderStatus,String SORT,String problem){
         isMore = true;
         CURRENT_PAGE = 1;
         SHOWNUM = num;
         this.AreaId = AreaId==null?Common.COMMON_DEFAULT:AreaId;
         this.BeginDate = beginDate;
+        this.OrderStatus = OrderStatus;
+        this.SORT = SORT;
+        this.problem = problem;
         this.EndDate = endDate;
         ribs.clear();
     }
@@ -284,7 +287,7 @@ public class Start1Activity extends BaseActivity {
         nav_grp.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, @IdRes int i) {
-                initListReq(Common.SHOW_NUM,null,null,null);
+                initListReq(Common.SHOW_NUM,null,null,null,null,null,null);
                 loadList();
 
                 market_group.clearCheck();
@@ -323,6 +326,8 @@ public class Start1Activity extends BaseActivity {
                             //选中才打开
                            // dataPop();
                            // showDataPop(dataPopupWindow,drop);
+                           problemPop();
+                            showDataPop(problemPopupWindow,drop);
                         }
                         break;
                     case R.id.market_group_item1:
@@ -348,6 +353,9 @@ public class Start1Activity extends BaseActivity {
     }
     private String BeginDate = null;
     private String EndDate = null;
+    private String OrderStatus = null;
+    private String SORT = null;
+    private String problem = null;
     private String AreaId = Common.COMMON_DEFAULT;
     private int SHOWNUM = Common.SHOW_NUM;
     private   ArrayList<ReserItemBean> ribs = new ArrayList<>();
@@ -375,7 +383,15 @@ public class Start1Activity extends BaseActivity {
                 pms.put("BeginDate",BeginDate);
                 pms.put("EndDate",EndDate);
             }
-
+            if(SORT!=null){
+                pms.put("Sort",SORT);
+            }
+            if(problem!=null){
+                pms.put("problem",problem);
+            }
+            if(OrderStatus!=null){
+                pms.put("OrderStatus",OrderStatus);
+            }
             pms.put("Index",CURRENT_PAGE);
             pms.put("Size",SHOWNUM);
             jsonObject.put("param",pms.toString());
@@ -474,6 +490,49 @@ private void add(ArrayList<AreaBean> rbs,String name,String id){
     ab.setId(id);
     rbs.add(ab);
 }
+    private void problemPop(){
+        problemPop = inflater.inflate(R.layout.area_list_layout,null);
+        problemPopupWindow = new PopupWindow(problemPop,LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.MATCH_PARENT);
+        problemPopupWindow.setBackgroundDrawable(getResources().getDrawable(
+                R.color.bcolor));
+        problemPopupWindow.setAnimationStyle(android.R.style.TextAppearance_DeviceDefault_Widget_TextView_PopupMenu);
+        problemPopupWindow.update();
+        problemPopupWindow.setTouchable(true);
+        problemPopupWindow.setFocusable(true);
+        problemList = (ListView) problemPop.findViewById(R.id.area_list);
+        final ArrayList<AreaBean> rbs = new ArrayList<>();
+        add(rbs,"存在隐患","1");
+        add(rbs,"无隐患","0");
+
+        problemAdapter = new AreasAdapter(Start1Activity.this,rbs);
+        problemList.setAdapter(problemAdapter);
+        problemPopupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+
+                // ((RadioButton)findViewById(market_group.getCheckedRadioButtonId())).setChecked(false);
+                // market_group_item2.setChecked(false);
+                market_group.clearCheck();
+            }
+        });
+        problemList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                initListReq(Common.SHOW_NUM,null,null,null,null,null,rbs.get(i).getId());
+                loadList();
+                disDataPop(problemPopupWindow,problemPop,null);
+            }
+        });
+        View diss = problemPop.findViewById(R.id.diss);
+        diss.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                disDataPop(problemPopupWindow,problemPop,null);
+            }
+        });
+    }
+
+
 private void statusPop(){
     statusPop = inflater.inflate(R.layout.area_list_layout,null);
     statusPopupWindow = new PopupWindow(statusPop,LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.MATCH_PARENT);
@@ -484,17 +543,28 @@ private void statusPop(){
     statusPopupWindow.setTouchable(true);
     statusPopupWindow.setFocusable(true);
     statusList = (ListView) statusPop.findViewById(R.id.area_list);
-      ArrayList<AreaBean> rbs = new ArrayList<>();
+      final ArrayList<AreaBean> rbs = new ArrayList<>();
      add(rbs,"任务进行中","3");
     add(rbs,"审核中","4");
     add(rbs,"重新安检中","6");
-    add(rbs,"等待再次执行","7");
+    add(rbs,"等待再次执行","7,9");
     add(rbs,"整改中","8");
     statusAdapter = new AreasAdapter(Start1Activity.this,rbs);
     statusList.setAdapter(statusAdapter);
+    statusPopupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+        @Override
+        public void onDismiss() {
+
+            // ((RadioButton)findViewById(market_group.getCheckedRadioButtonId())).setChecked(false);
+            // market_group_item2.setChecked(false);
+            market_group.clearCheck();
+        }
+    });
     statusList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+            initListReq(Common.SHOW_NUM,null,null,null,rbs.get(i).getId(),null,null);
+            loadList();
             disDataPop(statusPopupWindow,statusPop,null);
         }
     });
@@ -517,16 +587,27 @@ private void sortPop(){
         sortPopupWindow.setTouchable(true);
         sortPopupWindow.setFocusable(true);
         sortList = (ListView) sortPop.findViewById(R.id.area_list);
-        ArrayList<AreaBean> rbs = new ArrayList<>();
-        add(rbs,"单号由低到高","StaffCode asc");
-        add(rbs,"单号由高到低","StaffCode desc");
+        final ArrayList<AreaBean> rbs = new ArrayList<>();
+        add(rbs,"单号由低到高","OrderCode asc");
+        add(rbs,"单号由高到低","OrderCode desc");
         add(rbs,"时间由低到高","SecurityTime asc");
         add(rbs,"时间由高到低","SecurityTime desc");
         sortAdapter = new AreasAdapter(Start1Activity.this,rbs);
         sortList.setAdapter(sortAdapter);
+        sortPopupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+
+                // ((RadioButton)findViewById(market_group.getCheckedRadioButtonId())).setChecked(false);
+                // market_group_item2.setChecked(false);
+                market_group.clearCheck();
+            }
+        });
         sortList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                initListReq(Common.SHOW_NUM,null,null,null,null,rbs.get(i).getId(),null);
+                loadList();
                 disDataPop(sortPopupWindow,sortPop,null);
             }
         });
@@ -542,10 +623,10 @@ private void sortPop(){
     /**
      * 关于时间的pop
      */
-    private View dataPop,areaPop,statusPop,sortPop;
-    private PopupWindow dataPopupWindow,areaPopupWindow,statusPopupWindow,sortPopupWindow;
-    private ListView area_list,statusList,sortList;
-    private AreasAdapter areasAdapter,statusAdapter,sortAdapter;
+    private View dataPop,areaPop,statusPop,sortPop,problemPop;
+    private PopupWindow dataPopupWindow,areaPopupWindow,statusPopupWindow,sortPopupWindow,problemPopupWindow;
+    private ListView area_list,statusList,sortList,problemList;
+    private AreasAdapter areasAdapter,statusAdapter,sortAdapter,problemAdapter;
     private ArrayList<AreaBean> rbs = new ArrayList<>();
     private void areaPop(){
 
@@ -564,11 +645,12 @@ private void sortPop(){
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
-                initListReq(Common.SHOW_NUM, rbs.get(i).getId(),null,null);
+                initListReq(Common.SHOW_NUM, rbs.get(i).getId(),null,null,null,null,null);
                 loadList();
                 disDataPop(areaPopupWindow,areaPop,new Object[]{area_list,areasAdapter});
             }
         });
+
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("toKen",sharedUtils.getStringValue("token"));
@@ -689,7 +771,7 @@ private void sortPop(){
                     return;
                 }
                 //时间筛选
-                initListReq(Common.SHOW_NUM,null,begin,end);
+                initListReq(Common.SHOW_NUM,null,begin,end,null,null,null);
                 loadList();
                 disDataPop(dataPopupWindow,dataPop,null);
 

@@ -73,7 +73,7 @@ public class Start2Activity extends BaseActivity {
                 @Override
                 public void run() {
                     pull_to_refresh_list.onHeaderRefreshComplete();
-                    initListReq(ribs.size()==0?SHOWNUM:ribs.size(),null,null,null);
+                    initListReq(ribs.size()==0?SHOWNUM:ribs.size(),null,null,null,null);
                     loadList();
                 }
             },runTime);
@@ -84,10 +84,11 @@ public class Start2Activity extends BaseActivity {
      * 列表请求初始化
      * @param num
      */
-    private void initListReq(int num,String AreaId,String beginDate,String endDate){
+    private void initListReq(int num,String AreaId,String beginDate,String endDate,String SORT){
         isMore = true;
         CURRENT_PAGE = 1;
         SHOWNUM = num;
+        this.SORT = SORT;
         this.AreaId = AreaId==null?Common.COMMON_DEFAULT:AreaId;
         this.BeginDate = beginDate;
         this.EndDate = endDate;
@@ -97,7 +98,7 @@ public class Start2Activity extends BaseActivity {
     private String AreaId = Common.COMMON_DEFAULT;
     private String BeginDate = null;
     private String EndDate = null;
-
+    private String SORT = null;
     private PullToRefreshView.OnFooterRefreshListener listFootListener = new PullToRefreshView.OnFooterRefreshListener() {
         @Override
         public void onFooterRefresh(PullToRefreshView view) {
@@ -154,7 +155,7 @@ public class Start2Activity extends BaseActivity {
 //                ribs.clear();
 //                isMore = true;
 //                CURRENT_PAGE = 1;
-                initListReq(Common.SHOW_NUM,null,null,null);
+                initListReq(Common.SHOW_NUM,null,null,null,null);
                 loadList();
 
                 market_group.clearCheck();
@@ -197,6 +198,12 @@ public class Start2Activity extends BaseActivity {
                         }
 
                         break;
+                    case R.id.market_group_item3:
+                        if(market_group_item3.isChecked()){
+                            sortPop();
+                            showDataPop(sortPopupWindow,drop);
+                        }
+                        break;
                 }
             }
         });
@@ -232,6 +239,9 @@ public class Start2Activity extends BaseActivity {
             if(BeginDate!=null&&EndDate!=null){
                 pms.put("BeginDate",BeginDate);
                 pms.put("EndDate",EndDate);
+            }
+            if(SORT!=null){
+                pms.put("Sort",SORT);
             }
 
             pms.put("Index",CURRENT_PAGE);
@@ -320,11 +330,63 @@ public class Start2Activity extends BaseActivity {
     /**
      * 关于时间的pop
      */
-    private View dataPop,areaPop;
-    private PopupWindow dataPopupWindow,areaPopupWindow;
-    private ListView area_list;
-    private AreasAdapter areasAdapter;
+    private View dataPop,areaPop,sortPop;
+    private PopupWindow dataPopupWindow,areaPopupWindow,sortPopupWindow;
+    private ListView area_list,sortList;
+    private AreasAdapter areasAdapter,sortAdapter;
     private ArrayList<AreaBean> rbs = new ArrayList<>();
+
+    private void add(ArrayList<AreaBean> rbs,String name,String id){
+        AreaBean ab = new AreaBean();
+        ab.setName(name);
+        ab.setId(id);
+        rbs.add(ab);
+    }
+    private void sortPop(){
+        {
+            sortPop = inflater.inflate(R.layout.area_list_layout,null);
+            sortPopupWindow = new PopupWindow(sortPop,LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.MATCH_PARENT);
+            sortPopupWindow.setBackgroundDrawable(getResources().getDrawable(
+                    R.color.bcolor));
+            sortPopupWindow.setAnimationStyle(android.R.style.TextAppearance_DeviceDefault_Widget_TextView_PopupMenu);
+            sortPopupWindow.update();
+            sortPopupWindow.setTouchable(true);
+            sortPopupWindow.setFocusable(true);
+            sortList = (ListView) sortPop.findViewById(R.id.area_list);
+            final ArrayList<AreaBean> rbs = new ArrayList<>();
+            add(rbs,"单号由低到高","OrderCode asc");
+            add(rbs,"单号由高到低","OrderCode desc");
+            add(rbs,"时间由低到高","SecurityTime asc");
+            add(rbs,"时间由高到低","SecurityTime desc");
+            sortAdapter = new AreasAdapter(Start2Activity.this,rbs);
+            sortList.setAdapter(sortAdapter);
+            sortPopupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+                @Override
+                public void onDismiss() {
+
+                    // ((RadioButton)findViewById(market_group.getCheckedRadioButtonId())).setChecked(false);
+                    // market_group_item2.setChecked(false);
+                    market_group.clearCheck();
+                }
+            });
+            sortList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    initListReq(Common.SHOW_NUM,null,null,null,rbs.get(i).getId());
+                    loadList();
+                    disDataPop(sortPopupWindow,sortPop,null);
+                }
+            });
+            View diss = sortPop.findViewById(R.id.diss);
+            diss.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    disDataPop(sortPopupWindow,sortPop,null);
+                }
+            });
+        }
+    }
+
     private void areaPop(){
 
         areaPop = inflater.inflate(R.layout.area_list_layout,null);
@@ -342,7 +404,7 @@ public class Start2Activity extends BaseActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
-                initListReq(Common.SHOW_NUM, rbs.get(i).getId(),null,null);
+                initListReq(Common.SHOW_NUM, rbs.get(i).getId(),null,null,null);
                 loadList();
                 disDataPop(areaPopupWindow,areaPop,new Object[]{area_list,areasAdapter});
             }
@@ -468,7 +530,7 @@ public class Start2Activity extends BaseActivity {
                     return;
                 }
                 //时间筛选
-                initListReq(Common.SHOW_NUM,null,begin,end);
+                initListReq(Common.SHOW_NUM,null,begin,end,null);
                 loadList();
                 disDataPop(dataPopupWindow,dataPop,null);
             }
