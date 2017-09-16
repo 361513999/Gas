@@ -616,7 +616,6 @@ public class Start0Activity extends BaseActivity {
                 R.color.bcolor));
         //android.R.style.TextAppearance_DeviceDefault_Widget_TextView_PopupMenu)
         dataPopupWindow.setAnimationStyle(android.R.style.TextAppearance_DeviceDefault_Widget_TextView_PopupMenu);
-
         dataPopupWindow.update();
         dataPopupWindow.setTouchable(true);
         dataPopupWindow.setFocusable(true);

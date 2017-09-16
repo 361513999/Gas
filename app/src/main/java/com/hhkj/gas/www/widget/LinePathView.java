@@ -87,6 +87,7 @@ public class LinePathView extends View {
         mGesturePaint.setStrokeWidth(mPaintWidth);
         //设置签名颜色
         mGesturePaint.setColor(mPenColor);
+
     }
 
     @Override

@@ -14,7 +14,6 @@ import android.widget.PopupWindow;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
-
 import com.hhkj.gas.www.R;
 import com.hhkj.gas.www.adapter.AreasAdapter;
 import com.hhkj.gas.www.adapter.Start1Adapter;
@@ -39,11 +38,9 @@ import com.hhkj.gas.www.widget.PullToRefreshView;
 import com.zc.http.okhttp.OkHttpUtils;
 import com.zc.http.okhttp.callback.StringCallback;
 import com.zc.http.okhttp.request.RequestCall;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -51,7 +48,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-
 import library.view.GregorianLunarCalendarView;
 import okhttp3.Call;
 import okhttp3.MediaType;
@@ -89,7 +85,6 @@ public class Start1Activity extends BaseActivity {
             },runTime);
         }
     };
-
     /**
      * 列表请求初始化
      * @param num
@@ -259,8 +254,6 @@ public class Start1Activity extends BaseActivity {
     @Override
     public void init() {
         drop = findViewById(R.id.drop);
-
-
         pull_to_refresh_list = (PullToRefreshView) findViewById(R.id.pull_to_refresh_list);
         pull_to_refresh_list.setOnHeaderRefreshListener(listHeadListener);
         pull_to_refresh_list.setOnFooterRefreshListener(listFootListener);

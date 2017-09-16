@@ -89,6 +89,12 @@ public class CommonLineActivity extends BaseActivity {
                 }
             }
         });
+        cancle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                line.clear();
+            }
+        });
 
     }
 }
