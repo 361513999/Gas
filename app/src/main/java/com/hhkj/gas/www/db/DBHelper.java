@@ -70,6 +70,7 @@ public class DBHelper extends SQLiteOpenHelper{
 		db.execSQL("DROP TABLE IF EXISTS staff_stand_line");
 		db.execSQL("DROP TABLE IF EXISTS staff_stand_pr_s");
 		db.execSQL("DROP TABLE IF EXISTS staff_stand_pr_l_values");
+		db.execSQL("DROP TABLE IF EXISTS staff_stand_pr_l");
 		db.setTransactionSuccessful();
 		db.endTransaction();
 		//此处是删除数据表，在实际的业务中一般是需要数据备份的

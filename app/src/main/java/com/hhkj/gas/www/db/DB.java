@@ -1011,4 +1011,18 @@ public class DB {
         }
         return map;
     }
+    public void clear(){
+
+        db.execSQL("DELETE FROM staff_stand");
+        db.execSQL("DELETE FROM staff_stand_image");
+        db.execSQL("DELETE FROM staff_stand_image_values");
+        db.execSQL("DELETE FROM staff_stand_item");
+        db.execSQL("DELETE FROM staff_stand_tab");
+        db.execSQL("DELETE FROM staff_stand_qj");
+        db.execSQL("DELETE FROM staff_stand_line");
+        db.execSQL("DELETE FROM staff_stand_pr_s");
+        db.execSQL("DELETE FROM staff_stand_pr_l_values");
+        db.execSQL("DELETE FROM staff_stand_pr_l");
+
+    }
 }

@@ -396,6 +396,7 @@ public class DetailActivity extends TakePhotoActivity {
                                 super.run();
                                 //保存燃气具
                                 DB.getInstance().updateQjs(staffQjs,bean);
+                                P.c("燃气比"+staffBs.get(0).getValue());
                                 DB.getInstance().updateTab(staffBs,bean);
                                 detailHandler.sendEmptyMessage(8);
                             }
@@ -740,8 +741,8 @@ public class DetailActivity extends TakePhotoActivity {
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-               Common.copy();
-                //AppManager.getAppManager().finishActivity(DetailActivity.this);
+//               Common.copy();
+                AppManager.getAppManager().finishActivity(DetailActivity.this);
             }
         });
         proble = (LinearLayout) findViewById(R.id.proble);
