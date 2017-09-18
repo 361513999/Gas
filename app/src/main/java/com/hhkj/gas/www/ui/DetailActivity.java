@@ -94,7 +94,7 @@ import okhttp3.MediaType;
  */
 
 public class DetailActivity extends TakePhotoActivity {
-
+    private LinearLayout proble;
     private TextView back;
     private ReserItemBean bean;
     private DetailHandler detailHandler;
@@ -210,6 +210,26 @@ public class DetailActivity extends TakePhotoActivity {
 
                         item5.setText(sbBuilder);
                         item6.setText(getString(R.string.curr_person, bean.getStaffName()));
+
+
+                            if(bean.getStaffTag()!=null&&bean.getStaffTag().equals("Y")){
+                                item10.setVisibility(View.INVISIBLE);
+                            }
+                            if(bean.getStaffTag()!=null&&bean.getStaffTag().equals("N")){
+                                item11.setVisibility(View.INVISIBLE);
+                            }
+                        proble.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                if(DB.getInstance().isExitPro(bean)){
+                                    goProblem();
+                                }else{
+                                    NewToast.makeText(DetailActivity.this,"暂无隐患单",2000).show();
+                                }
+                            }
+                        });
+
+
                         //----------
                         break;
                     case 11:
@@ -713,8 +733,6 @@ public class DetailActivity extends TakePhotoActivity {
 
         }
         DB.getInstance().addProblem(bean,item);
-
-
     }
 
     public void ini() {
@@ -723,9 +741,10 @@ public class DetailActivity extends TakePhotoActivity {
             @Override
             public void onClick(View view) {
                Common.copy();
-//                AppManager.getAppManager().finishActivity(DetailActivity.this);
+                //AppManager.getAppManager().finishActivity(DetailActivity.this);
             }
         });
+        proble = (LinearLayout) findViewById(R.id.proble);
         item0 = (TextView) findViewById(R.id.item0);
         item1 = (TextView) findViewById(R.id.item1);
         item2 = (TextView) findViewById(R.id.item2);
@@ -750,11 +769,8 @@ public class DetailActivity extends TakePhotoActivity {
         item_b11 = (EditText) findViewById(R.id.item_b11);
         item_b02 = (CheckBox) findViewById(R.id.item_b02);
         item_b12 = (CheckBox) findViewById(R.id.item_b12);
-
         item18 = (LinearLayout) findViewById(R.id.item18);
         item19 = (LinearLayout) findViewById(R.id.item19);
-
-
         imageAdapter = new DetailImageAdapter(DetailActivity.this, staffImages);
         item7.setAdapter(imageAdapter);
 
@@ -803,10 +819,16 @@ public class DetailActivity extends TakePhotoActivity {
                 changeTime.showSheet();
             }
         });
+
+
         item10.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                Map<String,String> map = DB.getInstance().ProLinePrint(bean);
+                if(map.get("proNo")!=null&&map.get("bis").equals("1")){
+                    NewToast.makeText(DetailActivity.this,"已处理过隐患单",2000).show();
+                    return;
+                }
                 if(check()){
                     //存在安全隐患
                     P.c("什么情况");
@@ -814,10 +836,8 @@ public class DetailActivity extends TakePhotoActivity {
                     if(!DB.getInstance().isExitPro(bean)){
                         createProblem();
                     }
-                    Intent intent = new Intent(DetailActivity.this,DetailProblemActivity.class);
-                    intent.putExtra("obj",bean);
-                    startActivity(intent);
-
+                    DB.getInstance().setStandCt(bean.getOrderStatus(),"N",bean);
+                    goProblem();
 
                 }else{
                     //不存在不能进行
@@ -913,7 +933,12 @@ public class DetailActivity extends TakePhotoActivity {
         });
 
     }
+    private void goProblem(){
 
+        Intent intent = new Intent(DetailActivity.this,DetailProblemActivity.class);
+        intent.putExtra("obj",bean);
+        startActivity(intent);
+    }
     @Override
     protected void onResume() {
         super.onResume();

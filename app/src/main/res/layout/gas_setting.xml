@@ -46,6 +46,7 @@
         android:layout_height="15dp"
         android:background="@color/line_bg"/>
     <RelativeLayout
+        android:id="@+id/item0"
         android:layout_width="match_parent"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
@@ -82,6 +83,7 @@
         android:layout_marginRight="20dp"
         android:background="@mipmap/line_gray"/>
     <RelativeLayout
+        android:id="@+id/item1"
         android:layout_width="match_parent"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"

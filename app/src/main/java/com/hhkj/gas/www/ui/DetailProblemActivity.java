@@ -221,6 +221,10 @@ public class DetailProblemActivity extends TakePhotoActivity {
         item19.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(item19_v.getText().equals(SUCEES)){
+                    NewToast.makeText(DetailProblemActivity.this,SUCEES,2000).show();
+                    return;
+                }
                 if(isCan()){
                     HeadTips headTips = new HeadTips(DetailProblemActivity.this,detailProblemHandler,bean);
                     headTips.showSheet();
@@ -370,7 +374,7 @@ public class DetailProblemActivity extends TakePhotoActivity {
             ImageLoader.getInstance().displayImage("file://"+data.getStringExtra("path"),item16);
         }
     }
-
+    private final String SUCEES ="隐患已解除";
     private class DetailProblemHandler extends Handler {
         WeakReference<DetailProblemActivity> mLeakActivityRef;
 
@@ -411,6 +415,12 @@ public class DetailProblemActivity extends TakePhotoActivity {
                         }else{
                             item19_v.setText("解除隐患");
                         }
+
+                        Map<String,String> map0 = DB.getInstance().ProLinePrint(bean);
+                        if(map0.get("proNo")!=null&&map0.get("bis").equals("1")){
+                            item19_v.setText(SUCEES);
+                        }
+
                         break;
                     case 70:
                         DB.getInstance().updataStand(bean);
@@ -637,7 +647,11 @@ public class DetailProblemActivity extends TakePhotoActivity {
                             if(map.get("bis").equals("1")){
                                 //已结解除过
                                 P.c("无需处理");
+                                //多余的步骤
+                                item19_v.setText(SUCEES);
+
                             }else{
+                                P.c("执行了清除");
                                 DB.getInstance().setStandCt(7,null,bean);
                                 DB.getInstance().resetItem(bean);
                                 DB.getInstance().changePLSBI(bean,true);

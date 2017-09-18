@@ -76,6 +76,7 @@ public class LoginActivity extends BaseActivity{
     @Override
     public void init() {
         user = (EditText) findViewById(R.id.user);
+        user.setText(sharedUtils.getStringValue("last"));
         pass = (EditText) findViewById(R.id.pass);
         login = (TextView) findViewById(R.id.login);
         login.setOnClickListener(new View.OnClickListener() {
@@ -116,6 +117,7 @@ public class LoginActivity extends BaseActivity{
         @Override
         public void onError(Call call, Exception e, int id) {
                 closeLoad();
+            P.c(e.getMessage());
         }
 
         @Override
@@ -130,6 +132,7 @@ public class LoginActivity extends BaseActivity{
                     String result = jsonObject.getString("Result");
                     JSONObject obj = new JSONObject(result);
                     sharedUtils.setStringValue("userid",obj.getString("Id"));
+                    sharedUtils.setStringValue("last",user.getText().toString().trim());
                     handler.sendEmptyMessage(1);
                 }else{
                     Message msg = new Message();

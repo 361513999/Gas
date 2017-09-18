@@ -58,13 +58,10 @@
         <activity android:name=".ui.DetailActivity" >
 
         </activity>
-        <activity android:name=".ui.BluetoothListActivity" android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
-
-
-        </activity>
+        <activity android:name=".ui.BluetoothListActivity" android:theme="@style/Theme.AppCompat.Light.DarkActionBar"/>
         <activity android:name=".ui.StaffCtActivity"/>
         <activity android:name=".ui.DetailProblemActivity"/>
-
+        <activity android:name=".ui.Gas_Setting_IP"/>
 
         <activity android:name=".ui.StaffBtActivity" />
         <activity android:name=".ui.DetailProBtActivity"/>

@@ -44,6 +44,7 @@
             android:gravity="center"
             android:orientation="horizontal">
             <TextView
+                android:id="@+id/dt_line"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="拒签"

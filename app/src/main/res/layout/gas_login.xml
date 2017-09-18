@@ -58,7 +58,7 @@
                         android:id="@+id/user"
                         android:background="@color/no_color"
                         android:textSize="18sp"
-                        android:text="17080707"
+
                         android:layout_gravity="center_vertical"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
@@ -96,7 +96,7 @@
                         android:layout_width="match_parent"
                         android:inputType="textPassword"
                         android:textSize="18sp"
-                        android:text="123456"
+
                         android:layout_height="wrap_content" />
                 </LinearLayout>
                 <View
