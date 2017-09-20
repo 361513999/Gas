@@ -143,9 +143,9 @@ public class StaffItemAdapter extends BaseAdapter {
                         P.c("可以更改");
                         DB.getInstance().updateStandItemChk(si.getId(),!chk(viewHolder.item_c),handler);
 
-                    }/*else if(!tag.equals("Y")){
+                    }else if(tag.equals("O")){
                         DB.getInstance().updateStandItemChk(si.getId(),!chk(viewHolder.item_c),handler);
-                    }*/
+                    }
                     else{
                         //不能更改
                         P.c("不能更改");
