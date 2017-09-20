@@ -93,9 +93,11 @@ public class StaffItemAdapter extends BaseAdapter {
             view.setTag(R.id.staff_item_id,false);
             view.setBackgroundResource(no);
         }
-
-
-
+    }
+    private boolean canClick = true;
+    public void changeClick(boolean canClick){
+        this.canClick = canClick;
+        notifyDataSetChanged();
     }
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
@@ -127,8 +129,10 @@ public class StaffItemAdapter extends BaseAdapter {
             viewHolder.layout1.setVisibility(View.GONE);
 
             setBt(viewHolder.item_c,si.isCheck());
-
             viewHolder.item_t.setText(index+"、"+si.getTxt());
+            if(canClick){
+                viewHolder.item_c.setEnabled(canClick);
+            }
             viewHolder.item_c.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -139,9 +143,9 @@ public class StaffItemAdapter extends BaseAdapter {
                         P.c("可以更改");
                         DB.getInstance().updateStandItemChk(si.getId(),!chk(viewHolder.item_c),handler);
 
-                    }else if(!tag.equals("Y")){
+                    }/*else if(!tag.equals("Y")){
                         DB.getInstance().updateStandItemChk(si.getId(),!chk(viewHolder.item_c),handler);
-                    }
+                    }*/
                     else{
                         //不能更改
                         P.c("不能更改");
@@ -167,6 +171,9 @@ public class StaffItemAdapter extends BaseAdapter {
                 setBt(gc_item1,si.isCheck());
                 viewHolder.item_gc.addView(childView);
                 P.c("数量--"+viewHolder.item_gc.getChildCount());
+                if(canClick){
+                    gc_item1.setEnabled(canClick);
+                }
                 gc_item1.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {

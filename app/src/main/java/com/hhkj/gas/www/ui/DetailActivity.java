@@ -219,8 +219,9 @@ public class DetailActivity extends TakePhotoActivity {
                         item5.setText(sbBuilder);
                         item6.setText(getString(R.string.curr_person, bean.getStaffName()));
 
-
+                        staffItemAdapter.changeClick(true);
                             if(bean.getStaffTag()!=null&&bean.getStaffTag().equals("Y")){
+                                staffItemAdapter.changeClick(false);
                                 item10.setVisibility(View.GONE);
                                 item12.setVisibility(View.GONE);
                                 RelativeLayout.LayoutParams par = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,RelativeLayout.LayoutParams.WRAP_CONTENT);
@@ -228,6 +229,7 @@ public class DetailActivity extends TakePhotoActivity {
                                 item11.setLayoutParams(par);
                             }
                             if(bean.getStaffTag()!=null&&bean.getStaffTag().equals("N")){
+                                staffItemAdapter.changeClick(false);
                                 item11.setVisibility(View.GONE);
                                 item12.setVisibility(View.GONE);
                                 RelativeLayout.LayoutParams par = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,RelativeLayout.LayoutParams.WRAP_CONTENT);
