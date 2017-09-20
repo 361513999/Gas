@@ -11,23 +11,25 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import com.hhkj.gas.www.R;
 import com.hhkj.gas.www.common.Common;
 import com.hhkj.gas.www.common.CopyFile;
 import com.hhkj.gas.www.db.DB;
 
 
-public class ClearTips {
+public class DetailTips {
     private Context context;
     private Handler handler;
     private IDialog dlg;
-
+    private int index;
     private  LayoutInflater inflater;
-
-    public ClearTips(Context context,Handler handler) {
+    private String txt;
+    public DetailTips(Context context, Handler handler,String txt,int index) {
         this.context = context;
         this.handler = handler;
-
+        this.txt = txt;
+        this.index = index;
         inflater  = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
@@ -39,13 +41,13 @@ public class ClearTips {
                 R.layout.clear_merroy, null);
         TextView item0 = (TextView) layout.findViewById(R.id.item0);
         TextView item1 = (TextView) layout.findViewById(R.id.item1);
-        TextView txt = (TextView) layout.findViewById(R.id.txt);
-        txt.setText("注意:清除缓存会将所有本地记录清空");
+        TextView tt = (TextView) layout.findViewById(R.id.txt);
+        tt.setText(txt);
         item0.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 cancle();
-//                Common.copy();
+
 
             }
         });
@@ -53,11 +55,7 @@ public class ClearTips {
             @Override
             public void onClick(View v) {
                 //清除数据
-                CopyFile copyFile = new CopyFile();
-                copyFile.delFolder(Common.SD);
-                DB.getInstance().clear();
-                handler.sendEmptyMessage(0);
-                NewToast.makeText(context,"清除完毕",2000).show();
+            handler.sendEmptyMessage(index);
                 cancle();
             }
         });

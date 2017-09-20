@@ -1,11 +1,13 @@
 package com.hhkj.gas.www.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -17,11 +19,13 @@ import com.hhkj.gas.www.R;
 import com.hhkj.gas.www.bean.DetailStaff;
 import com.hhkj.gas.www.bean.ReserItemBean;
 import com.hhkj.gas.www.bean.StaffTxtItem;
+import com.hhkj.gas.www.common.BaseApplication;
 import com.hhkj.gas.www.common.FileUtils;
 import com.hhkj.gas.www.common.P;
 import com.hhkj.gas.www.db.DB;
 import com.hhkj.gas.www.inter.ProSelect;
 import com.hhkj.gas.www.ui.DetailActivity;
+import com.hhkj.gas.www.ui.ShowImageActivity;
 import com.hhkj.gas.www.widget.auto.AutoFlowLayout;
 
 import java.util.ArrayList;
@@ -36,9 +40,11 @@ public class DetailProItemAdapter extends BaseAdapter {
     private Context context;
     private  ArrayList<StaffTxtItem>  rbs;
     private ProSelect proSelect;
+
     public DetailProItemAdapter(Context context, ArrayList<StaffTxtItem>  rbs, ProSelect proSelect){
         this.context = context;
         this.rbs = rbs;
+
         this.proSelect = proSelect;
         inflater = LayoutInflater.from(context);
     }
@@ -105,6 +111,22 @@ public class DetailProItemAdapter extends BaseAdapter {
             public void onClick(View v) {
                 proSelect.select(position);
 
+            }
+        });
+        viewHolder.item3.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                ArrayList<String> paths = new ArrayList<>();
+                for(int j=0;j<it.getImageItems().size();j++){
+                    paths.add(it.getImageItems().get(j).getPath());
+                }
+
+                Intent intent = new Intent();
+                intent.setClassName(BaseApplication.getName(), ShowImageActivity.class.getName());
+                intent.putExtra("list",paths);
+                intent.putExtra("index",i);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(intent);
             }
         });
         return  convertView;

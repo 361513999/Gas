@@ -58,6 +58,7 @@
         <activity android:name=".ui.DetailActivity" >
 
         </activity>
+        <activity android:name=".ui.ShowImageActivity"/>
         <activity android:name=".ui.BluetoothListActivity" android:theme="@style/Theme.AppCompat.Light.DarkActionBar"/>
         <activity android:name=".ui.StaffCtActivity"/>
         <activity android:name=".ui.DetailProblemActivity"/>

@@ -23,4 +23,5 @@
     <color name="login_edit">#E7E7E7</color>
     <color name="detail_red">#FF4C3E</color>
     <color name="detail_line">#7F7F7F</color>
+    <color name="tip_bg">#F2F2F2</color>
 </resources>

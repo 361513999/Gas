@@ -4,14 +4,14 @@
 
     <gradient
         android:angle="180"
-        android:endColor="@color/white"
-        android:startColor="@color/white" />
+        android:endColor="@color/tip_bg"
+        android:startColor="@color/tip_bg" />
 
     <stroke
         android:width="0px"
-        android:color="@color/white" />
+        android:color="@color/tip_bg" />
 
-    <solid android:color="@color/white" />
+    <solid android:color="@color/tip_bg" />
 
     <corners
         android:bottomLeftRadius="20px"

@@ -18,6 +18,7 @@ import android.text.style.ForegroundColorSpan;
 import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -25,6 +26,7 @@ import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import com.hhkj.gas.www.R;
 import com.hhkj.gas.www.adapter.DetailBAdapter;
@@ -46,14 +48,17 @@ import com.hhkj.gas.www.common.CopyFile;
 import com.hhkj.gas.www.common.FileUtils;
 import com.hhkj.gas.www.common.P;
 import com.hhkj.gas.www.common.SharedUtils;
+import com.hhkj.gas.www.common.TimeUtil;
 import com.hhkj.gas.www.common.U;
 import com.hhkj.gas.www.db.DB;
 import com.hhkj.gas.www.inter.PhotoSelect;
 import com.hhkj.gas.www.inter.TimeSelect;
+import com.hhkj.gas.www.utils.ImageUtil;
 import com.hhkj.gas.www.widget.ChangeTime;
 import com.hhkj.gas.www.widget.CommonLogin;
 import com.hhkj.gas.www.widget.CommonPhotoPop;
 import com.hhkj.gas.www.widget.DetailImageDlg;
+import com.hhkj.gas.www.widget.DetailTips;
 import com.hhkj.gas.www.widget.HeadTips;
 import com.hhkj.gas.www.widget.InScrollListView;
 import com.hhkj.gas.www.widget.LoadView;
@@ -79,6 +84,9 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -213,10 +221,18 @@ public class DetailActivity extends TakePhotoActivity {
 
 
                             if(bean.getStaffTag()!=null&&bean.getStaffTag().equals("Y")){
-                                item10.setVisibility(View.INVISIBLE);
+                                item10.setVisibility(View.GONE);
+                                item12.setVisibility(View.GONE);
+                                RelativeLayout.LayoutParams par = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,RelativeLayout.LayoutParams.WRAP_CONTENT);
+                                par.addRule(RelativeLayout.CENTER_IN_PARENT);
+                                item11.setLayoutParams(par);
                             }
                             if(bean.getStaffTag()!=null&&bean.getStaffTag().equals("N")){
-                                item11.setVisibility(View.INVISIBLE);
+                                item11.setVisibility(View.GONE);
+                                item12.setVisibility(View.GONE);
+                                RelativeLayout.LayoutParams par = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,RelativeLayout.LayoutParams.WRAP_CONTENT);
+                                par.addRule(RelativeLayout.CENTER_IN_PARENT);
+                                item10.setLayoutParams(par);
                             }
                         proble.setOnClickListener(new View.OnClickListener() {
                             @Override
@@ -443,6 +459,17 @@ public class DetailActivity extends TakePhotoActivity {
                                 }
                             }
 
+                        break;
+                    case -1:
+                        if(!DB.getInstance().isExitPro(bean)){
+                            createProblem();
+                        }
+                        DB.getInstance().setStandCt(bean.getOrderStatus(),"N",bean);
+                        goProblem();
+                        break;
+                    case -2:
+                        DB.getInstance().setStandCt(bean.getOrderStatus(),"Y",bean);
+                        detailHandler.sendEmptyMessage(70);
                         break;
                 }
             }
@@ -833,12 +860,9 @@ public class DetailActivity extends TakePhotoActivity {
                 if(check()){
                     //存在安全隐患
                     P.c("什么情况");
+                    DetailTips detailTips = new DetailTips(DetailActivity.this,detailHandler,"注意:修改该安检单为【不合格】",-1);
+                    detailTips.showSheet();
 
-                    if(!DB.getInstance().isExitPro(bean)){
-                        createProblem();
-                    }
-                    DB.getInstance().setStandCt(bean.getOrderStatus(),"N",bean);
-                    goProblem();
 
                 }else{
                     //不存在不能进行
@@ -852,8 +876,9 @@ public class DetailActivity extends TakePhotoActivity {
                 if(bean.getStaffTag()!=null&&bean.getStaffTag().equals("N")){
                     NewToast.makeText(DetailActivity.this,"请先解除隐患",Common.TTIME).show();
                 }else{
-                    DB.getInstance().setStandCt(bean.getOrderStatus(),"Y",bean);
-                    detailHandler.sendEmptyMessage(70);
+
+                    DetailTips detailTips = new DetailTips(DetailActivity.this,detailHandler,"注意:修改该安检单为【合格】",-2);
+                    detailTips.showSheet();
                 }
 
             }
@@ -954,6 +979,8 @@ public class DetailActivity extends TakePhotoActivity {
         if(requestCode==100&&resultCode==1000){
             //更新基本信息
             detailHandler.sendEmptyMessage(70);
+            setResult(1000);
+            AppManager.getAppManager().finishActivity(DetailActivity.this);
         }else if(requestCode==101&&resultCode==1000){
             //安检员
             P.c("返回的地址"+data.getStringExtra("path"));
@@ -1017,6 +1044,12 @@ public class DetailActivity extends TakePhotoActivity {
             //签名部分
             ArrayList<TImage> imsge = result.getImages();
             if(imsge.size()!=0){
+                try {
+                    shuiyin(imsge);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    P.c("水印异常");
+                }
                 DB.getInstance().staff_print(bean,2,imsge.get(0).getCompressPath());
                 detailHandler.sendEmptyMessage(12);
             }
@@ -1040,6 +1073,11 @@ public class DetailActivity extends TakePhotoActivity {
                     }
 
                 }*/
+                    try {
+                        shuiyin(imsge);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                     DB.getInstance().addStaffImages(staffImages.get(SELECT_INDEX),bean,imsge,detailHandler);
 
                 }
@@ -1049,7 +1087,46 @@ public class DetailActivity extends TakePhotoActivity {
 
     }
 
+    /**
+     * 水印处理
+     * @param imsges
+     */
+    private void shuiyin( ArrayList<TImage> imsges) throws IOException {
+        for(int i=0;i<imsges.size();i++){
+            String path = imsges.get(i).getCompressPath();
+            Bitmap sourBitmap = BitmapFactory.decodeFile(path);
+            Bitmap waterBitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.logo_p);
+            Bitmap watermarkBitmap = ImageUtil.createWaterMaskRightBottom(DetailActivity.this,sourBitmap, waterBitmap,20,30);
+            P.c("处理水印"+path);
+            Bitmap  textBitmap = ImageUtil.drawTextToRightBottom(this, watermarkBitmap, TimeUtil.getTimePri(System.currentTimeMillis()), 8, Color.RED, 0, 5);
+            saveMyBitmap(path,textBitmap);
+        }
 
+    }
+    public void saveMyBitmap(String path, Bitmap mBitmap) throws IOException {
+        File f = new File(path);
+        if(f.exists()){
+            f.delete();
+        }
+        f.createNewFile();
+        FileOutputStream fOut = null;
+        try {
+            fOut = new FileOutputStream(f);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        mBitmap.compress(Bitmap.CompressFormat.PNG, 100, fOut);
+        try {
+            fOut.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            fOut.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     @Override
     public void takeFail(TResult result, String msg) {
         super.takeFail(result, msg);

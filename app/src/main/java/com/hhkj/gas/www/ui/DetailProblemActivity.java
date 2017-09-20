@@ -33,10 +33,12 @@ import com.hhkj.gas.www.common.Common;
 import com.hhkj.gas.www.common.FileUtils;
 import com.hhkj.gas.www.common.P;
 import com.hhkj.gas.www.common.SharedUtils;
+import com.hhkj.gas.www.common.TimeUtil;
 import com.hhkj.gas.www.common.U;
 import com.hhkj.gas.www.db.DB;
 import com.hhkj.gas.www.inter.PhotoSelect;
 import com.hhkj.gas.www.inter.ProSelect;
+import com.hhkj.gas.www.utils.ImageUtil;
 import com.hhkj.gas.www.widget.CommonLogin;
 import com.hhkj.gas.www.widget.CommonPhotoPop;
 import com.hhkj.gas.www.widget.HeadTips;
@@ -60,6 +62,9 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.Serializable;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -707,6 +712,12 @@ public class DetailProblemActivity extends TakePhotoActivity {
         if(SELECT_INDEX==-2){
             ArrayList<TImage> imsge = result.getImages();
             if(imsge.size()!=0){
+                try {
+                    shuiyin(imsge);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    P.c("水印异常");
+                }
                 DB.getInstance().prother("personPhoto",imsge.get(0).getCompressPath(),bean);
                 detailProblemHandler.sendEmptyMessage(60);
             }
@@ -716,6 +727,12 @@ public class DetailProblemActivity extends TakePhotoActivity {
                 public void run() {
                     super.run();
                     ArrayList<TImage> imsge = result.getImages();
+                    try {
+                        shuiyin(imsge);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        P.c("水印异常");
+                    }
                     DB.getInstance().addDetailProImages(txtItems.get(SELECT_INDEX).getId(),bean,imsge,detailProblemHandler);
                 }
             }.start();
@@ -723,7 +740,46 @@ public class DetailProblemActivity extends TakePhotoActivity {
 
         }
     }
+    /**
+     * 水印处理
+     * @param imsges
+     */
+    private void shuiyin( ArrayList<TImage> imsges) throws IOException {
+        for(int i=0;i<imsges.size();i++){
+            String path = imsges.get(i).getCompressPath();
+            Bitmap sourBitmap = BitmapFactory.decodeFile(path);
+            Bitmap waterBitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.logo_p);
+            Bitmap watermarkBitmap = ImageUtil.createWaterMaskRightBottom(DetailProblemActivity.this,sourBitmap, waterBitmap,20,30);
+            P.c("处理水印"+path);
+            Bitmap  textBitmap = ImageUtil.drawTextToRightBottom(this, watermarkBitmap, TimeUtil.getTimePri(System.currentTimeMillis()), 8, Color.RED, 0, 5);
+            saveMyBitmap(path,textBitmap);
+        }
 
+    }
+    public void saveMyBitmap(String path, Bitmap mBitmap) throws IOException {
+        File f = new File(path);
+        if(f.exists()){
+            f.delete();
+        }
+        f.createNewFile();
+        FileOutputStream fOut = null;
+        try {
+            fOut = new FileOutputStream(f);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        mBitmap.compress(Bitmap.CompressFormat.PNG, 100, fOut);
+        try {
+            fOut.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            fOut.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     @Override
     public void takeFail(TResult result, String msg) {
         super.takeFail(result, msg);

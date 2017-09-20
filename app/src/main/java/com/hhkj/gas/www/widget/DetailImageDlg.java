@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.DialogInterface.OnShowListener;
+import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
 import android.view.LayoutInflater;
@@ -19,9 +20,12 @@ import com.hhkj.gas.www.R;
 import com.hhkj.gas.www.adapter.DetailDlgAdapter;
 import com.hhkj.gas.www.bean.ReserItemBean;
 import com.hhkj.gas.www.bean.StaffImageItem;
+import com.hhkj.gas.www.common.BaseApplication;
 import com.hhkj.gas.www.common.P;
 import com.hhkj.gas.www.common.SharedUtils;
 import com.hhkj.gas.www.db.DB;
+import com.hhkj.gas.www.ui.ShowImageActivity;
+import com.jph.takephoto.model.TImage;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.ArrayList;
@@ -80,6 +84,19 @@ public class DetailImageDlg {
                 msg9.arg1 = position;
                 parentHandler.sendMessage(msg9);
                 cancle();
+                break;
+            case 4:
+                ArrayList<String> paths = new ArrayList<>();
+               for(int i=0;i<rbs.size();i++){
+                   paths.add(rbs.get(i).getPath());
+               }
+
+                Intent intent = new Intent();
+                intent.setClassName(BaseApplication.getName(), ShowImageActivity.class.getName());
+                intent.putExtra("list",paths);
+                intent.putExtra("index",msg.arg1);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(intent);
                 break;
         }
         }

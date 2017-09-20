@@ -31,7 +31,7 @@ public class BaseApplication extends Application {
 	public static BaseApplication application;
 	protected boolean isNeedCaughtExeption = true;// 是否捕获未知异常
 	private MyUncaughtExceptionHandler uncaughtExceptionHandler;
-	private String packgeName;
+	private static String packgeName;
 	@Override
 	public void onCreate() {
 		// TODO Auto-generated method stub
@@ -49,6 +49,9 @@ public class BaseApplication extends Application {
 //		initLocation();
 //		mLocationClient.start();
 
+	}
+	public static String getName(){
+		return  packgeName;
 	}
 	public void initImageLoader(Context context) {
 		// This configuration tuning is custom. You can tune every option, you

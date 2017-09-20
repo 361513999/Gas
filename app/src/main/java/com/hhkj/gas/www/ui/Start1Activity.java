@@ -884,7 +884,7 @@ private void sortPop(){
                         ReserItemBean obj = (ReserItemBean) msg.obj;
                         Intent intent = new Intent(Start1Activity.this,DetailActivity.class);
                         intent.putExtra("obj",obj);
-                        startActivity(intent);
+                        startActivityForResult(intent,100);
                         break;
                     case 7:
                         int position = msg.arg1;
@@ -904,6 +904,16 @@ private void sortPop(){
             }
         }
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode==100&&resultCode==1000){
+            initListReq(ribs.size()==0?SHOWNUM:ribs.size(),null,null,null,null,null,null);
+            loadList();
+        }
+    }
+
     private String getCheckedId(){
         String tag = null;
         try {

@@ -105,6 +105,15 @@ public class DetailDlgAdapter extends BaseAdapter {
                     handler.sendMessage(msg);
                 }
             });
+            viewHolder.item0.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Message msg = new Message();
+                    msg.what = 4;
+                    msg.arg1 = position-1;
+                    handler.sendMessage(msg);
+                }
+            });
         }
 
         return  convertView;
