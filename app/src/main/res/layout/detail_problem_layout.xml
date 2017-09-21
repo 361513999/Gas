@@ -187,7 +187,7 @@
                                     android:gravity="center"
                                     android:text="@string/nor_item_txt4"
                                     android:textColor="@color/blue_n"
-                                    android:textSize="12sp" />
+                                    android:textSize="10sp" />
 
                                 <ImageView
                                     android:id="@+id/item_edit"
@@ -206,7 +206,7 @@
                                     android:gravity="center"
                                     android:text="@string/curr_status"
                                     android:textColor="@color/font_normal"
-                                    android:textSize="12sp" />
+                                    android:textSize="10sp" />
                             </RelativeLayout>
 
                             <LinearLayout
