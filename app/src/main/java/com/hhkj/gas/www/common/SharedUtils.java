@@ -9,7 +9,7 @@ public class SharedUtils {
 	@SuppressWarnings("deprecation")
 	public SharedUtils(String NAME) {
 		// TODO Auto-generated constructor stub
-		preferences = BaseApplication.application.getSharedPreferences(NAME,   Context.MODE_MULTI_PROCESS|Context.MODE_WORLD_WRITEABLE );
+		preferences = BaseApplication.application.getSharedPreferences(NAME,   Context.MODE_PRIVATE );
 	}
 	public void reg(final String key,final TextView view){
 		preferences.registerOnSharedPreferenceChangeListener(new OnSharedPreferenceChangeListener() {
