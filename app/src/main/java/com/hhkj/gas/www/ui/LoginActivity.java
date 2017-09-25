@@ -68,8 +68,10 @@ public class LoginActivity extends BaseActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.gas_login);
-
         handler = new LoginHandler(LoginActivity.this);
+        if(sharedUtils.getStringValue("token").length()!=0){
+            handler.sendEmptyMessage(1);
+        }
     }
     private EditText user,pass;
     private TextView login;

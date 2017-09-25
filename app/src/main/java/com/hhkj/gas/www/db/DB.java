@@ -432,7 +432,36 @@ public class DB {
         }
         return  result;
     }
+    /**
+     * 获得单据是否是合格状态
+     * @param bean
+     * @return
+     */
+    public int getStaffCount(){
 
+        String sql = "select count(*) as num from staff_stand";
+        Cursor cursor = null;
+        String result = null;
+        int count = 0;
+        try {
+            cursor = db.rawQuery(sql,null );
+            if(cursor.getCount()!=0) {
+
+                if (cursor.moveToFirst()){
+                    count = getInt(cursor,"num");
+                }
+
+            }
+        } catch (Exception e) {
+
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+                cursor = null;
+            }
+        }
+        return  count;
+    }
     /**
      * 更新安检栏目
      * @param id

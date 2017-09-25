@@ -6,10 +6,12 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.hhkj.gas.www.R;
 import com.hhkj.gas.www.base.AppManager;
 import com.hhkj.gas.www.base.BaseActivity;
+import com.hhkj.gas.www.db.DB;
 import com.hhkj.gas.www.widget.ChangeTime;
 
 /**
@@ -34,6 +36,7 @@ public class HomeActivity extends BaseActivity {
     }
     private ImageView setting_btn;
     private LinearLayout start0,start1,start2;
+    private TextView num;
     @Override
     public void init() {
         setting_btn = (ImageView) findViewById(R.id.setting_btn);
@@ -48,6 +51,7 @@ public class HomeActivity extends BaseActivity {
         start0 = (LinearLayout) findViewById(R.id.start0);
         start1 = (LinearLayout) findViewById(R.id.start1);
         start2 = (LinearLayout) findViewById(R.id.start2);
+        num = (TextView) findViewById(R.id.num);
         start0.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -69,5 +73,17 @@ public class HomeActivity extends BaseActivity {
                 startActivity(intent);
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        int num0 = DB.getInstance().getStaffCount();
+        if(num0!=0){
+            num.setText(String.valueOf(num0));
+            num.setVisibility(View.VISIBLE);
+        }else{
+            num.setVisibility(View.GONE);
+        }
     }
 }

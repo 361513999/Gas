@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
@@ -108,6 +109,7 @@ public class DetailActivity extends TakePhotoActivity {
     private DetailHandler detailHandler;
     public SharedUtils sharedUtils;
     public LayoutInflater inflater;
+    private LoadView loadView;
     public void backActivity(){
         AppManager.getAppManager().finishActivity(this);
     }
@@ -239,6 +241,7 @@ public class DetailActivity extends TakePhotoActivity {
                         proble.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
+                                clickDel();
                                 if(DB.getInstance().isExitPro(bean)){
                                     goProblem();
                                 }else{
@@ -764,7 +767,30 @@ public class DetailActivity extends TakePhotoActivity {
         }
         DB.getInstance().addProblem(bean,item);
     }
+    CountDownTimer countDownTimer = new CountDownTimer(200,10) {
+        @Override
+        public void onTick(long l) {
 
+        }
+
+        @Override
+        public void onFinish() {
+            if(loadView!=null){
+                loadView.cancle();
+                loadView = null;
+            }
+
+        }
+    };
+    private void clickDel(){
+        if(loadView==null){
+            loadView = new LoadView(DetailActivity.this);
+            loadView.showSheet();
+        }
+
+        countDownTimer.start();
+
+    }
     public void ini() {
         back = (TextView) findViewById(R.id.back);
         back.setOnClickListener(new View.OnClickListener() {
@@ -827,6 +853,7 @@ public class DetailActivity extends TakePhotoActivity {
         item9.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                clickDel();
                 if (dss.size() > SHOW_STAFF) {
                     staffItemAdapter.updata(dss);
                     item9.setVisibility(View.GONE);
@@ -854,6 +881,7 @@ public class DetailActivity extends TakePhotoActivity {
         item10.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                clickDel();
                 Map<String,String> map = DB.getInstance().ProLinePrint(bean);
                 if(map.get("proNo")!=null&&map.get("bis").equals("1")){
                     NewToast.makeText(DetailActivity.this,"已处理过隐患单",2000).show();
@@ -875,6 +903,7 @@ public class DetailActivity extends TakePhotoActivity {
         item11.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                clickDel();
                 if(bean.getStaffTag()!=null&&bean.getStaffTag().equals("N")){
                     NewToast.makeText(DetailActivity.this,"请先解除隐患",Common.TTIME).show();
                 }else{
@@ -889,6 +918,7 @@ public class DetailActivity extends TakePhotoActivity {
         item12.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                clickDel();
                 if(bean.getStaffTag()!=null&&bean.getStaffTag().equals("N")){
                     NewToast.makeText(DetailActivity.this,"请先解除隐患",Common.TTIME).show();
                 }else {
@@ -937,6 +967,7 @@ public class DetailActivity extends TakePhotoActivity {
         item18.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                clickDel();
                 detailHandler.sendEmptyMessage(7);
                 P.c(bean.getProblem()+"bean.getStaffTag()"+bean.getStaffTag()+"=="+(bean.getStaffTag()==null));
 
@@ -953,7 +984,7 @@ public class DetailActivity extends TakePhotoActivity {
         item19.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                clickDel();
                     HeadTips headTips = new HeadTips(DetailActivity.this,detailHandler,staffImages,bean);
                     headTips.showSheet();
 

@@ -101,6 +101,7 @@ public class SettingActivity extends BaseActivity {
         setting_exit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                sharedUtils.clear("token");
                 Intent intent = new Intent(SettingActivity.this,LoginActivity.class);
                 startActivity(intent);
                 try {
