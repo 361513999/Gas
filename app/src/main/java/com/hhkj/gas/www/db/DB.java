@@ -439,7 +439,7 @@ public class DB {
      */
     public int getStaffCount(){
 
-        String sql = "select count(*) as num from staff_stand";
+        String sql = "select count(*) as num from staff_stand where send=0";
         Cursor cursor = null;
         String result = null;
         int count = 0;

@@ -224,6 +224,11 @@ public class DetailActivity extends TakePhotoActivity {
                         staffItemAdapter.changeClick(true);
                             if(bean.getStaffTag()!=null&&bean.getStaffTag().equals("Y")){
                                 staffItemAdapter.changeClick(false);
+
+                                tag_view_no.setVisibility(View.GONE);
+                                tag_view_ok.setVisibility(View.VISIBLE);
+                                tag_con.setVisibility(View.GONE);
+
                                 item10.setVisibility(View.GONE);
                                 item12.setVisibility(View.GONE);
                                 RelativeLayout.LayoutParams par = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,RelativeLayout.LayoutParams.WRAP_CONTENT);
@@ -232,6 +237,9 @@ public class DetailActivity extends TakePhotoActivity {
                             }
                             if(bean.getStaffTag()!=null&&bean.getStaffTag().equals("N")){
                                 staffItemAdapter.changeClick(false);
+                                tag_view_no.setVisibility(View.VISIBLE);
+                                tag_view_ok.setVisibility(View.GONE);
+                                tag_con.setVisibility(View.GONE);
                                 item11.setVisibility(View.GONE);
                                 item12.setVisibility(View.GONE);
                                 RelativeLayout.LayoutParams par = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,RelativeLayout.LayoutParams.WRAP_CONTENT);
@@ -239,6 +247,17 @@ public class DetailActivity extends TakePhotoActivity {
                                 item10.setLayoutParams(par);
                             }
                         proble.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                clickDel();
+                                if(DB.getInstance().isExitPro(bean)){
+                                    goProblem();
+                                }else{
+                                    NewToast.makeText(DetailActivity.this,"暂无隐患单",2000).show();
+                                }
+                            }
+                        });
+                        view_problem.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
                                 clickDel();
@@ -791,6 +810,9 @@ public class DetailActivity extends TakePhotoActivity {
         countDownTimer.start();
 
     }
+    private LinearLayout tag_view_ok,tag_view_no;
+    private RelativeLayout tag_con;
+    private TextView view_problem;
     public void ini() {
         back = (TextView) findViewById(R.id.back);
         back.setOnClickListener(new View.OnClickListener() {
@@ -800,6 +822,11 @@ public class DetailActivity extends TakePhotoActivity {
                 AppManager.getAppManager().finishActivity(DetailActivity.this);
             }
         });
+        view_problem = (TextView) findViewById(R.id.view_problem);
+        tag_view_ok = (LinearLayout) findViewById(R.id.tag_view_ok);
+        tag_view_no = (LinearLayout) findViewById(R.id.tag_view_no);
+
+        tag_con = (RelativeLayout) findViewById(R.id.tag_con);
         proble = (LinearLayout) findViewById(R.id.proble);
         item0 = (TextView) findViewById(R.id.item0);
         item1 = (TextView) findViewById(R.id.item1);

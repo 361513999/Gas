@@ -330,8 +330,61 @@
                     android:text="查看更多"
                     android:textColor="@color/font_normal"
                     android:textSize="13sp" />
+                <LinearLayout
+                    android:id="@+id/tag_view_no"
+                    android:gravity="center"
+                    android:visibility="gone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="19sp"
 
+                        android:textColor="@color/font_normal"
+                        android:text="安检结果"/>
+                    <ImageView
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:layout_marginLeft="15dp"
+                        android:layout_marginRight="15dp"
+                        android:src="@mipmap/tag_no"/>
+                    <TextView
+                        android:id="@+id/view_problem"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:background="@color/blue_n"
+                        android:padding="5dp"
+                        android:textSize="14sp"
+                        android:textColor="@color/white"
+                        android:text="查看隐患整改单"/>
+
+                </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/tag_view_ok"
+                    android:gravity="center"
+                    android:visibility="gone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="19sp"
+
+                        android:textColor="@color/font_normal"
+                        android:text="安检结果"/>
+                    <ImageView
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:layout_marginLeft="15dp"
+                        android:layout_marginRight="15dp"
+                        android:src="@mipmap/tag_ok"/>
+
+
+                </LinearLayout>
                 <RelativeLayout
+                    android:id="@+id/tag_con"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="15dp">
