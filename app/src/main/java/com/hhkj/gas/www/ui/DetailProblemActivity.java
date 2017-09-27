@@ -669,9 +669,12 @@ public class DetailProblemActivity extends TakePhotoActivity {
                         detailProblemHandler.sendEmptyMessage(70);
                         NewToast.makeText(DetailProblemActivity.this,"上传完毕",Common.TTIME).show();
                         cancelUp();
+                        setResult(999);
+                        AppManager.getAppManager().finishActivity(DetailProblemActivity.this);
 
                     }else {
                         if(jsonObject.getString("Result").equals(Common.UNLOGIN)){
+
                             NewToast.makeText(DetailProblemActivity.this, "未登录", 1000).show();
                             detailProblemHandler.sendEmptyMessage(4);
                         }

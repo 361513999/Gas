@@ -744,6 +744,9 @@ public class DB {
     public void changeSIV(ReserItemBean bean,String path,String id){
         db.execSQL("update staff_stand_image_values set send =?   where standId = ? and staffId = ? and path = ? and id=?",new Object[]{true,bean.getId(),bean.getNo(),path,id});
     }
+    public void changeStaffTime(ReserItemBean bean,String time){
+        db.execSQL("update staff_stand set staffTime=? where id = ? and staffId = ?",new Object[]{time,bean.getId(),bean.getNo()});
+    }
 
     /**
      *修改签名组发送情况

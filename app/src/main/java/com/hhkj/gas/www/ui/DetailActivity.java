@@ -17,6 +17,7 @@ import android.text.SpannableStringBuilder;
 import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
 import android.util.Base64;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -479,6 +480,9 @@ public class DetailActivity extends TakePhotoActivity {
                                         //完成任务单
                                         cancelUp();
                                         NewToast.makeText(DetailActivity.this,"上传完毕",Common.TTIME).show();
+                                        setResult(1000);
+                                        AppManager.getAppManager().finishActivity(DetailActivity.this);
+
                                     }
                                 }
                             }
@@ -810,6 +814,18 @@ public class DetailActivity extends TakePhotoActivity {
         countDownTimer.start();
 
     }
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        if(event.getKeyCode()==KeyEvent.KEYCODE_BACK){
+            if(isProblem){
+                setResult(1000);
+            }
+            AppManager.getAppManager().finishActivity(DetailActivity.this);
+        }
+        return super.dispatchKeyEvent(event);
+    }
+
     private LinearLayout tag_view_ok,tag_view_no;
     private RelativeLayout tag_con;
     private TextView view_problem;
@@ -819,6 +835,10 @@ public class DetailActivity extends TakePhotoActivity {
             @Override
             public void onClick(View view) {
 //               Common.copy();
+                P.c("isProblem"+isProblem);
+                if(isProblem){
+                    setResult(1000);
+                }
                 AppManager.getAppManager().finishActivity(DetailActivity.this);
             }
         });
@@ -898,6 +918,7 @@ public class DetailActivity extends TakePhotoActivity {
                     @Override
                     public void success(String time) {
                         item4.setText(time);
+                        DB.getInstance().changeStaffTime(bean,time);
                     }
                 });
                 changeTime.showSheet();
@@ -1023,7 +1044,7 @@ public class DetailActivity extends TakePhotoActivity {
 
         Intent intent = new Intent(DetailActivity.this,DetailProblemActivity.class);
         intent.putExtra("obj",bean);
-        startActivity(intent);
+        startActivityForResult(intent,100);
     }
     @Override
     protected void onResume() {
@@ -1048,8 +1069,11 @@ public class DetailActivity extends TakePhotoActivity {
         }else if(requestCode==102&&resultCode==1000){
             //客户签名
             ImageLoader.getInstance().displayImage("file://"+data.getStringExtra("path"),item16);
+        }else if(requestCode==100&&resultCode==999){
+            isProblem = true;
         }
     }
+    private boolean isProblem = false;
 
     int SELECT_INDEX = -1;
     private TakePhoto takePhoto;

@@ -914,6 +914,13 @@ private void sortPop(){
         }
     }
 
+   /* @Override
+    protected void onResume() {
+        super.onResume();
+        initListReq(ribs.size()==0?SHOWNUM:ribs.size(),null,null,null,null,null,null);
+        loadList();
+    }*/
+
     private String getCheckedId(){
         String tag = null;
         try {
