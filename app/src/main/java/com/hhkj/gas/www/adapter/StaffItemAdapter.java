@@ -177,12 +177,17 @@ public class StaffItemAdapter extends BaseAdapter {
                 gc_item1.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if(DB.getInstance().getStafftag(bean)==null){
+
+                        String tag = DB.getInstance().getStafftag(bean);
+                        if(tag==null){
                             //这种状态才能整改
                             P.c("复项可以更改");
                             DB.getInstance().updateStandItemChk(si.getId(),!chk(gc_item1),handler);
-                        }else{
+                        }else if(tag.equals("O")){
                             //不能更改
+                            DB.getInstance().updateStandItemChk(si.getId(),!chk(gc_item1),handler);
+                        }else{
+
                         }
                     }
                 });

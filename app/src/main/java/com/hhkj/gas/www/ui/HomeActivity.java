@@ -13,6 +13,7 @@ import com.hhkj.gas.www.base.AppManager;
 import com.hhkj.gas.www.base.BaseActivity;
 import com.hhkj.gas.www.db.DB;
 import com.hhkj.gas.www.widget.ChangeTime;
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 /**
  * Created by cloor on 2017/8/7.
@@ -34,11 +35,15 @@ public class HomeActivity extends BaseActivity {
          }
         return super.onKeyDown(keyCode, event);
     }
+    private ImageView user_tag;
+    private TextView user;
     private ImageView setting_btn;
     private LinearLayout start0,start1,start2;
     private TextView num;
     @Override
     public void init() {
+        user_tag = (ImageView) findViewById(R.id.user_tag);
+        user = (TextView) findViewById(R.id.user);
         setting_btn = (ImageView) findViewById(R.id.setting_btn);
         setting_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -85,5 +90,11 @@ public class HomeActivity extends BaseActivity {
         }else{
             num.setVisibility(View.GONE);
         }
+        if(sharedUtils.getBooleanValue("head")){
+            ImageLoader.getInstance().displayImage("drawable://"+R.mipmap.login_users,user_tag);
+        }else{
+            ImageLoader.getInstance().displayImage("drawable://"+R.mipmap.login_user,user_tag);
+        }
+        user.setText(sharedUtils.getStringValue("name"));
     }
 }

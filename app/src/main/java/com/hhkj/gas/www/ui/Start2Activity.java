@@ -294,6 +294,7 @@ public class Start2Activity extends BaseActivity {
                         ib.setName(object.getString("CName"));
                         ib.setNo(object.getString("OrderCode"));
                         ib.setTel(object.getString("MobilePhone"));
+                        ib.setStaffName(object.getString("StaffName"));
 //                        int type = Integer.parseInt(getCheckedId());
                         int type = object.getInt("OrderType");
                        switch (type){

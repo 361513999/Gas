@@ -37,36 +37,52 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/ThemeActivity">
-    <activity android:name=".ui.CommonLineActivity">
+    <activity android:name=".ui.CommonLineActivity"
+        android:configChanges="orientation|keyboardHidden"
+        android:screenOrientation="portrait">
 
     </activity>
-        <activity android:name=".ui.HomeActivity">
+        <activity android:name=".ui.HomeActivity"   android:configChanges="orientation|keyboardHidden"
+            android:screenOrientation="portrait">
 
         </activity>
-        <activity android:name=".ui.SettingActivity">
+        <activity android:name=".ui.SettingActivity"   android:configChanges="orientation|keyboardHidden"
+            android:screenOrientation="portrait">
 
         </activity>
-        <activity android:name=".ui.Start0Activity">
+        <activity android:name=".ui.Start0Activity"   android:configChanges="orientation|keyboardHidden"
+            android:screenOrientation="portrait">
 
         </activity>
-        <activity android:name=".ui.Start1Activity">
+        <activity android:name=".ui.Start1Activity"   android:configChanges="orientation|keyboardHidden"
+            android:screenOrientation="portrait">
 
         </activity>
-        <activity android:name=".ui.Start2Activity">
+        <activity android:name=".ui.Start2Activity"   android:configChanges="orientation|keyboardHidden"
+            android:screenOrientation="portrait">
 
         </activity>
-        <activity android:name=".ui.DetailActivity" >
+        <activity android:name=".ui.DetailActivity"   android:configChanges="orientation|keyboardHidden"
+            android:screenOrientation="portrait">
 
         </activity>
-        <activity android:name=".ui.ShowImageActivity"/>
-        <activity android:name=".ui.BluetoothListActivity" android:theme="@style/Theme.AppCompat.Light.DarkActionBar"/>
-        <activity android:name=".ui.StaffCtActivity"/>
-        <activity android:name=".ui.DetailProblemActivity"/>
-        <activity android:name=".ui.Gas_Setting_IP"/>
+        <activity android:name=".ui.ShowImageActivity"   android:configChanges="orientation|keyboardHidden"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ui.BluetoothListActivity"    android:configChanges="orientation|keyboardHidden"
+            android:screenOrientation="portrait" android:theme="@style/Theme.AppCompat.Light.DarkActionBar"/>
+        <activity android:name=".ui.StaffCtActivity"   android:configChanges="orientation|keyboardHidden"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ui.DetailProblemActivity"   android:configChanges="orientation|keyboardHidden"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ui.Gas_Setting_IP"   android:configChanges="orientation|keyboardHidden"
+            android:screenOrientation="portrait"/>
 
-        <activity android:name=".ui.StaffBtActivity" />
-        <activity android:name=".ui.DetailProBtActivity"/>
-        <activity android:name=".ui.LoginActivity">
+        <activity android:name=".ui.StaffBtActivity"   android:configChanges="orientation|keyboardHidden"
+            android:screenOrientation="portrait" />
+        <activity android:name=".ui.DetailProBtActivity"   android:configChanges="orientation|keyboardHidden"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ui.LoginActivity"   android:configChanges="orientation|keyboardHidden"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>

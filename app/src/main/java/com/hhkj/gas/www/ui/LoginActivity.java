@@ -125,15 +125,18 @@ public class LoginActivity extends BaseActivity{
         @Override
         public void onResponse(String response, int id) {
             closeLoad();
+
             try {
                 JSONObject jsonObject = new JSONObject( FileUtils.formatJson(response));
                 if(jsonObject.getBoolean("Success")){
 
                     sharedUtils.setStringValue("token",jsonObject.getString("Value"));
                     sharedUtils.setBooleanValue("head",(jsonObject.getInt("Error")==0)?false:true);
+
                     String result = jsonObject.getString("Result");
                     JSONObject obj = new JSONObject(result);
                     sharedUtils.setStringValue("userid",obj.getString("Id"));
+                    sharedUtils.setStringValue("name",obj.getString("StaffName"));
                     sharedUtils.setStringValue("last",user.getText().toString().trim());
                     handler.sendEmptyMessage(1);
                 }else{
