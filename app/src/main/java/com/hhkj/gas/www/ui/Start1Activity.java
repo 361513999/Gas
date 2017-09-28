@@ -921,6 +921,12 @@ private void sortPop(){
         loadList();
     }*/
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        start1Adapter.updata(ribs);
+    }
+
     private String getCheckedId(){
         String tag = null;
         try {

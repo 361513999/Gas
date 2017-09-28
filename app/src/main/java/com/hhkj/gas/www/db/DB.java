@@ -526,6 +526,27 @@ public class DB {
             handler.sendEmptyMessage(5);
         }
     }
+    public Map<String,String> getStatusByStand(){
+        String sql = "select id, staffTag from staff_stand  ";
+        Cursor cursor = null;
+        String result = null;
+        int count = 0;
+        Map<String,String>  map = new HashMap<>();
+        try {
+            cursor = db.rawQuery(sql,null );
+           while(cursor.moveToNext()){
+               map.put(getString(cursor,"id"),getString(cursor,"staffTag"));
+           }
+        } catch (Exception e) {
+
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+                cursor = null;
+            }
+        }
+        return  map;
+    }
     /**无法安检
      */
     public void setStandCt(int status,String tag,ReserItemBean bean){

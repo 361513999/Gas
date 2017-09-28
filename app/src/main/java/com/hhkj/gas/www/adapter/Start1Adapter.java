@@ -13,10 +13,12 @@ import android.widget.TextView;
 import com.hhkj.gas.www.R;
 import com.hhkj.gas.www.bean.ReserItemBean;
 import com.hhkj.gas.www.common.SharedUtils;
+import com.hhkj.gas.www.db.DB;
 import com.hhkj.gas.www.inter.TimeSelect;
 import com.hhkj.gas.www.widget.ChangeTime;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * Created by cloor on 2017/8/9.
@@ -35,8 +37,10 @@ public class Start1Adapter extends BaseAdapter {
         this.sharedUtils = sharedUtils;
         inflater = LayoutInflater.from(context);
     }
+    private Map<String,String> map;
     public void updata(ArrayList<ReserItemBean> rbs){
         this.rbs = rbs;
+        map = DB.getInstance().getStatusByStand();
         notifyDataSetChanged();
     }
     @Override
@@ -88,7 +92,16 @@ public class Start1Adapter extends BaseAdapter {
         viewHolder.item1.setText(context.getString(R.string.nor_item_txt1,it.getName()));
         viewHolder.item2.setText(context.getString(R.string.nor_item_txt2,it.getTel()));
         viewHolder.item3.setText(context.getString(R.string.nor_item_txt3,it.getAdd()));
-       switch (it.getOrderStatus()){
+        int key = it.getOrderStatus();
+        if(map!=null){
+            if(map.containsKey(it.getId())){
+                if(map.get(it.getId())!=null&&map.get(it.getId()).equals("N")){
+                    key = 8;
+                }
+
+            }
+        }
+       switch (key){
            case 3:
                viewHolder.item_icon.setBackgroundResource(R.mipmap.icon_running);
                viewHolder.item_tag.setText("任务进行中");
