@@ -491,8 +491,10 @@ public class DetailActivity extends TakePhotoActivity {
                     case -1:
                         if(!DB.getInstance().isExitPro(bean)){
                             createProblem();
+                            DB.getInstance().setStandCt(8,"N",bean);
+//                            DB.getInstance().setStandCt(bean.getOrderStatus(),"N",bean);
                         }
-                        DB.getInstance().setStandCt(bean.getOrderStatus(),"N",bean);
+
                         goProblem();
                         break;
                     case -2:
@@ -789,6 +791,8 @@ public class DetailActivity extends TakePhotoActivity {
 
         }
         DB.getInstance().addProblem(bean,item);
+
+
     }
     CountDownTimer countDownTimer = new CountDownTimer(200,10) {
         @Override
