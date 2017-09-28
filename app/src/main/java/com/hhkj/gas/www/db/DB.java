@@ -12,7 +12,9 @@ import com.hhkj.gas.www.bean.StaffImageItem;
 import com.hhkj.gas.www.bean.StaffQj;
 import com.hhkj.gas.www.bean.StaffTxtItem;
 import com.hhkj.gas.www.common.BaseApplication;
+import com.hhkj.gas.www.common.Common;
 import com.hhkj.gas.www.common.P;
+import com.hhkj.gas.www.common.SharedUtils;
 import com.jph.takephoto.model.TImage;
 
 import java.util.ArrayList;
@@ -109,10 +111,10 @@ public class DB {
      * @param staffQjs 安检器具
      */
     public void addStaff(ReserItemBean stand, ArrayList<StaffImageItem> staffImages, ArrayList<DetailStaff> dss, ArrayList<StaffB> staffBs, ArrayList<StaffQj> staffQjs){
-
+        SharedUtils sharedUtils = new SharedUtils(Common.config);
             db.beginTransaction();
-            db.execSQL("insert into staff_stand(id,staffId,staffName,staffTel,staffAdd,staffTime,opt,status,send) values(?,?,?,?,?,?,?,?,?)", new Object[]{stand.getId(), stand.getNo(), stand.getStaffName()
-                    , stand.getTel(), stand.getAdd(), stand.getTime(), stand.getName(), stand.getOrderStatus(),false
+            db.execSQL("insert into staff_stand(id,staffId,staffName,staffTel,staffAdd,staffTime,opt,status,send,userid) values(?,?,?,?,?,?,?,?,?,?)", new Object[]{stand.getId(), stand.getNo(), stand.getStaffName()
+                    , stand.getTel(), stand.getAdd(), stand.getTime(), stand.getName(), stand.getOrderStatus(),false,sharedUtils.getStringValue("userid")
             });
             //安检图
             int imageLen = staffImages.size();
@@ -439,7 +441,7 @@ public class DB {
      */
     public int getStaffCount(String id){
 
-        String sql = "select count(*) as num from staff_stand where send=0 and id=?";
+        String sql = "select count(*) as num from staff_stand where send=0 and userid=?";
         Cursor cursor = null;
         String result = null;
         int count = 0;
