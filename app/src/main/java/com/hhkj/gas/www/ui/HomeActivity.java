@@ -83,7 +83,7 @@ public class HomeActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        int num0 = DB.getInstance().getStaffCount();
+        int num0 = DB.getInstance().getStaffCount(sharedUtils.getStringValue("userid"));
         if(num0!=0){
             num.setText(String.valueOf(num0));
             num.setVisibility(View.VISIBLE);

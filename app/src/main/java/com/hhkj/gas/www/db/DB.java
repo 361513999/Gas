@@ -437,14 +437,14 @@ public class DB {
      * @param bean
      * @return
      */
-    public int getStaffCount(){
+    public int getStaffCount(String id){
 
-        String sql = "select count(*) as num from staff_stand where send=0";
+        String sql = "select count(*) as num from staff_stand where send=0 and id=?";
         Cursor cursor = null;
         String result = null;
         int count = 0;
         try {
-            cursor = db.rawQuery(sql,null );
+            cursor = db.rawQuery(sql,new String[]{id} );
             if(cursor.getCount()!=0) {
 
                 if (cursor.moveToFirst()){
