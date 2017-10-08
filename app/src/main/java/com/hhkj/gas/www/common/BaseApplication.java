@@ -10,10 +10,14 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import com.hhkj.gas.www.R;
 import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
+import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
 
 
 import android.app.Application;
@@ -22,159 +26,186 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.graphics.Bitmap;
 import android.os.Environment;
+import android.os.Handler;
 import android.view.WindowManager;
 import android.widget.Toast;
 
 public class BaseApplication extends Application {
-	private static final boolean DEVELOPER_MODE = true;
-	public static BaseApplication application;
-	protected boolean isNeedCaughtExeption = true;// 是否捕获未知异常
-	private MyUncaughtExceptionHandler uncaughtExceptionHandler;
-	private static String packgeName;
-	@Override
-	public void onCreate() {
-		// TODO Auto-generated method stub
-		super.onCreate();
-		application = this;
+    private static final boolean DEVELOPER_MODE = true;
+    public static BaseApplication application;
+    protected boolean isNeedCaughtExeption = true;// 是否捕获未知异常
+    private MyUncaughtExceptionHandler uncaughtExceptionHandler;
+    private static String packgeName;
 
-		packgeName = getPackageName();
-		if (isNeedCaughtExeption) {
-			cauchException();
-		}
-		initImageLoader(application);
-		P.c("启动");
+    @Override
+    public void onCreate() {
+        // TODO Auto-generated method stub
+        super.onCreate();
+        application = this;
+
+        packgeName = getPackageName();
+        if (isNeedCaughtExeption) {
+            cauchException();
+        }
+        initImageLoader(application);
+        P.c("启动");
 //		mLocationClient = new LocationClient(application); // 声明LocationClient类
 //		mLocationClient.registerLocationListener(myListener); // 注册监听函数
 //		initLocation();
 //		mLocationClient.start();
 
-	}
-	public static String getName(){
-		return  packgeName;
-	}
-	public void initImageLoader(Context context) {
-		// This configuration tuning is custom. You can tune every option, you
-		// may tune some of them,
-		// or you can create default configuration by
-		// ImageLoaderConfiguration.createDefault(this);
-		// method.
-		ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(
-				context).threadPriority(Thread.NORM_PRIORITY - 2)
-				.denyCacheImageMultipleSizesInMemory()
-				.diskCacheFileNameGenerator(new Md5FileNameGenerator())
-				.tasksProcessingOrder(QueueProcessingType.LIFO)
-				.memoryCacheSize(2 * 1024 * 1024) //缓存到内存的最大数据
-				.memoryCacheSize(50 * 1024 * 1024) //设置内存缓存的大小
-				.diskCacheFileCount(200)
-				//.writeDebugLogs() // Remove for release app
-				.build();
-		// Initialize ImageLoader with configuration.
-		ImageLoader.getInstance().init(config);
-	}
-	/**
-	 * 获得应用版本
-	 *
-	 * @return
-	 */
-	public String tripLittle(String temp) {
-		return temp.replaceAll("\\.", "");
-	}
+    }
 
-	public String getVersion() {
+    public static String getName() {
+        return packgeName;
+    }
 
-		try {
-			PackageManager packageManager = getPackageManager();
-			PackageInfo packInfo = packageManager.getPackageInfo(
-					getPackageName(), 0);
-			return packInfo.versionName;
-		} catch (NameNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
-	}
+    public void initImageLoader(Context context) {
+        // This configuration tuning is custom. You can tune every option, you
+        // may tune some of them,
+        // or you can create default configuration by
+        // ImageLoaderConfiguration.createDefault(this);
+        // method.
+        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(
+                context).threadPriority(Thread.NORM_PRIORITY - 2)
+                .denyCacheImageMultipleSizesInMemory()
+                .diskCacheFileNameGenerator(new Md5FileNameGenerator())
+
+                .tasksProcessingOrder(QueueProcessingType.LIFO)
+                .memoryCacheSize(2 * 1024 * 1024) //缓存到内存的最大数据
+                .memoryCacheSize(50 * 1024 * 1024) //设置内存缓存的大小
+                .diskCacheFileCount(200)
+                //.writeDebugLogs() // Remove for release app
+                .build();
+        // Initialize ImageLoader with configuration.
+        ImageLoader.getInstance().init(config);
+    }
 
 
-	private WindowManager.LayoutParams wmParams = new WindowManager.LayoutParams();
-	private PendingIntent restartIntent;
+  public static  DisplayImageOptions options = new DisplayImageOptions.Builder()
+            .showImageOnLoading(R.mipmap.img_load) // resource or
+            // drawable
+            .showImageForEmptyUri(R.mipmap.no_img) // resource or
+            // drawable
+            .showImageOnFail(R.mipmap.no_img) // resource or
+            // drawable
+            .resetViewBeforeLoading(false) // default
+            .delayBeforeLoading(1000).cacheInMemory(false) // default
+            .cacheOnDisk(false) // default
+            .considerExifParams(false) // default
+            .imageScaleType(ImageScaleType.IN_SAMPLE_POWER_OF_2) // default
+            .bitmapConfig(Bitmap.Config.ARGB_8888) // default
+            .displayer(new SimpleBitmapDisplayer()) // default
+            .handler(new Handler()) // default
+            .build();
 
-	public WindowManager.LayoutParams getMywmParams() {
-		return wmParams;
-	}
+    /**
+     * 获得应用版本
+     *
+     * @return
+     */
+    public String tripLittle(String temp) {
+        return temp.replaceAll("\\.", "");
+    }
 
-	private void cauchException() {
-		System.out
-				.println("-----------------------------------------------------");
-		// 程序崩溃时触发线程
-		uncaughtExceptionHandler = new MyUncaughtExceptionHandler();
-		Thread.setDefaultUncaughtExceptionHandler(uncaughtExceptionHandler);
-	}
+    public String getVersion() {
 
-	private class MyUncaughtExceptionHandler implements
-			UncaughtExceptionHandler {
-		@Override
-		public void uncaughtException(Thread thread, Throwable ex) {
-			// 保存错误日志
-			saveCatchInfo2File(ex);
-			// 如果报错就不进行重启
+        try {
+            PackageManager packageManager = getPackageManager();
+            PackageInfo packInfo = packageManager.getPackageInfo(
+                    getPackageName(), 0);
+            return packInfo.versionName;
+        } catch (NameNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
+    private WindowManager.LayoutParams wmParams = new WindowManager.LayoutParams();
+    private PendingIntent restartIntent;
+
+    public WindowManager.LayoutParams getMywmParams() {
+        return wmParams;
+    }
+
+    private void cauchException() {
+        System.out
+                .println("-----------------------------------------------------");
+        // 程序崩溃时触发线程
+        uncaughtExceptionHandler = new MyUncaughtExceptionHandler();
+        Thread.setDefaultUncaughtExceptionHandler(uncaughtExceptionHandler);
+    }
+
+    private class MyUncaughtExceptionHandler implements
+            UncaughtExceptionHandler {
+        @Override
+        public void uncaughtException(Thread thread, Throwable ex) {
+            // 保存错误日志
+            saveCatchInfo2File(ex);
+            // 如果报错就不进行重启
 //			android.os.Process.killProcess(android.os.Process.myPid());
-		//System.exit(0);
-		}
+            //System.exit(0);
+        }
 
-	};
+    }
+
+    ;
 
 
-	/**
-	 * 保存错误信息到文件中
-	 *
-	 * @return 返回文件名称
-	 */
-	private String saveCatchInfo2File(Throwable ex) {
-		Writer writer = new StringWriter();
-		PrintWriter printWriter = new PrintWriter(writer);
-		ex.printStackTrace(printWriter);
-		Throwable cause = ex.getCause();
-		while (cause != null) {
-			cause.printStackTrace(printWriter);
-			cause = cause.getCause();
-		}
-		printWriter.close();
-		String sb = writer.toString();
-	    P.c("日志"+sb);
-		try {
-			DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
-			String time = formatter.format(new Date());
-			String fileName = time + ".txt";
-			System.out.println("fileName:" + fileName);
-			if (Environment.getExternalStorageState().equals(
-					Environment.MEDIA_MOUNTED)) {
-				String filePath = Common.BASE_DIR + Common.DIR
-						+ packgeName + "/crash/";
-				File dir = new File(filePath);
-				if (!dir.exists()) {
-					if (!dir.mkdirs()) {
-						// 创建目录失败: 一般是因为SD卡被拔出了
-						return "";
-					}
-				}
-				P.c("filePath + fileName:" + filePath + fileName);
-				FileOutputStream fos = new FileOutputStream(filePath + fileName);
-				fos.write(sb.getBytes());
-				fos.close();
-				// 文件保存完了之后,在应用下次启动的时候去检查错误日志,发现新的错误日志,就发送给开发者
-			}
-			return fileName;
-		} catch (Exception e) {
-			P.c("an error occured while writing file..." + e.getMessage());
-		}
-		return null;
-	}
+    /**
+     * 保存错误信息到文件中
+     *
+     * @return 返回文件名称
+     */
+    private String saveCatchInfo2File(Throwable ex) {
+        Writer writer = new StringWriter();
+        PrintWriter printWriter = new PrintWriter(writer);
+        ex.printStackTrace(printWriter);
+        Throwable cause = ex.getCause();
+        while (cause != null) {
+            cause.printStackTrace(printWriter);
+            cause = cause.getCause();
+        }
+        printWriter.close();
+        String sb = writer.toString();
+        P.c("日志" + sb);
+        try {
+            DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+            String time = formatter.format(new Date());
+            String fileName = time + ".txt";
+            System.out.println("fileName:" + fileName);
+            if (Environment.getExternalStorageState().equals(
+                    Environment.MEDIA_MOUNTED)) {
+                String filePath = Common.BASE_DIR + Common.DIR
+                        + packgeName + "/crash/";
+                File dir = new File(filePath);
+                if (!dir.exists()) {
+                    if (!dir.mkdirs()) {
+                        // 创建目录失败: 一般是因为SD卡被拔出了
+                        return "";
+                    }
+                }
+                P.c("filePath + fileName:" + filePath + fileName);
+                FileOutputStream fos = new FileOutputStream(filePath + fileName);
+                fos.write(sb.getBytes());
+                fos.close();
+                // 文件保存完了之后,在应用下次启动的时候去检查错误日志,发现新的错误日志,就发送给开发者
+            }
+            return fileName;
+        } catch (Exception e) {
+            P.c("an error occured while writing file..." + e.getMessage());
+        }
+        return null;
+    }
 
-	/**
-	 * 百度服務
-	 */
-	/*public LocationClient mLocationClient = null;
+    /**
+     * 百度服務
+     */
+    /*public LocationClient mLocationClient = null;
 	public BDLocationListener myListener = new MyLocationListener();
 
 	private void initLocation() {
@@ -360,8 +391,8 @@ public class BaseApplication extends Application {
 	}
 
 	*//**
-	 * 更新数据
-	 *//*
+     * 更新数据
+     *//*
 	private void updata(BDLocation location,String id) {
 		P.c(String.valueOf(location.getLatitude())+"---->"+String.valueOf(location.getLongitude())+"-->"+location.getAddrStr());
 		updataCall = OkHttpUtils

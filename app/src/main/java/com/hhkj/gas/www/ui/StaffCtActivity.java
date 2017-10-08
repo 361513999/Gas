@@ -67,7 +67,15 @@ public class StaffCtActivity extends BaseActivity {
         sure.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                    post();
+                  try {
+                      post();
+                  }catch (ArrayIndexOutOfBoundsException e){
+                      if(loadView!=null){
+                          loadView.cancle();
+                          loadView = null;
+                      }
+                      NewToast.makeText(StaffCtActivity.this,"请选择",200).show();
+                  }
             }
         });
     }

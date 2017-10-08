@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.hhkj.gas.www.R;
 import com.hhkj.gas.www.bean.AreaBean;
 import com.hhkj.gas.www.bean.StaffImageItem;
+import com.hhkj.gas.www.common.BaseApplication;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.ArrayList;
@@ -69,9 +70,11 @@ public class DetailImageAdapter extends BaseAdapter {
         }
         StaffImageItem it = rbs.get(position);
       if(it.getPath()==null){
-          viewHolder.item0.setImageResource(R.mipmap.btn_add);
+        //  viewHolder.item0.setImageResource(R.mipmap.btn_add);
+          ImageLoader.getInstance().displayImage("drawable://"+R.mipmap.btn_add, viewHolder.item0,BaseApplication.options);
+
       }else{
-          ImageLoader.getInstance().displayImage("file://"+it.getPath(),viewHolder.item0);
+          ImageLoader.getInstance().displayImage("file://"+it.getPath(),viewHolder.item0,BaseApplication.options);
       }
         viewHolder.txt.setText(it.getTag());
         return  convertView;
