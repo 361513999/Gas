@@ -1035,6 +1035,34 @@ public class DB {
         }
         return  irs;
     }
+    public ArrayList<ReserItemBean> getRbs(){
+        ArrayList<ReserItemBean> rbs = new ArrayList<>();
+        String sql = "select id,staffId,staffTag from staff_stand where send =0";
+        Cursor cursor = null;
+
+        try {
+            cursor = db.rawQuery(sql, null);
+           while(cursor.moveToNext()){
+               ReserItemBean rb = new ReserItemBean();
+               rb.setId(getString(cursor,"id"));
+               rb.setNo(getString(cursor,"staffId"));
+               rb.setStaffTag(getString(cursor,"staffTag"));
+               rbs.add(rb);
+           }
+            cursor.close();
+
+        } catch (Exception e) {
+            P.c("判断"+e.getMessage());
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+                cursor = null;
+            }
+        }
+        return  rbs;
+    }
+
+
     public Map<String,String> ProLinePrint(ReserItemBean bean) {
         Map<String,String> map  = new HashMap<>();
         String sql = "select startTime,endTime,proNo,staffLine,personLine,personPhoto,send,bis from staff_stand_pr_s  where standId=? and staffId=?";
