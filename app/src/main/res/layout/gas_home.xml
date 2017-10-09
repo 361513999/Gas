@@ -29,13 +29,23 @@
                 android:layout_height="wrap_content" />
         </LinearLayout>
         <LinearLayout
-            android:id="@+id/start0"
+
             android:layout_width="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:gravity="center_vertical|bottom"
             android:layout_marginBottom="10dp"
             android:layout_height="wrap_content">
+            <View
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"/>
+            <LinearLayout
+                android:layout_width="0dp"
+                android:id="@+id/start0"
+                android:layout_weight="6"
+                android:orientation="horizontal"
+                android:layout_height="wrap_content">
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -47,6 +57,7 @@
                 android:layout_marginLeft="10dp"
                 android:textSize="18sp"
                 android:textColor="@color/white"/>
+            </LinearLayout>
         </LinearLayout>
 
     </RelativeLayout>
@@ -56,12 +67,26 @@
         android:gravity="center_horizontal"
         android:layout_weight="97">
         <LinearLayout
-            android:id="@+id/start1"
-            android:layout_width="wrap_content"
+
+            android:layout_width="match_parent"
             android:layout_gravity="bottom"
-            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:gravity="center_vertical|bottom"
+
+            android:layout_alignParentBottom="true"
+
             android:layout_marginBottom="10dp"
             android:layout_height="wrap_content">
+            <View
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"/>
+            <LinearLayout
+                android:id="@+id/start1"
+                android:layout_width="0dp"
+                android:layout_weight="6"
+                android:orientation="horizontal"
+                android:layout_height="wrap_content">
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -84,6 +109,7 @@
                 android:visibility="gone"
                 android:gravity="center"
                 android:background="@drawable/shape_verl_bg"/>
+                </LinearLayout>
         </LinearLayout>
     </LinearLayout>
     <LinearLayout
@@ -92,12 +118,25 @@
         android:gravity="center_horizontal"
         android:layout_weight="96">
         <LinearLayout
-            android:id="@+id/start2"
-            android:layout_width="wrap_content"
+
+            android:layout_width="match_parent"
             android:layout_gravity="bottom"
+            android:orientation="horizontal"
+            android:layout_alignParentBottom="true"
+
             android:layout_marginBottom="10dp"
-            android:gravity="center_vertical"
+            android:gravity="center_vertical|bottom"
             android:layout_height="wrap_content">
+            <View
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"/>
+            <LinearLayout
+                android:layout_width="0dp"
+                android:id="@+id/start2"
+                android:layout_weight="6"
+                android:orientation="horizontal"
+                android:layout_height="wrap_content">
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -109,6 +148,7 @@
                 android:layout_marginLeft="10dp"
                 android:textSize="18sp"
                 android:textColor="@color/white"/>
+                </LinearLayout>
         </LinearLayout>1
     </LinearLayout>
     <RelativeLayout
@@ -116,12 +156,22 @@
         android:layout_height="0dp"
         android:layout_weight="175">
         <LinearLayout
-            android:id="@+id/start3"
+
             android:layout_centerInParent="true"
             android:layout_width="wrap_content"
             android:layout_gravity="bottom"
             android:layout_marginBottom="10dp"
             android:gravity="center_vertical"
+            android:layout_height="wrap_content">
+        <View
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"/>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:id="@+id/start3"
+            android:layout_weight="6"
+            android:orientation="horizontal"
             android:layout_height="wrap_content">
             <ImageView
                 android:layout_width="wrap_content"
@@ -146,6 +196,7 @@
 
                 android:gravity="center"
                 android:background="@drawable/shape_verl_bg"/>
+            </LinearLayout>
         </LinearLayout>1
         <ImageView
             android:id="@+id/setting_btn"
