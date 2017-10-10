@@ -223,6 +223,14 @@ public class DetailActivity extends TakePhotoActivity {
                         item6.setText(getString(R.string.curr_person, bean.getStaffName()));
 
                         staffItemAdapter.changeClick(true);
+//                        bean.setStaffTag(DB.getInstance().getStafftag(bean));
+//                        P.c("staffTag"+DB.getInstance().getStafftag(bean));
+                        tag_view_no.setVisibility(View.GONE);
+                        tag_view_ok.setVisibility(View.GONE);
+                        tag_con.setVisibility(View.VISIBLE);
+                        item10.setVisibility(View.VISIBLE);
+                        item11.setVisibility(View.VISIBLE);
+                        item12.setVisibility(View.VISIBLE);
                             if(bean.getStaffTag()!=null&&bean.getStaffTag().equals("Y")){
                                 staffItemAdapter.changeClick(false);
 
@@ -247,6 +255,8 @@ public class DetailActivity extends TakePhotoActivity {
                                 par.addRule(RelativeLayout.CENTER_IN_PARENT);
                                 item10.setLayoutParams(par);
                             }
+
+
                         proble.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
@@ -1075,6 +1085,7 @@ public class DetailActivity extends TakePhotoActivity {
             ImageLoader.getInstance().displayImage("file://"+data.getStringExtra("path"),item16);
         }else if(requestCode==100&&resultCode==999){
             isProblem = true;
+            detailHandler.sendEmptyMessage(70);
         }
     }
     private boolean isProblem = false;
