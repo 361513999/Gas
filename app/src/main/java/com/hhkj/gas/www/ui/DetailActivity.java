@@ -225,35 +225,35 @@ public class DetailActivity extends TakePhotoActivity {
                         staffItemAdapter.changeClick(true);
 //                        bean.setStaffTag(DB.getInstance().getStafftag(bean));
 //                        P.c("staffTag"+DB.getInstance().getStafftag(bean));
+                        P.c("bean.getStaffTag()"+bean.getStaffTag());
                         tag_view_no.setVisibility(View.GONE);
                         tag_view_ok.setVisibility(View.GONE);
                         tag_con.setVisibility(View.VISIBLE);
-                        item10.setVisibility(View.VISIBLE);
-                        item11.setVisibility(View.VISIBLE);
-                        item12.setVisibility(View.VISIBLE);
+//                        item10.setVisibility(View.VISIBLE);
+//                        item11.setVisibility(View.VISIBLE);
+//                        item12.setVisibility(View.VISIBLE);
                             if(bean.getStaffTag()!=null&&bean.getStaffTag().equals("Y")){
                                 staffItemAdapter.changeClick(false);
 
                                 tag_view_no.setVisibility(View.GONE);
                                 tag_view_ok.setVisibility(View.VISIBLE);
                                 tag_con.setVisibility(View.GONE);
-
-                                item10.setVisibility(View.GONE);
-                                item12.setVisibility(View.GONE);
-                                RelativeLayout.LayoutParams par = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,RelativeLayout.LayoutParams.WRAP_CONTENT);
-                                par.addRule(RelativeLayout.CENTER_IN_PARENT);
-                                item11.setLayoutParams(par);
+//                                item10.setVisibility(View.GONE);
+//                                item12.setVisibility(View.GONE);
+//                                RelativeLayout.LayoutParams par = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,RelativeLayout.LayoutParams.WRAP_CONTENT);
+//                                par.addRule(RelativeLayout.CENTER_IN_PARENT);
+//                                item11.setLayoutParams(par);
                             }
                             if(bean.getStaffTag()!=null&&bean.getStaffTag().equals("N")){
                                 staffItemAdapter.changeClick(false);
                                 tag_view_no.setVisibility(View.VISIBLE);
                                 tag_view_ok.setVisibility(View.GONE);
                                 tag_con.setVisibility(View.GONE);
-                                item11.setVisibility(View.GONE);
-                                item12.setVisibility(View.GONE);
-                                RelativeLayout.LayoutParams par = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,RelativeLayout.LayoutParams.WRAP_CONTENT);
-                                par.addRule(RelativeLayout.CENTER_IN_PARENT);
-                                item10.setLayoutParams(par);
+//                                item11.setVisibility(View.GONE);
+//                                item12.setVisibility(View.GONE);
+//                                RelativeLayout.LayoutParams par = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,RelativeLayout.LayoutParams.WRAP_CONTENT);
+//                                par.addRule(RelativeLayout.CENTER_IN_PARENT);
+//                                item10.setLayoutParams(par);
                             }
 
 
