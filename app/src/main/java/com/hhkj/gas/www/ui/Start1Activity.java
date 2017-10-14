@@ -250,9 +250,11 @@ public class Start1Activity extends BaseActivity {
     private RadioGroup market_group;
     private RadioButton market_group_item0,market_group_item1,market_group_item2,market_group_item3;
     private View drop;
+    private TextView search;
 
     @Override
     public void init() {
+        search = (TextView) findViewById(R.id.search);
         drop = findViewById(R.id.drop);
         pull_to_refresh_list = (PullToRefreshView) findViewById(R.id.pull_to_refresh_list);
         pull_to_refresh_list.setOnHeaderRefreshListener(listHeadListener);

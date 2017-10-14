@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:layout_height="@dimen/title_heigh">
+
+    <TextView
+        android:id="@+id/back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="12dp"
+        android:background="@drawable/back_act" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:focusableInTouchMode="true"
+        android:layout_height="match_parent"
+        android:gravity="center">
+
+        <EditText
+            android:id="@+id/edit"
+            android:layout_width="match_parent"
+            android:layout_marginRight="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:layout_height="match_parent"
+            android:background="@drawable/shape_login_edit_bg"
+            android:paddingLeft="3dp"
+            android:paddingRight="3dp"
+            android:gravity="center_vertical|left"
+            android:paddingBottom="6dp"
+            android:paddingTop="6dp"
+            android:hint="按单号、姓名、地址搜索"
+            android:textColor="@color/font_normal"
+            android:textSize="14sp" />
+
+    </LinearLayout>
+        <TextView
+            android:id="@+id/edit_sure"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="搜索"
+            android:gravity="center"
+            android:ems="4"
+            android:textSize="13sp"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:layout_marginRight="12dp"
+            android:background="@drawable/shape_btn_blue"
+            android:textColor="@color/white"/>
+    </LinearLayout>
+
+</LinearLayout>

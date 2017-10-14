@@ -6,13 +6,12 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-
 /**
  * 重新定义的dialog
  * @author Administrator
  *
  */
-public class IDialog extends Dialog {
+public class IDialog extends Dialog{
 	private Context context;
 	public IDialog(Context context) {
 		super(context);
@@ -29,11 +28,11 @@ public class IDialog extends Dialog {
 	@Override
 	public boolean dispatchTouchEvent(MotionEvent ev) {
 		// TODO Auto-generated method stub
-		if (ev.getAction() == MotionEvent.ACTION_DOWN) {
-	        View v = getCurrentFocus();
+		if (ev.getAction() == MotionEvent.ACTION_DOWN) {  
+	        View v = getCurrentFocus();  
 	        if (isShouldHideInput(v, ev)) {  
 	  
-	            InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+	            InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);  
 	            if (imm != null) {  
 	                imm.hideSoftInputFromWindow(v.getWindowToken(), 0);  
 	            }  
@@ -47,8 +46,8 @@ public class IDialog extends Dialog {
 		return super.dispatchTouchEvent(ev);
 	
 	}
-	private  boolean isShouldHideInput(View v, MotionEvent event) {
-	    if (v != null && (v instanceof EditText)) {
+	private  boolean isShouldHideInput(View v, MotionEvent event) {  
+	    if (v != null && (v instanceof EditText)) {  
 	        int[] leftTop = { 0, 0 };  
 	        //获取输入框当前的location位置  
 	        v.getLocationInWindow(leftTop);  

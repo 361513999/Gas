@@ -32,6 +32,7 @@ import com.hhkj.gas.www.widget.HeadChildsList;
 import com.hhkj.gas.www.widget.LoadView;
 import com.hhkj.gas.www.widget.NewToast;
 import com.hhkj.gas.www.widget.PullToRefreshView;
+import com.hhkj.gas.www.widget.SearchTips;
 import com.zc.http.okhttp.OkHttpUtils;
 import com.zc.http.okhttp.callback.StringCallback;
 import com.zc.http.okhttp.request.RequestCall;
@@ -123,14 +124,14 @@ public class Start0Activity extends BaseActivity {
     private View drop;
     private LinearLayout get_layout;
     private CheckBox get_all;
-    private TextView get_sure;
+    private TextView get_sure, search;
     @Override
     public void init() {
         drop = findViewById(R.id.drop);
         get_layout = (LinearLayout) findViewById(R.id.get_layout);
         get_all = (CheckBox) findViewById(R.id.get_all);
         get_sure = (TextView) findViewById(R.id.get_sure);
-
+        search = (TextView) findViewById(R.id.search);
         pull_to_refresh_list = (PullToRefreshView) findViewById(R.id.pull_to_refresh_list);
         pull_to_refresh_list.setOnHeaderRefreshListener(listHeadListener);
         pull_to_refresh_list.setOnFooterRefreshListener(listFootListener);
@@ -147,7 +148,13 @@ public class Start0Activity extends BaseActivity {
         gas_list.setAdapter(start0Adapter);
         back = (TextView) findViewById(R.id.back);
         head_btn = (TextView) findViewById(R.id.head_btn);
-
+        search.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SearchTips searchTips = new SearchTips(Start0Activity.this,null);
+                searchTips.showSheet();
+            }
+        });
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
