@@ -40,6 +40,7 @@ public class CommonLogin {
        inflater  = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
+
     private Handler handler = new Handler(){
         @Override
         public void dispatchMessage(Message msg) {

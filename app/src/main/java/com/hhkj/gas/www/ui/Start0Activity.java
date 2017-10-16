@@ -17,6 +17,7 @@ import android.widget.PopupWindow;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+
 import com.hhkj.gas.www.R;
 import com.hhkj.gas.www.adapter.AreasAdapter;
 import com.hhkj.gas.www.adapter.Start0Adapter;
@@ -36,12 +37,15 @@ import com.hhkj.gas.www.widget.SearchTips;
 import com.zc.http.okhttp.OkHttpUtils;
 import com.zc.http.okhttp.callback.StringCallback;
 import com.zc.http.okhttp.request.RequestCall;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Calendar;
+
 import library.view.GregorianLunarCalendarView;
 import okhttp3.Call;
 import okhttp3.MediaType;
@@ -52,20 +56,22 @@ import okhttp3.MediaType;
 
 public class Start0Activity extends BaseActivity {
     private StartHandler startHandler;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-         setContentView(R.layout.start0_layout);
+        setContentView(R.layout.start0_layout);
         startHandler = new StartHandler(Start0Activity.this);
     }
+
     private LoadView loadView;
     private RadioGroup nav_grp;
-    private RadioButton nav_0,nav_1;
+    private RadioButton nav_0, nav_1;
     private ListView gas_list;
     private TextView back;
     private Start0Adapter start0Adapter;
     private PullToRefreshView pull_to_refresh_list;
-    private PullToRefreshView.OnHeaderRefreshListener listHeadListener = new PullToRefreshView.OnHeaderRefreshListener(){
+    private PullToRefreshView.OnHeaderRefreshListener listHeadListener = new PullToRefreshView.OnHeaderRefreshListener() {
 
         @Override
         public void onHeaderRefresh(PullToRefreshView view) {
@@ -73,30 +79,35 @@ public class Start0Activity extends BaseActivity {
                 @Override
                 public void run() {
                     pull_to_refresh_list.onHeaderRefreshComplete();
-                    initListReq(ribs.size()==0?SHOWNUM:ribs.size(),null,null,null,null);
+                    initListReq(ribs.size() == 0 ? SHOWNUM : ribs.size(), null, null, null, null,null);
                     loadList();
 
                 }
-            },runTime);
+            }, runTime);
         }
     };
 
     /**
      * 列表请求初始化
+     *
      * @param num
      */
     private String SORT = null;
-    private void initListReq(int num,String AreaId,String beginDate,String endDate,String SORT){
+    private String Search = null;
+
+    private void initListReq(int num, String AreaId, String beginDate, String endDate, String SORT, String Search) {
         isMore = true;
         CURRENT_PAGE = 1;
         SHOWNUM = num;
-        this.AreaId = AreaId==null?Common.COMMON_DEFAULT:AreaId;
+        this.AreaId = AreaId == null ? Common.COMMON_DEFAULT : AreaId;
         this.BeginDate = beginDate;
         this.EndDate = endDate;
         this.SORT = SORT;
+        this.Search = Search;
         ribs.clear();
     }
-    private int  SHOWNUM  = Common.SHOW_NUM;
+
+    private int SHOWNUM = Common.SHOW_NUM;
     private String AreaId = Common.COMMON_DEFAULT;
     private String BeginDate = null;
     private String EndDate = null;
@@ -106,25 +117,27 @@ public class Start0Activity extends BaseActivity {
             pull_to_refresh_list.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    pull_to_refresh_list.onFooterRefreshComplete();                    if(isMore){
+                    pull_to_refresh_list.onFooterRefreshComplete();
+                    if (isMore) {
                         loadList();
-                    }else{
-                        NewToast.makeText(Start0Activity.this,"没有数据可加载",Common.TTIME).show();
+                    } else {
+                        NewToast.makeText(Start0Activity.this, "没有数据可加载", Common.TTIME).show();
 
                     }
 
                 }
-            },runTime);
+            }, runTime);
         }
     };
     private final int runTime = 400;
     private TextView head_btn;
     private RadioGroup market_group;
-    private RadioButton market_group_item0,market_group_item1,market_group_item2,market_group_item3;
+    private RadioButton market_group_item0, market_group_item1, market_group_item2, market_group_item3;
     private View drop;
     private LinearLayout get_layout;
     private CheckBox get_all;
     private TextView get_sure, search;
+
     @Override
     public void init() {
         drop = findViewById(R.id.drop);
@@ -136,7 +149,7 @@ public class Start0Activity extends BaseActivity {
         pull_to_refresh_list.setOnHeaderRefreshListener(listHeadListener);
         pull_to_refresh_list.setOnFooterRefreshListener(listFootListener);
         gas_list = (ListView) findViewById(R.id.gas_list);
-        start0Adapter = new Start0Adapter(Start0Activity.this,ribs);
+        start0Adapter = new Start0Adapter(Start0Activity.this, ribs);
         market_group = (RadioGroup) findViewById(R.id.market_group);
         market_group_item0 = (RadioButton) findViewById(R.id.market_group_item0);
         market_group_item1 = (RadioButton) findViewById(R.id.market_group_item1);
@@ -151,7 +164,7 @@ public class Start0Activity extends BaseActivity {
         search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SearchTips searchTips = new SearchTips(Start0Activity.this,null);
+                SearchTips searchTips = new SearchTips(Start0Activity.this, startHandler);
                 searchTips.showSheet();
             }
         });
@@ -162,9 +175,9 @@ public class Start0Activity extends BaseActivity {
             }
         });
 
-        if(sharedUtils.getBooleanValue("head")){
+        if (sharedUtils.getBooleanValue("head")) {
             head_btn.setVisibility(View.VISIBLE);
-        }else{
+        } else {
             head_btn.setVisibility(View.GONE);
         }
         head_btn.setOnClickListener(new View.OnClickListener() {
@@ -175,7 +188,7 @@ public class Start0Activity extends BaseActivity {
                 get_layout.setVisibility(View.VISIBLE);
                 get_sure.setText("指派");
                 start0Adapter.changeItem(true);
-                if(head_btn.getTag().toString().equals("0")){
+                if (head_btn.getTag().toString().equals("0")) {
                     head_btn.setTag("1");
                     //开启指派模式
                 }
@@ -186,21 +199,21 @@ public class Start0Activity extends BaseActivity {
         nav_grp.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, @IdRes int i) {
-               initListReq(Common.SHOW_NUM,null,null,null,null);
+                initListReq(Common.SHOW_NUM, null, null, null, null,null);
                 loadList();
                 /*get_layout.setVisibility(View.GONE);
                 start0Adapter.changeItem(false);
                 market_group_item0.setChecked(false);*/
                 market_group.clearCheck();
                 get_all.setChecked(false);
-               switch (i){
+                switch (i) {
                     case R.id.nav_0:
-                        if(nav_0.isChecked()){
+                        if (nav_0.isChecked()) {
                             get_sure.setText("确认");
                         }
                         break;
                     case R.id.nav_1:
-                        if(nav_1.isChecked()){
+                        if (nav_1.isChecked()) {
                             get_sure.setText("领取");
                         }
                         break;
@@ -218,41 +231,41 @@ public class Start0Activity extends BaseActivity {
                 start0Adapter.changeItem(false);
                 head_btn.setTag("0");//重置指派模式
                 get_all.setChecked(false);
-                switch (checkedId){
+                switch (checkedId) {
                     case R.id.market_group_item0:
 
-                        if(market_group_item0.isChecked()){
+                        if (market_group_item0.isChecked()) {
                             get_layout.setVisibility(View.VISIBLE);
                             start0Adapter.changeItem(true);
-                            if(nav_0.isChecked()){
+                            if (nav_0.isChecked()) {
                                 get_sure.setText("确认");
                             }
-                            if(nav_1.isChecked()){
+                            if (nav_1.isChecked()) {
                                 get_sure.setText("领取");
                             }
 
                         }
                         break;
                     case R.id.market_group_item3:
-                        if(market_group_item3.isChecked()){
+                        if (market_group_item3.isChecked()) {
                             //选中才打开
 
                             sortPop();
-                            showDataPop(sortPopupWindow,drop);
+                            showDataPop(sortPopupWindow, drop);
                         }
                         break;
                     case R.id.market_group_item2:
-                        if(market_group_item2.isChecked()){
+                        if (market_group_item2.isChecked()) {
                             //选中才打开
 
                             dataPop();
-                            showDataPop(dataPopupWindow,drop);
+                            showDataPop(dataPopupWindow, drop);
                         }
                         break;
                     case R.id.market_group_item1:
-                        if(market_group_item1.isChecked()){
+                        if (market_group_item1.isChecked()) {
                             areaPop();
-                            showDataPop(areaPopupWindow,drop);
+                            showDataPop(areaPopupWindow, drop);
                         }
 
                         break;
@@ -263,40 +276,40 @@ public class Start0Activity extends BaseActivity {
         get_sure.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(head_btn.getTag().toString().equals("1")){
-                    HeadChildsList childsList = new HeadChildsList(Start0Activity.this,sharedUtils,ribs,startHandler);
+                if (head_btn.getTag().toString().equals("1")) {
+                    HeadChildsList childsList = new HeadChildsList(Start0Activity.this, sharedUtils, ribs, startHandler);
                     childsList.showSheet();
 
-                }else{
+                } else {
 
                     StringBuilder builder = new StringBuilder();
-                    for(int i=0;i<ribs.size();i++){
-                        ReserItemBean rtb =   ribs.get(i);
-                        if(rtb.isOpen()){
-                            builder.append(rtb.getId()+",");
+                    for (int i = 0; i < ribs.size(); i++) {
+                        ReserItemBean rtb = ribs.get(i);
+                        if (rtb.isOpen()) {
+                            builder.append(rtb.getId() + ",");
                         }
                     }
                     final String temp = builder.toString();
-                    if(temp.length()>0){
+                    if (temp.length() > 0) {
 
                         //在这里进行领取任务
                         JSONObject jsonObject = new JSONObject();
                         try {
-                            jsonObject.put("toKen",sharedUtils.getStringValue("token"));
-                            jsonObject.put("cls","Gas.SecurityOrder");
-                            jsonObject.put("method","AssignOrder");
+                            jsonObject.put("toKen", sharedUtils.getStringValue("token"));
+                            jsonObject.put("cls", "Gas.SecurityOrder");
+                            jsonObject.put("method", "AssignOrder");
                             JSONObject object = new JSONObject();
-                            object.put("OrderIds",temp);
-                            jsonObject.put("param",object.toString());
+                            object.put("OrderIds", temp);
+                            jsonObject.put("param", object.toString());
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                    if(loadView==null){
-                        loadView = new LoadView(Start0Activity.this);
-                        loadView.showSheet();
-                    }
+                        if (loadView == null) {
+                            loadView = new LoadView(Start0Activity.this);
+                            loadView.showSheet();
+                        }
 
-                        OkHttpUtils.postString().url(U.VISTER(U.BASE_URL)+U.LIST).mediaType(MediaType.parse("application/json; charset=utf-8")).content(jsonObject.toString()).build().execute(new StringCallback() {
+                        OkHttpUtils.postString().url(U.VISTER(U.BASE_URL) + U.LIST).mediaType(MediaType.parse("application/json; charset=utf-8")).content(jsonObject.toString()).build().execute(new StringCallback() {
                             @Override
                             public void onError(Call call, Exception e, int id) {
                                 closeLoad();
@@ -309,12 +322,12 @@ public class Start0Activity extends BaseActivity {
 
                                 try {
                                     JSONObject jsonObject = new JSONObject(FileUtils.formatJson(response));
-                                    if(jsonObject.getBoolean("Success")){
+                                    if (jsonObject.getBoolean("Success")) {
                                         //领取操作
-                                        String []strs = temp.split(",");
-                                        for(int i=0;i<ribs.size();i++){
-                                            for(int j=0;j<strs.length;j++){
-                                                if(ribs.get(i).getId().equals(strs[j])){
+                                        String[] strs = temp.split(",");
+                                        for (int i = 0; i < ribs.size(); i++) {
+                                            for (int j = 0; j < strs.length; j++) {
+                                                if (ribs.get(i).getId().equals(strs[j])) {
                                                     ribs.remove(i);
                                                 }
                                             }
@@ -323,7 +336,7 @@ public class Start0Activity extends BaseActivity {
                                         get_all.setChecked(false);
                                         market_group.clearCheck();
 
-                                        NewToast.makeText(Start0Activity.this,"成功确认",Common.TTIME).show();
+                                        NewToast.makeText(Start0Activity.this, "成功确认", Common.TTIME).show();
                                         startHandler.sendEmptyMessage(1);
                                     }
                                 } catch (JSONException e) {
@@ -335,7 +348,6 @@ public class Start0Activity extends BaseActivity {
                     }
 
 
-
                 }
 
             }
@@ -343,8 +355,8 @@ public class Start0Activity extends BaseActivity {
         get_all.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                for(int i=0;i<ribs.size();i++){
-                    ReserItemBean rtb =   ribs.get(i);
+                for (int i = 0; i < ribs.size(); i++) {
+                    ReserItemBean rtb = ribs.get(i);
                     rtb.setOpen(b);
                 }
                 start0Adapter.notifyDataSetChanged();
@@ -352,15 +364,16 @@ public class Start0Activity extends BaseActivity {
             }
         });
 
-      //  loadList(CURRENT_PAGE);
+        //  loadList(CURRENT_PAGE);
     }
 
 
-    private   ArrayList<ReserItemBean> ribs = new ArrayList<>();
+    private ArrayList<ReserItemBean> ribs = new ArrayList<>();
     private int CURRENT_PAGE = 1;
     private RequestCall requestCall;
-    private void loadList(){
-        if(loadView==null){
+
+    private void loadList() {
+        if (loadView == null) {
             loadView = new LoadView(Start0Activity.this);
             loadView.showSheet();
         }
@@ -369,40 +382,45 @@ public class Start0Activity extends BaseActivity {
         int type = Integer.parseInt(getCheckedId());
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("toKen",sharedUtils.getStringValue("token"));
-            jsonObject.put("cls","Gas.SecurityOrder");
-            jsonObject.put("method",type==0?"GetSelfOrder":"GetCommonOrder");
+            jsonObject.put("toKen", sharedUtils.getStringValue("token"));
+            jsonObject.put("cls", "Gas.SecurityOrder");
+            jsonObject.put("method", type == 0 ? "GetSelfOrder" : "GetCommonOrder");
             JSONObject pms = new JSONObject();
             //0 自己和下属的，还包括未领取的，1自己和下属的，2未领取的
-            pms.put("OrderStatus","1,2");
+            pms.put("OrderStatus", "1,2");
 
-            if(type==0){
-                pms.put("OrderType",type);
+            if (type == 0) {
+                pms.put("OrderType", type);
             }
 
-            pms.put("AreaId",AreaId);
-            if(BeginDate!=null&&EndDate!=null){
-                pms.put("BeginDate",BeginDate);
-                pms.put("EndDate",EndDate);
+            pms.put("AreaId", AreaId);
+            if(Search!=null){
+                pms.put("Search",Search);
             }
-            pms.put("Index",CURRENT_PAGE);
-            pms.put("Size",Common.SHOW_NUM);
-            jsonObject.put("param",pms.toString());
+            if (BeginDate != null && EndDate != null) {
+                pms.put("BeginDate", BeginDate);
+                pms.put("EndDate", EndDate);
+            }
+            pms.put("Index", CURRENT_PAGE);
+            pms.put("Size", Common.SHOW_NUM);
+            jsonObject.put("param", pms.toString());
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        requestCall = OkHttpUtils.postString().url(U.VISTER(U.BASE_URL)+U.LIST).mediaType(MediaType.parse("application/json; charset=utf-8")).content(jsonObject.toString()).build();
+        requestCall = OkHttpUtils.postString().url(U.VISTER(U.BASE_URL) + U.LIST).mediaType(MediaType.parse("application/json; charset=utf-8")).content(jsonObject.toString()).build();
 
         requestCall.execute(stringCallback);
     }
-    private void closeLoad(){
-        if(loadView!=null){
+
+    private void closeLoad() {
+        if (loadView != null) {
             loadView.cancle();
             loadView = null;
         }
 
     }
+
     private boolean isMore = true;
     private StringCallback stringCallback = new StringCallback() {
         @Override
@@ -416,19 +434,19 @@ public class Start0Activity extends BaseActivity {
 
             try {
                 JSONObject jsonObject = new JSONObject(FileUtils.formatJson(response));
-                if(jsonObject.getBoolean("Success")){
+                if (jsonObject.getBoolean("Success")) {
                     //成功状态
                     String result = jsonObject.getString("Result");
                     JSONArray jsonArray = new JSONArray(result);
                     int len = jsonArray.length();
-                    if(len<Common.SHOW_NUM){
+                    if (len < Common.SHOW_NUM) {
                         isMore = false;
                         startHandler.sendEmptyMessage(2);
-                    }else{
-                        CURRENT_PAGE = CURRENT_PAGE+1;
+                    } else {
+                        CURRENT_PAGE = CURRENT_PAGE + 1;
                     }
 
-                    for(int i=0;i<len;i++){
+                    for (int i = 0; i < len; i++) {
                         JSONObject object = jsonArray.getJSONObject(i);
                         ReserItemBean ib = new ReserItemBean();
                         ib.setAdd(object.getString("Address"));
@@ -438,21 +456,21 @@ public class Start0Activity extends BaseActivity {
                         ib.setTel(object.getString("MobilePhone"));
 //                        int type = Integer.parseInt(getCheckedId());
                         int type = object.getInt("OrderType");
-                       switch (type){
-                           case 0:
-                               ib.setTime(object.getString("SecurityTime"));
-                               break;
-                           case 1:
-                               ib.setTime("待定");
-                               break;
-                       }
+                        switch (type) {
+                            case 0:
+                                ib.setTime(object.getString("SecurityTime"));
+                                break;
+                            case 1:
+                                ib.setTime("待定");
+                                break;
+                        }
 
                         ribs.add(ib);
                     }
                     startHandler.sendEmptyMessage(1);
 
-                }else {
-                    if(jsonObject.getString("Result").equals(Common.UNLOGIN)){
+                } else {
+                    if (jsonObject.getString("Result").equals(Common.UNLOGIN)) {
                         NewToast.makeText(Start0Activity.this, "未登录", 1000).show();
                         startHandler.sendEmptyMessage(4);
                     }
@@ -472,16 +490,17 @@ public class Start0Activity extends BaseActivity {
     /**
      * 关于时间的pop
      */
-    private void add(ArrayList<AreaBean> rbs,String name,String id){
+    private void add(ArrayList<AreaBean> rbs, String name, String id) {
         AreaBean ab = new AreaBean();
         ab.setName(name);
         ab.setId(id);
         rbs.add(ab);
     }
-    private void sortPop(){
+
+    private void sortPop() {
         {
-            sortPop = inflater.inflate(R.layout.area_list_layout,null);
-            sortPopupWindow = new PopupWindow(sortPop,LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.MATCH_PARENT);
+            sortPop = inflater.inflate(R.layout.area_list_layout, null);
+            sortPopupWindow = new PopupWindow(sortPop, LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
             sortPopupWindow.setBackgroundDrawable(getResources().getDrawable(
                     R.color.bcolor));
             sortPopupWindow.setAnimationStyle(android.R.style.TextAppearance_DeviceDefault_Widget_TextView_PopupMenu);
@@ -490,11 +509,11 @@ public class Start0Activity extends BaseActivity {
             sortPopupWindow.setFocusable(true);
             sortList = (ListView) sortPop.findViewById(R.id.area_list);
             final ArrayList<AreaBean> rbs = new ArrayList<>();
-            add(rbs,"单号由低到高","OrderCode asc");
-            add(rbs,"单号由高到低","OrderCode desc");
-            add(rbs,"时间由低到高","SecurityTime asc");
-            add(rbs,"时间由高到低","SecurityTime desc");
-            sortAdapter = new AreasAdapter(Start0Activity.this,rbs);
+            add(rbs, "单号由低到高", "OrderCode asc");
+            add(rbs, "单号由高到低", "OrderCode desc");
+            add(rbs, "时间由低到高", "SecurityTime asc");
+            add(rbs, "时间由高到低", "SecurityTime desc");
+            sortAdapter = new AreasAdapter(Start0Activity.this, rbs);
             sortList.setAdapter(sortAdapter);
             sortPopupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
                 @Override
@@ -508,28 +527,30 @@ public class Start0Activity extends BaseActivity {
             sortList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                    initListReq(Common.SHOW_NUM,null,null,null,rbs.get(i).getId());
+                    initListReq(Common.SHOW_NUM, null, null, null, rbs.get(i).getId(),null);
                     loadList();
-                    disDataPop(sortPopupWindow,sortPop,null);
+                    disDataPop(sortPopupWindow, sortPop, null);
                 }
             });
             View diss = sortPop.findViewById(R.id.diss);
             diss.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    disDataPop(sortPopupWindow,sortPop,null);
+                    disDataPop(sortPopupWindow, sortPop, null);
                 }
             });
         }
     }
-    private View dataPop,areaPop,sortPop;
-    private PopupWindow dataPopupWindow,areaPopupWindow,sortPopupWindow;
-    private ListView area_list,sortList;
-    private AreasAdapter areasAdapter,sortAdapter;
+
+    private View dataPop, areaPop, sortPop;
+    private PopupWindow dataPopupWindow, areaPopupWindow, sortPopupWindow;
+    private ListView area_list, sortList;
+    private AreasAdapter areasAdapter, sortAdapter;
     private ArrayList<AreaBean> rbs = new ArrayList<>();
-    private void areaPop(){
-        areaPop = inflater.inflate(R.layout.area_list_layout,null);
-        areaPopupWindow = new PopupWindow(areaPop,LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.MATCH_PARENT);
+
+    private void areaPop() {
+        areaPop = inflater.inflate(R.layout.area_list_layout, null);
+        areaPopupWindow = new PopupWindow(areaPop, LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
         areaPopupWindow.setBackgroundDrawable(getResources().getDrawable(
                 R.color.bcolor));
         areaPopupWindow.setAnimationStyle(android.R.style.TextAppearance_DeviceDefault_Widget_TextView_PopupMenu);
@@ -537,23 +558,23 @@ public class Start0Activity extends BaseActivity {
         areaPopupWindow.setTouchable(true);
         areaPopupWindow.setFocusable(true);
         area_list = (ListView) areaPop.findViewById(R.id.area_list);
-        areasAdapter = new AreasAdapter(Start0Activity.this,rbs);
+        areasAdapter = new AreasAdapter(Start0Activity.this, rbs);
         area_list.setAdapter(areasAdapter);
         area_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
-                initListReq(Common.SHOW_NUM, rbs.get(i).getId(),null,null,null);
+                initListReq(Common.SHOW_NUM, rbs.get(i).getId(), null, null, null,null);
                 loadList();
-                disDataPop(areaPopupWindow,areaPop,new Object[]{area_list,areasAdapter});
+                disDataPop(areaPopupWindow, areaPop, new Object[]{area_list, areasAdapter});
             }
         });
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("toKen",sharedUtils.getStringValue("token"));
-            jsonObject.put("cls","Gas.AreaSet");
-            jsonObject.put("method","AreaList");
-            jsonObject.put("param","");
+            jsonObject.put("toKen", sharedUtils.getStringValue("token"));
+            jsonObject.put("cls", "Gas.AreaSet");
+            jsonObject.put("method", "AreaList");
+            jsonObject.put("param", "");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -570,10 +591,10 @@ public class Start0Activity extends BaseActivity {
         diss.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                disDataPop(areaPopupWindow,areaPop,new Object[]{area_list,areasAdapter});
+                disDataPop(areaPopupWindow, areaPop, new Object[]{area_list, areasAdapter});
             }
         });
-        OkHttpUtils.postString().url(U.VISTER(U.BASE_URL)+U.LIST).mediaType(MediaType.parse("application/json; charset=utf-8")).content(jsonObject.toString()).build().execute(new StringCallback() {
+        OkHttpUtils.postString().url(U.VISTER(U.BASE_URL) + U.LIST).mediaType(MediaType.parse("application/json; charset=utf-8")).content(jsonObject.toString()).build().execute(new StringCallback() {
             @Override
             public void onError(Call call, Exception e, int id) {
 
@@ -585,22 +606,22 @@ public class Start0Activity extends BaseActivity {
 
                 try {
                     JSONObject jsonObject = new JSONObject(FileUtils.formatJson(response));
-                    if(jsonObject.getBoolean("Success")){
+                    if (jsonObject.getBoolean("Success")) {
                         //成功状态
                         String result = jsonObject.getString("Result");
                         JSONArray jsonArray = new JSONArray(result);
                         int len = jsonArray.length();
                         rbs.clear();
-                        for(int i=0;i<len;i++){
+                        for (int i = 0; i < len; i++) {
                             JSONObject object = jsonArray.getJSONObject(i);
                             AreaBean ab = new AreaBean();
                             ab.setName(object.getString("AreaName"));
-                            ab.setId(object.getString("Id")==null?Common.COMMON_DEFAULT:object.getString("Id"));
+                            ab.setId(object.getString("Id") == null ? Common.COMMON_DEFAULT : object.getString("Id"));
                             rbs.add(ab);
                         }
                         startHandler.sendEmptyMessage(3);
-                    }else {
-                        if(jsonObject.getString("Result").equals(Common.UNLOGIN)){
+                    } else {
+                        if (jsonObject.getString("Result").equals(Common.UNLOGIN)) {
                             NewToast.makeText(Start0Activity.this, "未登录", 1000).show();
                             startHandler.sendEmptyMessage(4);
                         }
@@ -615,11 +636,11 @@ public class Start0Activity extends BaseActivity {
     }
 
 
-    private void dataPop(){
+    private void dataPop() {
 
         dataPop = inflater.inflate(R.layout.date_double_layout, null);
         dataPopupWindow = new PopupWindow(dataPop, LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout. LayoutParams.MATCH_PARENT);
+                LinearLayout.LayoutParams.MATCH_PARENT);
         dataPopupWindow.setBackgroundDrawable(getResources().getDrawable(
                 R.color.bcolor));
         //android.R.style.TextAppearance_DeviceDefault_Widget_TextView_PopupMenu)
@@ -627,16 +648,16 @@ public class Start0Activity extends BaseActivity {
         dataPopupWindow.update();
         dataPopupWindow.setTouchable(true);
         dataPopupWindow.setFocusable(true);
-        final GregorianLunarCalendarView  mGLCView0 = (GregorianLunarCalendarView) dataPop.findViewById(R.id.calendar_view_start);
-        final GregorianLunarCalendarView  mGLCView1 = (GregorianLunarCalendarView) dataPop.findViewById(R.id.calendar_view_end);
+        final GregorianLunarCalendarView mGLCView0 = (GregorianLunarCalendarView) dataPop.findViewById(R.id.calendar_view_start);
+        final GregorianLunarCalendarView mGLCView1 = (GregorianLunarCalendarView) dataPop.findViewById(R.id.calendar_view_end);
         mGLCView0.init();//init has no scroll effection, to today
         mGLCView1.init();
         dataPopupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
             @Override
             public void onDismiss() {
 
-               // ((RadioButton)findViewById(market_group.getCheckedRadioButtonId())).setChecked(false);
-               // market_group_item2.setChecked(false);
+                // ((RadioButton)findViewById(market_group.getCheckedRadioButtonId())).setChecked(false);
+                // market_group_item2.setChecked(false);
                 market_group.clearCheck();
             }
         });
@@ -657,43 +678,44 @@ public class Start0Activity extends BaseActivity {
 //                        + (calendar1.get(Calendar.MONTH) + 1) + "-"
 //                        + calendar1.get(Calendar.DAY_OF_MONTH);
 
-                String begin =   calendar0.get(Calendar.YEAR) + "-"
+                String begin = calendar0.get(Calendar.YEAR) + "-"
                         + (calendar0.get(Calendar.MONTH) + 1) + "-"
                         + calendar0.get(Calendar.DAY_OF_MONTH);
                 String end = calendar1.get(Calendar.YEAR) + "-"
                         + (calendar1.get(Calendar.MONTH) + 1) + "-"
                         + calendar1.get(Calendar.DAY_OF_MONTH);
-                if(begin.compareTo(end)==1){
-                    NewToast.makeText(Start0Activity.this,"结束时间小于起始时间",Common.TTIME).show();
+                if (begin.compareTo(end) == 1) {
+                    NewToast.makeText(Start0Activity.this, "结束时间小于起始时间", Common.TTIME).show();
                     return;
                 }
                 //时间筛选
-                initListReq(Common.SHOW_NUM,null,begin,end,null);
+                initListReq(Common.SHOW_NUM, null, begin, end, null,null);
                 loadList();
-                disDataPop(dataPopupWindow,dataPop,null);
+                disDataPop(dataPopupWindow, dataPop, null);
             }
         });
         View diss = dataPop.findViewById(R.id.diss);
         cancle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                disDataPop(dataPopupWindow,dataPop,null);
+                disDataPop(dataPopupWindow, dataPop, null);
             }
         });
         diss.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                disDataPop(dataPopupWindow,dataPop,null);
+                disDataPop(dataPopupWindow, dataPop, null);
             }
         });
     }
-    private void disDataPop(PopupWindow popupWindow,View v,Object[] objs){
-        if(popupWindow!=null&&popupWindow.isShowing()){
+
+    private void disDataPop(PopupWindow popupWindow, View v, Object[] objs) {
+        if (popupWindow != null && popupWindow.isShowing()) {
             popupWindow.dismiss();
             popupWindow = null;
             v = null;
-            if(objs!=null){
-                for(int i=0;i<objs.length;i++){
+            if (objs != null) {
+                for (int i = 0; i < objs.length; i++) {
                     objs[i] = null;
                 }
             }
@@ -701,9 +723,7 @@ public class Start0Activity extends BaseActivity {
     }
 
 
-
-
-    private void showDataPop(PopupWindow popupWindow,View view) {
+    private void showDataPop(PopupWindow popupWindow, View view) {
         if (!popupWindow.isShowing()) {
             // mPopupWindow.showAsDropDown(view,0,0);
             // 第一个参数指定PopupWindow的锚点view，即依附在哪个view上。
@@ -715,7 +735,6 @@ public class Start0Activity extends BaseActivity {
             popupWindow.showAsDropDown(view);
         }
     }
-
 
 
     private class StartHandler extends Handler {
@@ -730,12 +749,16 @@ public class Start0Activity extends BaseActivity {
             // TODO Auto-generated method stub
             super.dispatchMessage(msg);
             if (mLeakActivityRef.get() != null) {
-                switch (msg.what){
+                switch (msg.what) {
+                    case -8:
+                        initListReq(Common.SHOW_NUM, null, null, null, null,(String)msg.obj);
+                        loadList();
+                        break;
                     case 1:
                         start0Adapter.updata(ribs);
                         break;
                     case 2:
-                        NewToast.makeText(Start0Activity.this,"最后一页",1000).show();
+                        NewToast.makeText(Start0Activity.this, "最后一页", 1000).show();
                         break;
                     case 3:
                         areasAdapter.updata(rbs);
@@ -752,18 +775,19 @@ public class Start0Activity extends BaseActivity {
                         get_all.setChecked(false);
                         market_group.clearCheck();
                         start0Adapter.updata(ribs);
-                        NewToast.makeText(Start0Activity.this,"成功指派",Common.TTIME).show();
+                        NewToast.makeText(Start0Activity.this, "成功指派", Common.TTIME).show();
                         break;
                 }
             }
         }
     }
-    private String getCheckedId(){
+
+    private String getCheckedId() {
         String tag = null;
         try {
-            tag = ((RadioButton)findViewById(nav_grp.getCheckedRadioButtonId())).getTag().toString();
-        }catch (Exception e){
+            tag = ((RadioButton) findViewById(nav_grp.getCheckedRadioButtonId())).getTag().toString();
+        } catch (Exception e) {
         }
-        return  tag;
+        return tag;
     }
 }

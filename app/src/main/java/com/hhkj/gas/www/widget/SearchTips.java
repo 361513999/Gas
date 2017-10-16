@@ -7,6 +7,7 @@ import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.DialogInterface.OnShowListener;
 import android.os.Handler;
+import android.os.Message;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,7 +20,10 @@ import android.widget.TextView;
 import com.hhkj.gas.www.R;
 import com.hhkj.gas.www.common.Common;
 import com.hhkj.gas.www.common.CopyFile;
+import com.hhkj.gas.www.common.FileUtils;
 import com.hhkj.gas.www.db.DB;
+
+import java.util.Map;
 
 
 public class SearchTips {
@@ -46,7 +50,7 @@ public class SearchTips {
                 R.layout.search_pop_layout, null);
         layout.setMinimumWidth(screenWidth);
         TextView item0 = (TextView) layout.findViewById(R.id.back);
-        EditText item1 = (EditText) layout.findViewById(R.id.edit);
+        final EditText item1 = (EditText) layout.findViewById(R.id.edit);
         TextView edit_sure = (TextView) layout.findViewById(R.id.edit_sure);
 
         item0.setOnClickListener(new View.OnClickListener() {
@@ -60,6 +64,21 @@ public class SearchTips {
         edit_sure.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                String str = item1.getText().toString().trim();
+                Map<String,Integer> ft = FileUtils.formatStr(str);
+                int enCount = ft.get("en");//统计英文字符和数字
+                int zhCount = ft.get("zh");
+
+
+                if(enCount<4&&zhCount==0||enCount<2&&zhCount==1||zhCount<2&&enCount==0){
+                    NewToast.makeText(context,"至少两个字符",Common.TTIME).show();
+                }else{
+                    Message msg = new Message();
+                    msg.what = -8;
+                    msg.obj = str;
+                    handler.sendMessage(msg);
+                    cancle();
+                }
 
             }
         });

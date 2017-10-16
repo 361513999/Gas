@@ -30,6 +30,7 @@ import com.hhkj.gas.www.widget.HeadTips;
 import com.hhkj.gas.www.widget.LoadView;
 import com.hhkj.gas.www.widget.NewToast;
 import com.hhkj.gas.www.widget.PullToRefreshView;
+import com.hhkj.gas.www.widget.SearchTips;
 import com.zc.http.okhttp.OkHttpUtils;
 import com.zc.http.okhttp.callback.StringCallback;
 import com.zc.http.okhttp.request.RequestCall;
@@ -73,7 +74,7 @@ public class Start2Activity extends BaseActivity {
                 @Override
                 public void run() {
                     pull_to_refresh_list.onHeaderRefreshComplete();
-                    initListReq(ribs.size()==0?SHOWNUM:ribs.size(),null,null,null,null);
+                    initListReq(ribs.size()==0?SHOWNUM:ribs.size(),null,null,null,null,null);
                     loadList();
                 }
             },runTime);
@@ -84,7 +85,8 @@ public class Start2Activity extends BaseActivity {
      * 列表请求初始化
      * @param num
      */
-    private void initListReq(int num,String AreaId,String beginDate,String endDate,String SORT){
+    private  String Search = null;
+    private void initListReq(int num,String AreaId,String beginDate,String endDate,String SORT,String Search){
         isMore = true;
         CURRENT_PAGE = 1;
         SHOWNUM = num;
@@ -92,6 +94,7 @@ public class Start2Activity extends BaseActivity {
         this.AreaId = AreaId==null?Common.COMMON_DEFAULT:AreaId;
         this.BeginDate = beginDate;
         this.EndDate = endDate;
+        this.Search = Search;
         ribs.clear();
     }
     private int  SHOWNUM  = Common.SHOW_NUM;
@@ -142,7 +145,13 @@ public class Start2Activity extends BaseActivity {
         nav_1 = (RadioButton) findViewById(R.id.nav_1);
         gas_list.setAdapter(start2Adapter);
         back = (TextView) findViewById(R.id.back);
-
+    search.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            SearchTips searchTips = new SearchTips(Start2Activity.this, startHandler);
+            searchTips.showSheet();
+        }
+    });
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -155,7 +164,7 @@ public class Start2Activity extends BaseActivity {
 //                ribs.clear();
 //                isMore = true;
 //                CURRENT_PAGE = 1;
-                initListReq(Common.SHOW_NUM,null,null,null,null);
+                initListReq(Common.SHOW_NUM,null,null,null,null,null);
                 loadList();
 
                 market_group.clearCheck();
@@ -234,7 +243,9 @@ public class Start2Activity extends BaseActivity {
             //0 自己和下属的，还包括未领取的，1自己和下属的，2未领取的
             pms.put("OrderStatus","5");
             pms.put("OrderType",type);
-
+            if(Search!=null){
+                pms.put("Search",Search);
+            }
             pms.put("AreaId",AreaId);
             if(BeginDate!=null&&EndDate!=null){
                 pms.put("BeginDate",BeginDate);
@@ -373,7 +384,7 @@ public class Start2Activity extends BaseActivity {
             sortList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                    initListReq(Common.SHOW_NUM,null,null,null,rbs.get(i).getId());
+                    initListReq(Common.SHOW_NUM,null,null,null,rbs.get(i).getId(),null);
                     loadList();
                     disDataPop(sortPopupWindow,sortPop,null);
                 }
@@ -405,7 +416,7 @@ public class Start2Activity extends BaseActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
-                initListReq(Common.SHOW_NUM, rbs.get(i).getId(),null,null,null);
+                initListReq(Common.SHOW_NUM, rbs.get(i).getId(),null,null,null,null);
                 loadList();
                 disDataPop(areaPopupWindow,areaPop,new Object[]{area_list,areasAdapter});
             }
@@ -531,7 +542,7 @@ public class Start2Activity extends BaseActivity {
                     return;
                 }
                 //时间筛选
-                initListReq(Common.SHOW_NUM,null,begin,end,null);
+                initListReq(Common.SHOW_NUM,null,begin,end,null,null);
                 loadList();
                 disDataPop(dataPopupWindow,dataPop,null);
             }
@@ -594,6 +605,11 @@ public class Start2Activity extends BaseActivity {
             super.dispatchMessage(msg);
             if (mLeakActivityRef.get() != null) {
                 switch (msg.what){
+                    case -8:
+
+                        initListReq(Common.SHOW_NUM, null, null, null, null,(String)msg.obj);
+                        loadList();
+                        break;
                     case 1:
                         start2Adapter.updata(ribs);
                         break;

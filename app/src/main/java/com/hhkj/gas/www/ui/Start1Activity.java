@@ -35,6 +35,7 @@ import com.hhkj.gas.www.db.DB;
 import com.hhkj.gas.www.widget.LoadView;
 import com.hhkj.gas.www.widget.NewToast;
 import com.hhkj.gas.www.widget.PullToRefreshView;
+import com.hhkj.gas.www.widget.SearchTips;
 import com.zc.http.okhttp.OkHttpUtils;
 import com.zc.http.okhttp.callback.StringCallback;
 import com.zc.http.okhttp.request.RequestCall;
@@ -79,7 +80,7 @@ public class Start1Activity extends BaseActivity {
                 @Override
                 public void run() {
                     pull_to_refresh_list.onHeaderRefreshComplete();
-                    initListReq(ribs.size()==0?SHOWNUM:ribs.size(),null,null,null,null,null,null);
+                    initListReq(ribs.size()==0?SHOWNUM:ribs.size(),null,null,null,null,null,null,null);
                     loadList();
                 }
             },runTime);
@@ -89,7 +90,8 @@ public class Start1Activity extends BaseActivity {
      * 列表请求初始化
      * @param num
      */
-    private void initListReq(int num,String AreaId,String beginDate,String endDate,String OrderStatus,String SORT,String problem){
+    private String Search = null;
+    private void initListReq(int num,String AreaId,String beginDate,String endDate,String OrderStatus,String SORT,String problem,String Search){
         isMore = true;
         CURRENT_PAGE = 1;
         SHOWNUM = num;
@@ -99,6 +101,7 @@ public class Start1Activity extends BaseActivity {
         this.SORT = SORT;
         this.problem = problem;
         this.EndDate = endDate;
+        this.Search = Search;
         ribs.clear();
     }
     private PullToRefreshView.OnFooterRefreshListener listFootListener = new PullToRefreshView.OnFooterRefreshListener() {
@@ -272,7 +275,13 @@ public class Start1Activity extends BaseActivity {
         gas_list.setAdapter(start1Adapter);
 
         back = (TextView) findViewById(R.id.back);
-
+        search.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SearchTips searchTips = new SearchTips(Start1Activity.this, startHandler);
+                searchTips.showSheet();
+            }
+        });
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -282,7 +291,7 @@ public class Start1Activity extends BaseActivity {
         nav_grp.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, @IdRes int i) {
-                initListReq(Common.SHOW_NUM,null,null,null,null,null,null);
+                initListReq(Common.SHOW_NUM,null,null,null,null,null,null,null);
                 loadList();
 
                 market_group.clearCheck();
@@ -374,6 +383,9 @@ public class Start1Activity extends BaseActivity {
             pms.put("OrderStatus","3,4,6,7,8,9");
             pms.put("OrderType",type);
             pms.put("AreaId",AreaId);
+            if(Search!=null){
+                pms.put("Search",Search);
+            }
             if(BeginDate!=null&&EndDate!=null){
                 pms.put("BeginDate",BeginDate);
                 pms.put("EndDate",EndDate);
@@ -513,7 +525,7 @@ private void add(ArrayList<AreaBean> rbs,String name,String id){
         problemList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                initListReq(Common.SHOW_NUM,null,null,null,null,null,rbs.get(i).getId());
+                initListReq(Common.SHOW_NUM,null,null,null,null,null,rbs.get(i).getId(),null);
                 loadList();
                 disDataPop(problemPopupWindow,problemPop,null);
             }
@@ -558,7 +570,7 @@ private void statusPop(){
     statusList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-            initListReq(Common.SHOW_NUM,null,null,null,rbs.get(i).getId(),null,null);
+            initListReq(Common.SHOW_NUM,null,null,null,rbs.get(i).getId(),null,null,null);
             loadList();
             disDataPop(statusPopupWindow,statusPop,null);
         }
@@ -601,7 +613,7 @@ private void sortPop(){
         sortList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                initListReq(Common.SHOW_NUM,null,null,null,null,rbs.get(i).getId(),null);
+                initListReq(Common.SHOW_NUM,null,null,null,null,rbs.get(i).getId(),null,null);
                 loadList();
                 disDataPop(sortPopupWindow,sortPop,null);
             }
@@ -640,7 +652,7 @@ private void sortPop(){
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
-                initListReq(Common.SHOW_NUM, rbs.get(i).getId(),null,null,null,null,null);
+                initListReq(Common.SHOW_NUM, rbs.get(i).getId(),null,null,null,null,null,null);
                 loadList();
                 disDataPop(areaPopupWindow,areaPop,new Object[]{area_list,areasAdapter});
             }
@@ -766,7 +778,7 @@ private void sortPop(){
                     return;
                 }
                 //时间筛选
-                initListReq(Common.SHOW_NUM,null,begin,end,null,null,null);
+                initListReq(Common.SHOW_NUM,null,begin,end,null,null,null,null);
                 loadList();
                 disDataPop(dataPopupWindow,dataPop,null);
 
@@ -828,6 +840,11 @@ private void sortPop(){
             super.dispatchMessage(msg);
             if (mLeakActivityRef.get() != null) {
                 switch (msg.what){
+                    case -8:
+                        initListReq(Common.SHOW_NUM, null,null,null,null,null,null,(String)msg.obj);
+
+                        loadList();
+                        break;
                     case 1:
                         start1Adapter.updata(ribs);
                         break;
@@ -911,7 +928,7 @@ private void sortPop(){
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode==100&&resultCode==1000){
-            initListReq(ribs.size()==0?SHOWNUM:ribs.size(),null,null,null,null,null,null);
+            initListReq(ribs.size()==0?SHOWNUM:ribs.size(),null,null,null,null,null,null,null);
             loadList();
         }
     }
