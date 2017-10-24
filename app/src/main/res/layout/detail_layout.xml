@@ -383,6 +383,28 @@
 
 
                 </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/tag_view_jc"
+                    android:gravity="center"
+                    android:visibility="gone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="19sp"
+
+                        android:textColor="@color/font_normal"
+                        android:text="安检结果"/>
+                    <ImageView
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:layout_marginLeft="15dp"
+                        android:layout_marginRight="15dp"
+                        android:src="@mipmap/icon_jc"/>
+
+
+                </LinearLayout>
                 <RelativeLayout
                     android:id="@+id/tag_con"
                     android:layout_width="match_parent"

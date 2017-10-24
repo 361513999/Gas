@@ -159,7 +159,11 @@ public class StaffMark implements PrintDataMaker {
             printerWriter.printLineFeed();
             printerWriter.setFontSize(1);
             printerWriter.setAlignCenter();
-            printerWriter.print("安检结果:合格");
+            if(bean.getStaffTag().equals("Y")){
+                printerWriter.print("安检结果:合格");
+            }else if(bean.getStaffTag().equals("J")){
+                printerWriter.print("安检结果:隐患已解除");
+            }
             printerWriter.printLineFeed();
             printerWriter.setAlignLeft();
             printerWriter.setFontSize(0);

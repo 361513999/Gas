@@ -78,7 +78,7 @@ public class HeadTips {
                     }
 
                 }else{
-                    if(bean.getStaffTag()!=null&&bean.getStaffTag().equals("Y")){
+                    if((bean.getStaffTag()!=null&&bean.getStaffTag().equals("Y"))||(bean.getStaffTag()!=null&&bean.getStaffTag().equals("J"))){
                         if(isImage()){
 
                             if( DB.getInstance().getCanSend()){

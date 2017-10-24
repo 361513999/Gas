@@ -554,6 +554,9 @@ public class DB {
     public void setStandCt(int status,String tag,ReserItemBean bean){
         db.execSQL("update staff_stand set status=? ,staffTag = ? where staffId = ? and id = ?",new Object[]{status,tag,bean.getNo(),bean.getId()});
     }
+    public void setStandJC(int status,ReserItemBean bean){
+        db.execSQL("update staff_stand set status=? where staffId = ? and id = ?",new Object[]{status,bean.getNo(),bean.getId()});
+    }
     public void resetItem(ReserItemBean bean){
         db.execSQL("update staff_stand_item set chk=? where  standId=? and staffId = ? ",new Object[]{false,bean.getId(),bean.getNo()});
     }

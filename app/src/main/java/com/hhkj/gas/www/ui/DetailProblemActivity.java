@@ -657,7 +657,7 @@ public class DetailProblemActivity extends TakePhotoActivity {
 
                             }else{
                                 P.c("执行了清除");
-                                DB.getInstance().setStandCt(7,null,bean);
+                                DB.getInstance().setStandCt(11,"J",bean);
                                 DB.getInstance().resetItem(bean);
                                 DB.getInstance().changePLSBI(bean,true);
                             }

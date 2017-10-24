@@ -377,6 +377,7 @@
                         android:layout_height="1dp"
                         android:background="@color/detail_line" />
                     <TextView
+                        android:id="@+id/status"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
@@ -384,7 +385,7 @@
                         android:textColor="@color/font_normal"
                         android:textSize="18sp"
                         android:layout_gravity="center"
-                        android:text="检验结果:合格"/>
+                         />
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"

@@ -210,6 +210,9 @@ public class DetailActivity extends TakePhotoActivity {
                             case 8:
                                 status = "整改中";
                                 break;
+                            case 11:
+                                status = "隐患已解除";
+                                break;
 
 
                         }
@@ -236,6 +239,7 @@ public class DetailActivity extends TakePhotoActivity {
                                 staffItemAdapter.changeClick(false);
 
                                 tag_view_no.setVisibility(View.GONE);
+                                tag_view_jc.setVisibility(View.GONE);
                                 tag_view_ok.setVisibility(View.VISIBLE);
                                 tag_con.setVisibility(View.GONE);
 //                                item10.setVisibility(View.GONE);
@@ -248,13 +252,28 @@ public class DetailActivity extends TakePhotoActivity {
                                 staffItemAdapter.changeClick(false);
                                 tag_view_no.setVisibility(View.VISIBLE);
                                 tag_view_ok.setVisibility(View.GONE);
+                                tag_view_jc.setVisibility(View.GONE);
                                 tag_con.setVisibility(View.GONE);
+
 //                                item11.setVisibility(View.GONE);
 //                                item12.setVisibility(View.GONE);
 //                                RelativeLayout.LayoutParams par = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,RelativeLayout.LayoutParams.WRAP_CONTENT);
 //                                par.addRule(RelativeLayout.CENTER_IN_PARENT);
 //                                item10.setLayoutParams(par);
                             }
+                        if(bean.getStaffTag()!=null&&bean.getStaffTag().equals("J")){
+                            staffItemAdapter.changeClick(false);
+                            tag_view_no.setVisibility(View.GONE);
+                            tag_view_ok.setVisibility(View.GONE);
+                            tag_view_jc.setVisibility(View.VISIBLE);
+                            tag_con.setVisibility(View.GONE);
+//                                item11.setVisibility(View.GONE);
+//                                item12.setVisibility(View.GONE);
+//                                RelativeLayout.LayoutParams par = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,RelativeLayout.LayoutParams.WRAP_CONTENT);
+//                                par.addRule(RelativeLayout.CENTER_IN_PARENT);
+//                                item10.setLayoutParams(par);
+                        }
+
 
 
                         proble.setOnClickListener(new View.OnClickListener() {
@@ -488,6 +507,7 @@ public class DetailActivity extends TakePhotoActivity {
                                         sendStand();
                                     }else{
                                         //完成任务单
+                                        DB.getInstance().setStandJC(4,bean);
                                         cancelUp();
                                         NewToast.makeText(DetailActivity.this,"上传完毕",Common.TTIME).show();
                                         setResult(1000);
@@ -840,7 +860,7 @@ public class DetailActivity extends TakePhotoActivity {
         return super.dispatchKeyEvent(event);
     }
 
-    private LinearLayout tag_view_ok,tag_view_no;
+    private LinearLayout tag_view_ok,tag_view_no,tag_view_jc;
     private RelativeLayout tag_con;
     private TextView view_problem;
     public void ini() {
@@ -859,7 +879,7 @@ public class DetailActivity extends TakePhotoActivity {
         view_problem = (TextView) findViewById(R.id.view_problem);
         tag_view_ok = (LinearLayout) findViewById(R.id.tag_view_ok);
         tag_view_no = (LinearLayout) findViewById(R.id.tag_view_no);
-
+        tag_view_jc = (LinearLayout) findViewById(R.id.tag_view_jc);
         tag_con = (RelativeLayout) findViewById(R.id.tag_con);
         proble = (LinearLayout) findViewById(R.id.proble);
         item0 = (TextView) findViewById(R.id.item0);
@@ -915,9 +935,16 @@ public class DetailActivity extends TakePhotoActivity {
             @Override
             public void onClick(View view) {
                 clickDel();
+
                 if (dss.size() > SHOW_STAFF) {
-                    staffItemAdapter.updata(dss);
-                    item9.setVisibility(View.GONE);
+                    if(item9.getText().toString().equals("收回列表")){
+                        staffItemAdapter.updata(dss,SHOW_STAFF);
+                        item9.setText("查看更多");
+                    }else{
+                        staffItemAdapter.updata(dss);
+                        item9.setText("收回列表");
+                    }
+
                 }
             }
         });
@@ -1033,11 +1060,11 @@ public class DetailActivity extends TakePhotoActivity {
                 detailHandler.sendEmptyMessage(7);
                 P.c(bean.getProblem()+"bean.getStaffTag()"+bean.getStaffTag()+"=="+(bean.getStaffTag()==null));
 
-                if(bean.getStaffTag()!=null&&bean.getStaffTag().equals("Y")){
+                if((bean.getStaffTag()!=null&&bean.getStaffTag().equals("Y"))||(bean.getStaffTag()!=null&&bean.getStaffTag().equals("J"))){
                     Intent intent = new Intent(DetailActivity.this, StaffBtActivity.class);
                     intent.putExtra("obj",bean);
                     startActivity(intent);
-                }else{
+                } else{
                     NewToast.makeText(DetailActivity.this,"任务状态不合格,拒绝打印安检单",Common.TTIME).show();
                 }
 

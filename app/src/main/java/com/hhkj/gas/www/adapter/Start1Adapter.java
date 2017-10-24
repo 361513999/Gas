@@ -97,6 +97,10 @@ public class Start1Adapter extends BaseAdapter {
             if(map.containsKey(it.getId())){
                 if(map.get(it.getId())!=null&&map.get(it.getId()).equals("N")){
                     key = 8;
+                }else if(map.get(it.getId())!=null&&map.get(it.getId()).equals("J")){
+                        if(key!=4){
+                            key = 11;
+                        }
                 }
 
             }
@@ -123,6 +127,10 @@ public class Start1Adapter extends BaseAdapter {
            case 8:
                viewHolder.item_icon.setBackgroundResource(R.mipmap.icon_zhengtai);
                viewHolder.item_tag.setText("整改中");
+               break;
+           case 11:
+               viewHolder.item_icon.setBackgroundResource(R.mipmap.icon_zhengtai);
+               viewHolder.item_tag.setText("隐患已解除");
                break;
 
 

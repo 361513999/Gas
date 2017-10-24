@@ -55,15 +55,21 @@ public class StaffBtActivity extends BaseActivity  {
     private final BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
     private StaffMark staffMark;
     private ReserItemBean bean;
+    private TextView status;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.staff_bt_layout);
         staffBtHandler = new StaffBtHandler(this);
-
+        status = (TextView) findViewById(R.id.status);
         Intent intent = getIntent();
         if(intent.hasExtra("obj")){
             bean = (ReserItemBean) intent.getSerializableExtra("obj");
+        }
+        if(bean.getStaffTag().equals("Y")){
+            status.setText("安检结果:合格");
+        }else if(bean.getStaffTag().equals("J")){
+            status.setText("安检结果:隐患已解除");
         }
 
         IntentFilter filter = new IntentFilter();
