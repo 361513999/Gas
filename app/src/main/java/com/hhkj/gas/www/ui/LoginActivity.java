@@ -119,7 +119,7 @@ public class LoginActivity extends BaseActivity{
         @Override
         public void onError(Call call, Exception e, int id) {
                 closeLoad();
-            P.c(e.getMessage());
+
         }
 
         @Override

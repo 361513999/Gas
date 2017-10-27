@@ -56,6 +56,7 @@ import com.hhkj.gas.www.db.DB;
 import com.hhkj.gas.www.inter.PhotoSelect;
 import com.hhkj.gas.www.inter.TimeSelect;
 import com.hhkj.gas.www.utils.ImageUtil;
+import com.hhkj.gas.www.widget.CallTips;
 import com.hhkj.gas.www.widget.ChangeTime;
 import com.hhkj.gas.www.widget.CommonLogin;
 import com.hhkj.gas.www.widget.CommonPhotoPop;
@@ -186,6 +187,13 @@ public class DetailActivity extends TakePhotoActivity {
                         item0.setText(getString(R.string.nor_item_txt0, bean.getNo()));
                         item1.setText(getString(R.string.nor_item_txt1, bean.getName()));
                         item2.setText(getString(R.string.nor_item_txt2, bean.getTel()));
+                        item2.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                CallTips callTips = new CallTips(DetailActivity.this);
+                                callTips.showSheet(bean.getTel());
+                        }
+                        });
                         item3.setText(getString(R.string.nor_item_txt3, bean.getAdd()));
                         if (bean.getTime().equals("NON")) {
                             item4.setText(getString(R.string.nor_item_txt4, "____-__-__ __:__"));
@@ -451,7 +459,13 @@ public class DetailActivity extends TakePhotoActivity {
                     case 61:
                         //控制安检条目
                         if (dss.size() > SHOW_STAFF&&item9.getVisibility()==View.VISIBLE) {
-                            staffItemAdapter.updata(dss, SHOW_STAFF);
+                            if(item9.getTag()!=null&&item9.getTag().equals("0")){
+                                staffItemAdapter.updata(dss);
+
+                            }else {
+                                staffItemAdapter.updata(dss,SHOW_STAFF);
+                            }
+
                             item9.setVisibility(View.VISIBLE);
                         } else {
                             staffItemAdapter.updata(dss);
@@ -940,9 +954,11 @@ public class DetailActivity extends TakePhotoActivity {
                     if(item9.getText().toString().equals("收回列表")){
                         staffItemAdapter.updata(dss,SHOW_STAFF);
                         item9.setText("查看更多");
+                        item9.setTag("1");
                     }else{
                         staffItemAdapter.updata(dss);
                         item9.setText("收回列表");
+                        item9.setTag("0");
                     }
 
                 }
