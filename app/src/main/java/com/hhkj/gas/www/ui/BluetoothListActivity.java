@@ -2,6 +2,7 @@ package com.hhkj.gas.www.ui;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -30,7 +31,7 @@ import java.util.Set;
 
 public class BluetoothListActivity extends BaseActivity {
     private final BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-
+    private TextView connect_bt;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,6 +44,7 @@ public class BluetoothListActivity extends BaseActivity {
     private TextView ok,back;
     @Override
     public void init() {
+        connect_bt = (TextView) findViewById(R.id.connect_bt);
         ok = (TextView) findViewById(R.id.ok);
         back = (TextView) findViewById(R.id.back);
         gas_list = (ListView) findViewById(R.id.gas_list);
@@ -72,6 +74,12 @@ public class BluetoothListActivity extends BaseActivity {
 
             }
         });
+        connect_bt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openSetting();
+            }
+        });
         gas_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -79,7 +87,18 @@ public class BluetoothListActivity extends BaseActivity {
             }
         });
     }
-
+    private void openSetting(){
+        Intent intent = new Intent();
+        intent.setAction(Settings.ACTION_BLUETOOTH_SETTINGS);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        try{
+            startActivity(intent);
+        } catch(ActivityNotFoundException ex){
+            ex.printStackTrace();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
     private AlertDialog dlgBluetoothOpen;
 
     private void showForceTurnOnBluetoothDialog() {

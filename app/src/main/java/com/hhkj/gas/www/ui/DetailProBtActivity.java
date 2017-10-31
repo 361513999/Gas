@@ -24,6 +24,7 @@ import com.hhkj.gas.www.common.P;
 import com.hhkj.gas.www.common.TimeUtil;
 import com.hhkj.gas.www.widget.InScrollListView;
 import com.hhkj.gas.www.widget.NewToast;
+import com.hhkj.gas.www.widget.PrintView;
 
 import java.sql.Time;
 import java.util.ArrayList;
@@ -41,7 +42,7 @@ public class DetailProBtActivity extends BaseActivity {
     private DetailProMark detailProMark;
     private ArrayList<StaffTxtItem> staffTxtItems;
     private ReserItemBean bean;
-    private TextView item0,item1,item2,item4,item5,item6,item7,item8,item9;
+    private TextView item0,item1,item2,item4,item5,item6,item7,item8,item9,change_bt;
     private InScrollListView item3;
     private DetailProBtItemAdapter adapter;
     @Override
@@ -61,6 +62,7 @@ public class DetailProBtActivity extends BaseActivity {
                 checkBluetooth();
             }
         });
+        change_bt = (TextView) findViewById(R.id.change_bt);
         item0 = (TextView) findViewById(R.id.item0);
         item1 = (TextView) findViewById(R.id.item1);
         item2 = (TextView) findViewById(R.id.item2);
@@ -82,7 +84,12 @@ public class DetailProBtActivity extends BaseActivity {
         item7.setText("客户地址："+bean.getAdd());
         item8.setText("检查人："+bean.getStaffName());
         item9.setText("填发日期:"+ TimeUtil.getDate_(System.currentTimeMillis()));
-
+         change_bt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                goList();
+            }
+        });
     }
         private Map<String,String> map;
     @Override
@@ -144,6 +151,7 @@ public class DetailProBtActivity extends BaseActivity {
     /**
      * 检查蓝牙
      */
+      private PrintView printView;
     private final BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
     private void checkBluetooth() {
         if (bluetoothAdapter == null) {
@@ -157,6 +165,9 @@ public class DetailProBtActivity extends BaseActivity {
                 goList();
             }
             print();
+            printView = new PrintView(DetailProBtActivity.this);
+            printView.showSheet();
+
             // 载入设备
 //            showBluetoothTest();
 
@@ -211,7 +222,11 @@ public class DetailProBtActivity extends BaseActivity {
             executor.setOnPrintResultListener(new PrintExecutor.OnPrintResultListener() {
                 @Override
                 public void onResult(int errorCode) {
-
+                        if(errorCode==0){
+                            if(printView!=null){
+                                printView.cancle();
+                            }
+                        }
                 }
             });
         }

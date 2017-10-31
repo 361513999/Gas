@@ -37,6 +37,7 @@ import com.hhkj.gas.www.common.P;
 import com.hhkj.gas.www.db.DB;
 import com.hhkj.gas.www.widget.InScrollListView;
 import com.hhkj.gas.www.widget.NewToast;
+import com.hhkj.gas.www.widget.PrintView;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -55,7 +56,7 @@ public class StaffBtActivity extends BaseActivity  {
     private final BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
     private StaffMark staffMark;
     private ReserItemBean bean;
-    private TextView status;
+    private TextView status,change_bt;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -161,12 +162,13 @@ public class StaffBtActivity extends BaseActivity  {
     private DetailBt_Item7Adapter item7Adapter;
     private DetailBt_Item6Adapter item6Adapter;
     private TextView item0,item1,item2,item3,item4;
+    private PrintView printView;
     @Override
     public void init() {
         item5 = (InScrollListView) findViewById(R.id.item5);
         item5Adapter = new DetailBt_Item5Adapter(StaffBtActivity.this,dss);
         item5.setAdapter(item5Adapter);
-
+        change_bt = (TextView) findViewById(R.id.change_bt);
         item6 = (InScrollListView) findViewById(R.id.item6);
         item6Adapter = new DetailBt_Item6Adapter(StaffBtActivity.this,staffBs);
         item6.setAdapter(item6Adapter);
@@ -196,6 +198,12 @@ public class StaffBtActivity extends BaseActivity  {
 
             }
         });
+        change_bt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                goList();
+            }
+        });
         print.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -218,6 +226,7 @@ public class StaffBtActivity extends BaseActivity  {
                     switch (blueState) {
                         case BluetoothAdapter.STATE_CONNECTED:
                             P.c("连接成功");
+
                             break;
                         case BluetoothAdapter.STATE_TURNING_ON:
                             P.c("连接中");
@@ -261,6 +270,8 @@ public class StaffBtActivity extends BaseActivity  {
                 goList();
             }
             print();
+            printView = new PrintView(StaffBtActivity.this);
+            printView.showSheet();
             // 载入设备
 //            showBluetoothTest();
 
@@ -318,7 +329,12 @@ public class StaffBtActivity extends BaseActivity  {
             executor.setOnPrintResultListener(new PrintExecutor.OnPrintResultListener() {
                 @Override
                 public void onResult(int errorCode) {
-
+                      P.c("error"+errorCode);
+                    if(errorCode==0){
+                        if(printView!=null){
+                             printView.cancle();
+                        }
+                    }
                 }
             });
         }

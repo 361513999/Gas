@@ -3,6 +3,8 @@ package com.hhkj.gas.www.bluetooth.printer;
 import android.bluetooth.BluetoothDevice;
 import android.os.AsyncTask;
 
+import com.hhkj.gas.www.common.P;
+
 import java.lang.ref.WeakReference;
 import java.util.List;
 
@@ -17,7 +19,7 @@ public class PrintExecutor {
     private int mReconnectTimes = 0;
     private int time = 0;
     private PrintSocketHolder.OnStateChangedListener listener;
-    private WeakReference<OnPrintResultListener> mListener;
+    private OnPrintResultListener mListener;
 
     public PrintExecutor(BluetoothDevice device, int type) {
         holder = new PrintSocketHolder(device);
@@ -134,8 +136,11 @@ public class PrintExecutor {
          */
         private void onResult(int errorCode) {
             try {
-                if (mListener != null)
-                    mListener.get().onResult(errorCode);
+                if (mListener != null){
+                    P.c("..."+(mListener==null));
+                    mListener.onResult(errorCode);
+                }
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -204,7 +209,7 @@ public class PrintExecutor {
      * @param listener 回调
      */
     public void setOnPrintResultListener(OnPrintResultListener listener) {
-        mListener = new WeakReference<>(listener);
+        mListener =listener;
     }
 
     public interface OnPrintResultListener {

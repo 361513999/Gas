@@ -408,9 +408,9 @@ public abstract class PrinterWriter {
 //    private String checkTxt = getEmp(1.5)+"□是"+getEmp(0.5)+"□否";
     private String getRt(boolean is){
         if(is){
-            return  getEmp(1.5)+"√是"+getEmp(0.5)+"□否";
+            return  getEmp(1.5)+"是√"+getEmp(0.5)+"否□";
         }
-        return  getEmp(1.5)+"□是"+getEmp(0.5)+"√否";
+        return  getEmp(1.5)+"是□"+getEmp(0.5)+"否√";
     }
     //private String checkTxt = getEmp(1.5)+"×是"+getEmp(0.5)+"√否";
     /**

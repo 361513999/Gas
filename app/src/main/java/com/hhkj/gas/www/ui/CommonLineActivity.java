@@ -12,6 +12,7 @@ import com.hhkj.gas.www.base.BaseActivity;
 import com.hhkj.gas.www.bean.ReserItemBean;
 import com.hhkj.gas.www.common.Common;
 import com.hhkj.gas.www.common.CopyFile;
+import com.hhkj.gas.www.common.P;
 import com.hhkj.gas.www.db.DB;
 import com.hhkj.gas.www.widget.LinePathView;
 import com.hhkj.gas.www.widget.NewToast;
@@ -70,6 +71,9 @@ public class CommonLineActivity extends BaseActivity {
         }else{
             dt_line.setVisibility(View.GONE);
         }
+        if(from==1&&tag!=null&&tag.equals("personLine")){
+            dt_line.setVisibility(View.VISIBLE);
+        }
         sure.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -81,6 +85,7 @@ public class CommonLineActivity extends BaseActivity {
                         line.save(path, true, 10);
                         //保存数据库
                         if(from==1){
+
                             DB.getInstance().prother(tag,path,bean);
                         }else{
                             DB.getInstance().staff_print(bean,staffPrint,path);
@@ -111,7 +116,13 @@ public class CommonLineActivity extends BaseActivity {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                DB.getInstance().staff_print(bean,staffPrint,path);
+                if(from==1){
+
+                    DB.getInstance().prother(tag,path,bean);
+                }else {
+                    DB.getInstance().staff_print(bean,staffPrint,path);
+                }
+
                 Intent intent = new Intent();
                 intent.putExtra("path",path);
                 setResult(1000,intent);
