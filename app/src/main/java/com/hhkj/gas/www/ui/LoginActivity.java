@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -73,14 +75,70 @@ public class LoginActivity extends BaseActivity{
             handler.sendEmptyMessage(1);
         }
     }
+    private void getUserName(String userId){
+        JSONObject jsonObject = new JSONObject();
+        JSONObject object = null;
+        try {
+            jsonObject.put("cls","Gas.Staff");
+            jsonObject.put("method","GetStaffName");
+            jsonObject.put("toKen",Common.COMMON_DEFAULT);
+            object = new JSONObject();
+            object.put("StaffId",userId);
+            jsonObject.put("param",object.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        OkHttpUtils.postString().url(U.VISTER(U.BASE_URL)+U.LIST).mediaType(MediaType.parse("application/json; charset=utf-8")).content(jsonObject.toString()).build().execute(new StringCallback() {
+            @Override
+            public void onError(Call call, Exception e, int id) {
+
+            }
+
+            @Override
+            public void onResponse(String response, int id) {
+                try {
+                    JSONObject jsonObject = new JSONObject( FileUtils.formatJson(response));
+                    if(jsonObject.getBoolean("Success")){
+                        userName.setText(jsonObject.getString("Result"));
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
+    }
+
+
     private EditText user,pass;
     private TextView login;
+    private TextView userName;
     @Override
     public void init() {
         user = (EditText) findViewById(R.id.user);
+        userName = (TextView) findViewById(R.id.userName);
         user.setText(sharedUtils.getStringValue("last"));
         pass = (EditText) findViewById(R.id.pass);
         login = (TextView) findViewById(R.id.login);
+        user.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                P.c(editable.toString());
+                    String temp = editable.toString();
+                getUserName(temp);
+            }
+        });
         login.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {

@@ -45,7 +45,7 @@ public class Start0Adapter extends BaseAdapter {
         return position;
     }
     private class ViewHolder {
-        TextView item0,item1,item2,item3,item4;
+        TextView item0,item1,item2,item3,item4,item_tag;
         CheckBox item_c;
     }
    private boolean isOpen = false;
@@ -66,6 +66,7 @@ public class Start0Adapter extends BaseAdapter {
             viewHolder.item2 = (TextView) convertView.findViewById(R.id.item2);
             viewHolder.item3 = (TextView) convertView.findViewById(R.id.item3);
             viewHolder.item4 = (TextView) convertView.findViewById(R.id.item4);
+            viewHolder.item_tag = (TextView) convertView.findViewById(R.id.item_tag);
             convertView.setTag(R.mipmap.ic_launcher + position);
         } else {
             viewHolder = (ViewHolder) convertView.getTag(R.mipmap.ic_launcher
@@ -82,6 +83,13 @@ public class Start0Adapter extends BaseAdapter {
         viewHolder.item2.setText(context.getString(R.string.nor_item_txt2,it.getTel()));
         viewHolder.item3.setText(context.getString(R.string.nor_item_txt3,it.getAdd()));
         viewHolder.item_c.setChecked(it.isOpen());
+
+        int key = it.getOrderStatus();
+        if(key==3){
+            viewHolder.item_tag.setText("进行中");
+        }else {
+            viewHolder.item_tag.setText("未领取");
+        }
         if(it.getTime().equals("待定")){
             viewHolder.item4.setTextColor(context.getResources().getColor(R.color.rd_p));
         }else{

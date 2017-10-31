@@ -25,6 +25,7 @@ import com.hhkj.gas.www.widget.NewToast;
 import com.zc.http.okhttp.OkHttpUtils;
 import com.zc.http.okhttp.callback.StringCallback;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -47,7 +48,7 @@ public class StaffCtActivity extends BaseActivity {
     public void init() {
         lists = (ListView) findViewById(R.id.lists);
 
-        loadData(staffCtBeen,str);
+        loadData(staffCtBeen);
         staffCtAdapter = new StaffCtAdapter(StaffCtActivity.this,staffCtBeen);
         lists.setAdapter(staffCtAdapter);
         lists.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -84,8 +85,11 @@ public class StaffCtActivity extends BaseActivity {
         public void dispatchMessage(Message msg) {
             super.dispatchMessage(msg);
             switch (msg.what){
+                case 2:
+                    NewToast.makeText(StaffCtActivity.this,"数据获取失败",Common.TTIME).show();
+                    break;
                 case 1:
-
+                    staffCtAdapter.updata(staffCtBeen);
                     break;
                 case 4:
                     reLogin();
@@ -151,13 +155,50 @@ public class StaffCtActivity extends BaseActivity {
 
     }
 
-    private String [] str = new String[]{"用户拒检","无人在家","用户原因不方便开门","其他"};
-    private void loadData(ArrayList<StaffCtBean> staffCtBeen ,String [] str){
-       for(int i=0;i<str.length;i++){
-           StaffCtBean bean0 = new StaffCtBean();
-           bean0.setName(str[i]);
-           staffCtBeen.add(bean0);
-       }
+  //  private String [] str = new String[]{"用户拒检","无人在家","用户原因不方便开门","其他"};
+    private void loadData(final ArrayList<StaffCtBean> staffCtBeen ){
+        final JSONObject object = new JSONObject();
+        try {
+            object.put("cls","Sys.DataDic");
+            object.put("method","GetDataDicList");
+            object.put("toKen",sharedUtils.getStringValue("token"));
+            object.put("param","");
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        OkHttpUtils.postString().url(U.VISTER(U.BASE_URL)+U.LIST).mediaType(MediaType.parse("application/json; charset=utf-8")).content(object.toString()).build().execute(new StringCallback() {
+            @Override
+            public void onError(Call call, Exception e, int id) {
+                handler.sendEmptyMessage(2);
+            }
+
+            @Override
+            public void onResponse(String response, int id) {
+                try {
+                    JSONObject jsonObject = new JSONObject(FileUtils.formatJson(response));
+                    if(jsonObject.getBoolean("Success")){
+                       String jArray = jsonObject.getString("Result");
+                        JSONArray jsonArray = new JSONArray(jArray);
+                        int len = jsonArray.length();
+
+                        for(int i=0;i<len;i++){
+                            JSONObject object = jsonArray.getJSONObject(i);
+                            if(object.getString("FvchrDataCode").equals("Reason")){
+                                StaffCtBean bean0 = new StaffCtBean();
+                                bean0.setName(object.getString("FvchrValue"));
+                                staffCtBeen.add(bean0);
+                            }
+                        }
+                        handler.sendEmptyMessage(1);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {

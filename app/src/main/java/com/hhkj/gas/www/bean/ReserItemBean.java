@@ -12,6 +12,7 @@ public class ReserItemBean implements Serializable{
     private String tel;
     private String add;
     private String time;
+    private boolean isBack;
     /**
      * 列表是否展开
      */
@@ -26,6 +27,14 @@ public class ReserItemBean implements Serializable{
     private String staffTag;
     private String problem;
     private int printCount;
+
+    public boolean isBack() {
+        return isBack;
+    }
+
+    public void setBack(boolean back) {
+        isBack = back;
+    }
 
     public boolean isSend() {
         return isSend;

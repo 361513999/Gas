@@ -332,12 +332,18 @@ public class DetailActivity extends TakePhotoActivity {
                         //装载燃气表
                         if(staffBs.size()==1){
                             item_b00.setText(staffBs.get(0).getName());
+                            if(staffBs.get(0).getName()!=null&&staffBs.get(0).getName().length()!=0){
+                                item_b00.setEnabled(false);
+                            }
                             item_b01.setText(staffBs.get(0).getValue());
                             item_b02.setChecked(staffBs.get(0).isCheck());
                             StaffB staffB = new StaffB();
                             staffB.setI(-1);
                             staffBs.add(staffB);
                         }else if(staffBs.size()>1){
+                            if(staffBs.get(0).getName()!=null&&staffBs.get(0).getName().length()!=0){
+                                item_b00.setEnabled(false);
+                            }
                             item_b00.setText(staffBs.get(0).getName());
                             item_b01.setText(staffBs.get(0).getValue());
                             item_b02.setChecked(staffBs.get(0).isCheck());

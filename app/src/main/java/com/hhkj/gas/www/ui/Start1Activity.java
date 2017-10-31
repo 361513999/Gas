@@ -34,6 +34,7 @@ import com.hhkj.gas.www.common.U;
 import com.hhkj.gas.www.db.DB;
 import com.hhkj.gas.www.widget.LoadView;
 import com.hhkj.gas.www.widget.NewToast;
+import com.hhkj.gas.www.widget.NoTips;
 import com.hhkj.gas.www.widget.PullToRefreshView;
 import com.hhkj.gas.www.widget.SearchTips;
 import com.zc.http.okhttp.OkHttpUtils;
@@ -450,6 +451,7 @@ public class Start1Activity extends BaseActivity {
                         ib.setName(object.getString("CName"));
                         ib.setNo(object.getString("OrderCode"));
                         ib.setTel(object.getString("MobilePhone"));
+                        ib.setBack(object.getBoolean("IsBack"));
                         ib.setOrderStatus(object.getInt("OrderStatus")==9?7:object.getInt("OrderStatus"));
 //                        int type = Integer.parseInt(getCheckedId());
                         ib.setStaffName(object.getString("StaffName"));
@@ -918,6 +920,24 @@ private void sortPop(){
                             mg7.obj = ba;
                             startHandler.sendMessage(mg7);
                         }
+                        break;
+                    case 8:
+                        int pos = msg.arg1;
+                        int back = msg.arg2;
+                        if(sharedUtils.getBooleanValue("head")&&back==0){
+                            NewToast.makeText(Start1Activity.this,"组长不能申请放弃",Common.TTIME).show();
+                            return;
+                        }
+                        if((!sharedUtils.getBooleanValue("head"))&&back==1){
+
+                            NewToast.makeText(Start1Activity.this,"等待组长审批",Common.TTIME).show();
+                            return;
+                        }
+                        ReserItemBean ba0 =  ribs.get(pos);
+                        NoTips noTips = new NoTips(Start1Activity.this,sharedUtils,ba0,startHandler);
+                        noTips.showSheet(back);
+
+
                         break;
                 }
             }

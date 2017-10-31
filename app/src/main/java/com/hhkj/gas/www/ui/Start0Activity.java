@@ -338,6 +338,8 @@ public class Start0Activity extends BaseActivity {
 
                                         NewToast.makeText(Start0Activity.this, "成功确认", Common.TTIME).show();
                                         startHandler.sendEmptyMessage(1);
+                                    }else{
+                                        NewToast.makeText(Start0Activity.this,jsonObject.getString("Error").contains("已被")?"已被领取":"领取失败",Common.TTIME).show();
                                     }
                                 } catch (JSONException e) {
                                     e.printStackTrace();
@@ -387,7 +389,12 @@ public class Start0Activity extends BaseActivity {
             jsonObject.put("method", type == 0 ? "GetSelfOrder" : "GetCommonOrder");
             JSONObject pms = new JSONObject();
             //0 自己和下属的，还包括未领取的，1自己和下属的，2未领取的
-            pms.put("OrderStatus", "1,2");
+            if(sharedUtils.getBooleanValue("head")){
+                pms.put("OrderStatus", "1,2,3");
+            }else {
+                pms.put("OrderStatus", "1,2");
+            }
+
 
             if (type == 0) {
                 pms.put("OrderType", type);
@@ -454,6 +461,10 @@ public class Start0Activity extends BaseActivity {
                         ib.setNo(object.getString("OrderCode"));
                         ib.setId(object.getString("Id"));
                         ib.setTel(object.getString("MobilePhone"));
+                        ib.setOrderStatus(object.getInt("OrderStatus"));
+                        if(object.getInt("OrderStatus")==3){
+                            P.c(object.getString("OrderCode"));
+                        }
 //                        int type = Integer.parseInt(getCheckedId());
                         int type = object.getInt("OrderType");
                         switch (type) {
@@ -461,7 +472,12 @@ public class Start0Activity extends BaseActivity {
                                 ib.setTime(object.getString("SecurityTime"));
                                 break;
                             case 1:
-                                ib.setTime("待定");
+                                if(object.isNull("SecurityTime")){
+                                    ib.setTime("待定");
+                                }else{
+                                    ib.setTime(object.getString("SecurityTime"));
+                                }
+
                                 break;
                         }
 

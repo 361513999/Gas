@@ -105,6 +105,7 @@ public class Start1Adapter extends BaseAdapter {
 
             }
         }
+
        switch (key){
            case 3:
                viewHolder.item_icon.setBackgroundResource(R.mipmap.icon_running);
@@ -132,10 +133,11 @@ public class Start1Adapter extends BaseAdapter {
                viewHolder.item_icon.setBackgroundResource(R.mipmap.icon_zhengtai);
                viewHolder.item_tag.setText("隐患已解除");
                break;
-
-
        }
-
+    if(it.isBack()){
+        viewHolder.item_icon.setBackgroundResource(R.mipmap.icon_fangqi);
+        viewHolder.item_tag.setText("申请放弃");
+    }
         if(it.getTime().equals("NON")){
             //无时间标记
 
@@ -169,6 +171,21 @@ public class Start1Adapter extends BaseAdapter {
                 handler.sendMessage(msg);
             }
         });
+
+             convertView.setOnLongClickListener(new View.OnLongClickListener() {
+                 @Override
+                 public boolean onLongClick(View view) {
+
+                     Message msg = new Message();
+                     msg.what = 8;
+                     msg.arg1 = position;
+                     msg.arg2 = it.isBack()?1:0;
+                     handler.sendMessage(msg);
+                     return true;
+                 }
+             });
+
+
         return  convertView;
     }
 }
