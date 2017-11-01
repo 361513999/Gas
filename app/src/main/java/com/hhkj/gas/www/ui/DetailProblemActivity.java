@@ -144,7 +144,7 @@ public class DetailProblemActivity extends TakePhotoActivity {
     };
     private LinearLayout layout;
     private TextView itme8,itme7,item19_v;
-    private ImageView item15,item16,item17;
+    private ImageView item15,item16,item17,item20;
     private void init(){
         back = (TextView) findViewById(R.id.back);
         back.setOnClickListener(new View.OnClickListener() {
@@ -166,7 +166,7 @@ public class DetailProblemActivity extends TakePhotoActivity {
         item15 = (ImageView) findViewById(R.id.item15);
         item16 = (ImageView) findViewById(R.id.item16);
         item17 = (ImageView) findViewById(R.id.item17);
-
+        item20 = (ImageView) findViewById(R.id.item20);
         item18 = (LinearLayout) findViewById(R.id.item18);
         item19 = (LinearLayout) findViewById(R.id.item19);
         item19_v = (TextView) findViewById(R.id.item19_v);
@@ -236,6 +236,15 @@ public class DetailProblemActivity extends TakePhotoActivity {
                 }else{
                     NewToast.makeText(DetailProblemActivity.this,"每项至少存在一张隐患图",Common.TTIME).show();
                 }
+            }
+        });
+        item20.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                CommonLogin login = new CommonLogin(DetailProblemActivity.this,sharedUtils);
+                login.setResult(false,-22,detailProblemHandler);
+                login.showSheet();
             }
         });
 
@@ -377,6 +386,8 @@ public class DetailProblemActivity extends TakePhotoActivity {
         }else if(requestCode==102&&resultCode==1000){
             //客户签名
             ImageLoader.getInstance().displayImage("file://"+data.getStringExtra("path"),item16);
+        }else if(requestCode==99&&resultCode==1000){
+            ImageLoader.getInstance().displayImage("file://"+data.getStringExtra("path"),item20);
         }
     }
     private final String SUCEES ="隐患已解除";
@@ -393,6 +404,13 @@ public class DetailProblemActivity extends TakePhotoActivity {
             super.dispatchMessage(msg);
             if (mLeakActivityRef.get() != null) {
                 switch (msg.what){
+                    case -22:
+                        Intent intent = new Intent(DetailProblemActivity.this, CommonLineActivity.class);
+                        intent.putExtra("obj",bean);
+                        intent.putExtra("from",1);
+                        intent.putExtra("tag","staffOtherLine");
+                        startActivityForResult(intent,99);
+                        break;
                     case 4:
                         //用户未登录处理
                         reLogin();
@@ -414,6 +432,7 @@ public class DetailProblemActivity extends TakePhotoActivity {
                         ImageLoader.getInstance().displayImage("file://"+proStand.get("staffLine"),item15);
                         ImageLoader.getInstance().displayImage("file://"+proStand.get("personLine"),item16);
                         ImageLoader.getInstance().displayImage("file://"+proStand.get("personPhoto"),item17);
+                        ImageLoader.getInstance().displayImage("file://"+proStand.get("staffOtherLine"),item20);
                         String No = proStand.get("proNo");
                         if(No==null){
                             item19_v.setText("提交隐患");
@@ -485,7 +504,7 @@ public class DetailProblemActivity extends TakePhotoActivity {
                         }else{
                             //进行查询
                             Map<String,String> map = DB.getInstance().ProLinePrint(bean);
-                            if(!map.get("send").equals("3")){
+                            if((map.get("staffOtherLine")!=null&&!map.get("send").equals("4"))||(map.get("staffOtherLine")==null&&!map.get("send").equals("3"))){
                                 sendImage(map);
 
                             }else{
@@ -558,10 +577,15 @@ public class DetailProblemActivity extends TakePhotoActivity {
                     jsonObject.put("base64", Bitmap2StrByBase64(BitmapFactory.decodeFile(path)));
                 } else if (map.get("send").equals("2")) {
                     jsonObject.put("type", 4);
-
                     String path  =map.get("personPhoto").toString();
                     changeText(getFile(path));
                     jsonObject.put("base64", Bitmap2StrByBase64(BitmapFactory.decodeFile(path)));
+                }else  if (map.get("send").equals("3")) {
+                    //提交
+                    jsonObject.put("type", 3);
+                    String path  =map.get("staffOtherLine").toString();
+                    jsonObject.put("base64", Bitmap2StrByBase64(BitmapFactory.decodeFile(path)));
+                    changeText(getFile(path));
                 }
 
             }

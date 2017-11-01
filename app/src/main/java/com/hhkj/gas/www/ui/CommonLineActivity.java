@@ -88,6 +88,7 @@ public class CommonLineActivity extends BaseActivity {
 
                             DB.getInstance().prother(tag,path,bean);
                         }else{
+
                             DB.getInstance().staff_print(bean,staffPrint,path);
                         }
 

@@ -381,7 +381,7 @@ public class DB {
      */
     public void getStaffPrint(Map<String,String> map,ReserItemBean bean){
         map.clear();
-        String sql = "select staffLine,personLine,personPhoto from staff_stand_line where standId = ? and staffId = ?";
+        String sql = "select staffLine,staffOtherLine,personLine,personPhoto from staff_stand_line where standId = ? and staffId = ?";
         Cursor cursor = null;
 
         try {
@@ -391,6 +391,7 @@ public class DB {
                 if(cursor.moveToFirst()){
                     map.put("staffLine",getString(cursor,"staffLine"));
                     map.put("personLine",getString(cursor,"personLine"));
+                    map.put("staffOtherLine",getString(cursor,"staffOtherLine"));
                     map.put("personPhoto",getString(cursor,"personPhoto"));
                 }
             }
@@ -565,6 +566,9 @@ public class DB {
                 //添加
                 String sql = null;
                 switch (staffPrint){
+                    case -1:
+                        sql = "insert into staff_stand_line(standId,staffId,staffOtherLine,send) values(?,?,?,?)";
+                        break;
                     case  0:
                         sql = "insert into staff_stand_line(standId,staffId,staffLine,send) values(?,?,?,?)";
                         break;
@@ -581,6 +585,9 @@ public class DB {
                 String sql = null;
 
                 switch (staffPrint){
+                    case -1:
+                        sql = "update staff_stand_line set staffOtherLine=? where standId = ? and staffId = ?";
+                        break;
                     case  0:
                         sql = "update staff_stand_line set staffLine=? where standId = ? and staffId = ?";
                         break;
@@ -707,12 +714,13 @@ public class DB {
 
     public Map<String,String> linePrint(ReserItemBean bean) {
         Map<String,String> map  = new HashMap<>();
-        String sql = "select staffLine,personLine,personPhoto, send from staff_stand_line  where standId=? and staffId=?";
+        String sql = "select staffLine,staffOtherLine,personLine,personPhoto, send from staff_stand_line  where standId=? and staffId=?";
         Cursor cursor = null;
 
         try {
             cursor = db.rawQuery(sql, new String[] {bean.getId(),bean.getNo() });
             if(cursor.moveToFirst()){
+                map.put("staffOtherLine",getString(cursor,"staffOtherLine"));
                 map.put("staffLine",getString(cursor,"staffLine"));
                 map.put("personLine",getString(cursor,"personLine"));
                 map.put("personPhoto",getString(cursor,"personPhoto"));
@@ -912,7 +920,7 @@ public class DB {
      */
     public void getProStand(Map<String,String> map ,ReserItemBean bean){
         map.clear();
-        String sql = "select proNo,startTime,endTime,staffLine,personLine,personPhoto,bis from staff_stand_pr_s where standId = ? and staffId = ?";
+        String sql = "select proNo,startTime,endTime,staffLine,personLine,staffOtherLine,personPhoto,bis from staff_stand_pr_s where standId = ? and staffId = ?";
         Cursor cursor = null;
 
         try {
@@ -925,6 +933,7 @@ public class DB {
                     map.put("staffLine",getString(cursor,"staffLine"));
                     map.put("personLine",getString(cursor,"personLine"));
                     map.put("personPhoto",getString(cursor,"personPhoto"));
+                    map.put("staffOtherLine",getString(cursor,"staffOtherLine"));
                     map.put("bis",getString(cursor,"bis")==null?"0":"1");
                 }
             }
@@ -1068,7 +1077,7 @@ public class DB {
 
     public Map<String,String> ProLinePrint(ReserItemBean bean) {
         Map<String,String> map  = new HashMap<>();
-        String sql = "select startTime,endTime,proNo,staffLine,personLine,personPhoto,send,bis from staff_stand_pr_s  where standId=? and staffId=?";
+        String sql = "select startTime,endTime,proNo,staffLine,staffOtherLine,personLine,personPhoto,send,bis from staff_stand_pr_s  where standId=? and staffId=?";
         Cursor cursor = null;
 
         try {
@@ -1082,6 +1091,7 @@ public class DB {
                 map.put("personPhoto",getString(cursor,"personPhoto"));
                 map.put("send",getString(cursor,"send"));
                 map.put("bis",getString(cursor,"bis")==null?"0":"1");
+                map.put("staffOtherLine",getString(cursor,"staffOtherLine"));
 
 
             }

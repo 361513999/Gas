@@ -41,12 +41,13 @@ public class HeadChildsList {
     private SharedUtils sharedUtils;
     private ArrayList<ReserItemBean> ribs;
     private Handler startHandler;
-    public HeadChildsList(Context context, SharedUtils sharedUtils,ArrayList<ReserItemBean> ribs,Handler startHandler) {
+    private int what;
+    public HeadChildsList(Context context, SharedUtils sharedUtils,ArrayList<ReserItemBean> ribs,Handler startHandler,int what) {
         this.context = context;
         this.ribs = ribs;
         this.startHandler = startHandler;
         this.sharedUtils = sharedUtils;
-
+        this.what = what;
        inflater  = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
@@ -74,6 +75,7 @@ public class HeadChildsList {
                 builder.append(rtb.getId() + ",");
             }
         }
+        P.c("选择的"+ builder.toString());
         final String temp = builder.toString();
         if (temp.length() > 0) {
 
@@ -93,7 +95,7 @@ public class HeadChildsList {
             OkHttpUtils.postString().url(U.VISTER(U.BASE_URL)+U.LIST).mediaType(MediaType.parse("application/json; charset=utf-8")).content(jsonObject.toString()).build().execute(new StringCallback() {
                 @Override
                 public void onError(Call call, Exception e, int id) {
-
+                    P.c(e.getMessage());
                 }
 
                 @Override
@@ -114,7 +116,7 @@ public class HeadChildsList {
                                 }
                             }
 
-                            startHandler.sendEmptyMessage(5);
+                            startHandler.sendEmptyMessage(what);
                             cancle();
                         }
                     } catch (JSONException e) {
@@ -146,6 +148,7 @@ public class HeadChildsList {
             @Override
             public void onClick(View view) {
                 int index =itemAdapter.getSelect();
+                P.c(rbs.get(index).getId()+"选择"+index);
                 if(index!=-1){
                     send(rbs.get(index).getId());
                 }

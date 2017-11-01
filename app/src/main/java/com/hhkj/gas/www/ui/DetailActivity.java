@@ -324,6 +324,7 @@ public class DetailActivity extends TakePhotoActivity {
                         ImageLoader.getInstance().displayImage("file://"+printMap.get("staffLine"),item15);
                         ImageLoader.getInstance().displayImage("file://"+printMap.get("personLine"),item16);
                         ImageLoader.getInstance().displayImage("file://"+printMap.get("personPhoto"),item17);
+                        ImageLoader.getInstance().displayImage("file://"+printMap.get("staffOtherLine"),item20);
                         break;
                     case 1:
                         P.c("何时装载");
@@ -437,6 +438,13 @@ public class DetailActivity extends TakePhotoActivity {
                         bAdapter.updata(staffQjs);
 
                         break;
+                    case -22:
+
+                        Intent intent = new Intent(DetailActivity.this, CommonLineActivity.class);
+                        intent.putExtra("obj",bean);
+                        intent.putExtra("staffPrint",-1);
+                        startActivityForResult(intent,99);
+                        break;
                     case 2:
                         //装载数据操作
 
@@ -517,7 +525,7 @@ public class DetailActivity extends TakePhotoActivity {
                             }else{
                                 //进行查询
                                 Map<String,String> map = DB.getInstance().linePrint(bean);
-                                if(!map.get("send").equals("3")){
+                                if((map.get("staffOtherLine")!=null&&!map.get("send").equals("4"))||(map.get("staffOtherLine")==null&&!map.get("send").equals("3"))){
                                     sendImage(map);
 
                                 }else{
@@ -616,6 +624,11 @@ public class DetailActivity extends TakePhotoActivity {
                     String path  =map.get("personPhoto").toString();
                     changeText(getFile(path));
                     jsonObject.put("base64", Bitmap2StrByBase64(BitmapFactory.decodeFile(path)));
+                } else if(map.get("send").equals("3")){
+                    jsonObject.put("type", 3);
+                    String path  =map.get("staffOtherLine").toString();
+                    jsonObject.put("base64", Bitmap2StrByBase64(BitmapFactory.decodeFile(path)));
+                    changeText(getFile(path));
                 }
 
             }
@@ -773,7 +786,7 @@ public class DetailActivity extends TakePhotoActivity {
     private TextView item0, item1, item2, item3, item4, item5, item6, item9, item10,item11,item12,item13;
     private ImageView item_edit;
     private GridView item7;
-    private ImageView item15, item16,item17;
+    private ImageView item15, item16,item17,item20;
     private LinearLayout item18, item19;
     //图片
     private DetailImageAdapter imageAdapter;
@@ -928,6 +941,7 @@ public class DetailActivity extends TakePhotoActivity {
         item_b12 = (CheckBox) findViewById(R.id.item_b12);
         item18 = (LinearLayout) findViewById(R.id.item18);
         item19 = (LinearLayout) findViewById(R.id.item19);
+        item20 = (ImageView) findViewById(R.id.item20);
         imageAdapter = new DetailImageAdapter(DetailActivity.this, staffImages);
         item7.setAdapter(imageAdapter);
 
@@ -1101,6 +1115,14 @@ public class DetailActivity extends TakePhotoActivity {
 
             }
         });
+        item20.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                CommonLogin login = new CommonLogin(DetailActivity.this,sharedUtils);
+                login.setResult(false,-22,detailHandler);
+                login.showSheet();
+            }
+        });
 
     }
     private void goProblem(){
@@ -1135,6 +1157,8 @@ public class DetailActivity extends TakePhotoActivity {
         }else if(requestCode==100&&resultCode==999){
             isProblem = true;
             detailHandler.sendEmptyMessage(70);
+        }else  if(requestCode==99&&resultCode==1000){
+            ImageLoader.getInstance().displayImage("file://"+data.getStringExtra("path"),item20);
         }
     }
     private boolean isProblem = false;

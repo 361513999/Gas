@@ -621,7 +621,7 @@ public class Start2Activity extends BaseActivity {
                         break;
                     case 4:
                         //用户未登录处理
-                         reLogin();
+                         reLogin(startHandler);
                         break;
 
                 }

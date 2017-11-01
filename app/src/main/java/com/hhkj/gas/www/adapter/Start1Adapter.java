@@ -7,7 +7,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.CheckBox;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.hhkj.gas.www.R;
@@ -60,8 +62,14 @@ public class Start1Adapter extends BaseAdapter {
     private class ViewHolder {
         TextView item0,item1,item2,item3,item4,item_tag,item5;
         ImageView item_icon,item_edit;
+        CheckBox item_c;
+        LinearLayout layout;
     }
-
+    private boolean isOpen = false;
+    public void changeItem( boolean isOpen){
+        this.isOpen = isOpen;
+        notifyDataSetChanged();
+    }
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
         ViewHolder viewHolder;
@@ -69,6 +77,7 @@ public class Start1Adapter extends BaseAdapter {
                 || convertView.getTag(R.mipmap.ic_launcher + position) == null) {
             viewHolder = new ViewHolder();
             convertView = inflater.inflate(R.layout.start1_item, null);
+            viewHolder.item_c = (CheckBox) convertView.findViewById(R.id.item_c);
             viewHolder.item_icon = (ImageView) convertView.findViewById(R.id.item_icon);
             viewHolder.item_tag = (TextView) convertView.findViewById(R.id.item_tag);
             viewHolder.item0 = (TextView) convertView.findViewById(R.id.item0);
@@ -77,21 +86,40 @@ public class Start1Adapter extends BaseAdapter {
             viewHolder.item3 = (TextView) convertView.findViewById(R.id.item3);
             viewHolder.item4 = (TextView) convertView.findViewById(R.id.item4);
             viewHolder.item5 = (TextView) convertView.findViewById(R.id.item5);
+            viewHolder.layout = (LinearLayout) convertView.findViewById(R.id.layout);
             viewHolder.item_edit = (ImageView) convertView.findViewById(R.id.item_edit);
             convertView.setTag(R.mipmap.ic_launcher + position);
         } else {
             viewHolder = (ViewHolder) convertView.getTag(R.mipmap.ic_launcher
                     + position);
         }
+        if(isOpen){
+            convertView.setEnabled(false);
+            viewHolder.item_c.setVisibility(View.VISIBLE);
+        }else{
+            convertView.setEnabled(true);
+            viewHolder.item_c.setVisibility(View.GONE);
+        }
 
         final ReserItemBean it = rbs.get(position);
         if(sharedUtils.getBooleanValue("head")){
             viewHolder.item5.setText("(指派给:"+it.getStaffName()+")");
         }
+        if(it.getOrderStatus()!=3){
+            viewHolder.item_c.setEnabled(false);
+        }
         viewHolder.item0.setText(context.getString(R.string.nor_item_txt0,it.getNo()));
         viewHolder.item1.setText(context.getString(R.string.nor_item_txt1,it.getName()));
         viewHolder.item2.setText(context.getString(R.string.nor_item_txt2,it.getTel()));
         viewHolder.item3.setText(context.getString(R.string.nor_item_txt3,it.getAdd()));
+        viewHolder.item_c.setChecked(it.isOpen());
+        viewHolder.item_c.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                it.setOpen(it.isOpen()?false:true);
+                notifyDataSetChanged();
+            }
+        });
         int key = it.getOrderStatus();
         if(map!=null){
             if(map.containsKey(it.getId())){

@@ -83,13 +83,7 @@ public class Start0Adapter extends BaseAdapter {
         viewHolder.item2.setText(context.getString(R.string.nor_item_txt2,it.getTel()));
         viewHolder.item3.setText(context.getString(R.string.nor_item_txt3,it.getAdd()));
         viewHolder.item_c.setChecked(it.isOpen());
-
-        int key = it.getOrderStatus();
-        if(key==3){
-            viewHolder.item_tag.setText("进行中");
-        }else {
-            viewHolder.item_tag.setText("未领取");
-        }
+        viewHolder.item_tag.setText("未领取");
         if(it.getTime().equals("待定")){
             viewHolder.item4.setTextColor(context.getResources().getColor(R.color.rd_p));
         }else{

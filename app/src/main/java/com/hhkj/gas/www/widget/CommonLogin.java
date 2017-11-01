@@ -40,7 +40,18 @@ public class CommonLogin {
        inflater  = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
+    private boolean falg = true;
+    private int what = 0;
+    private Handler detailHandler;
+    public void setResult(boolean flag,int what,Handler detailHandler){
+        this.falg = flag;
+        this.what = what;
+        this.detailHandler = detailHandler;
+    }
 
+    public void setResult(Handler detailHandler){
+        this.detailHandler = detailHandler;
+    }
     private Handler handler = new Handler(){
         @Override
         public void dispatchMessage(Message msg) {
@@ -57,14 +68,21 @@ public class CommonLogin {
         cancle();
         }
     };
+    TextView title ;
     public Dialog showSheet() {
         dlg = new IDialog(context, R.style.head_pop_style);
         final LinearLayout layout = (LinearLayout) inflater.inflate(
                 R.layout.common_login, null);
         TextView sure = (TextView) layout.findViewById(R.id.sure);
-        TextView cancle = (TextView) layout.findViewById(R.id.cancle);
+        final TextView cancle = (TextView) layout.findViewById(R.id.cancle);
         final EditText user = (EditText) layout.findViewById(R.id.user);
         final EditText pass = (EditText) layout.findViewById(R.id.pass);
+        title = (TextView) layout.findViewById(R.id.title);
+        if(falg){
+            title.setText("重新登录");
+        }else{
+            title.setText("员工校验");
+        }
 
         sure.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -92,13 +110,25 @@ public class CommonLogin {
                         try {
                             JSONObject jsonObject = new JSONObject( FileUtils.formatJson(response));
                             if(jsonObject.getBoolean("Success")){
+                                if(falg){
+                                    sharedUtils.setStringValue("token",jsonObject.getString("Value"));
+                                    sharedUtils.setBooleanValue("head",(jsonObject.getInt("Error")==0)?false:true);
+                                    String result = jsonObject.getString("Result");
+                                    JSONObject obj = new JSONObject(result);
+                                    sharedUtils.setStringValue("userid",obj.getString("Id"));
+                                    sharedUtils.setStringValue("name",obj.getString("StaffName"));
+                                    sharedUtils.setStringValue("last",user.getText().toString().trim());
+                                    if(detailHandler!=null){
+                                        detailHandler.sendEmptyMessage(-8);
+                                    }
+                                    handler.sendEmptyMessage(1);
 
-                                sharedUtils.setStringValue("token",jsonObject.getString("Value"));
-                                sharedUtils.setBooleanValue("head",(jsonObject.getInt("Error")==0)?false:true);
-                                String result = jsonObject.getString("Result");
-                                JSONObject obj = new JSONObject(result);
-                                sharedUtils.setStringValue("userid",obj.getString("Id"));
-                                handler.sendEmptyMessage(1);
+                                }else {
+                                    P.c("校验正常");
+                                    detailHandler.sendEmptyMessage(what);
+                                    cancle();
+                                }
+
                             }else{
                                 Message msg = new Message();
                                 msg.what = 0;

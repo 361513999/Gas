@@ -20,7 +20,7 @@ public class Common {
     public static String APK_LOG = SD+"LOG/";
     public final static String DB_DIR = "data/data/"+BaseApplication.application.getPackageName()+"/databases/";
     public static final String DB_NAME = "store.gas";
-    public static final int DB_VERSION = 2;
+    public static final int DB_VERSION = 3;
     public static final String UNLOGIN = "login";
     public static final int SHOW_NUM = 8;
     public static final String STAFF_IMAGE = "IMAGES/";

@@ -117,6 +117,21 @@
                     android:layout_alignParentLeft="true"
                     android:button="@drawable/reser_nor_cb_ine"/>
                 <TextView
+                    android:id="@+id/get_cancel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toLeftOf="@+id/get_sure"
+                    android:layout_centerVertical="true"
+                    android:text="取消"
+                    android:gravity="center"
+                    android:ems="4"
+                    android:textSize="13sp"
+                    android:paddingTop="3dp"
+                    android:layout_marginRight="8dp"
+                    android:paddingBottom="3dp"
+                    android:background="@color/cancle"
+                    android:textColor="@color/white"/>
+                <TextView
                     android:id="@+id/get_sure"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -138,31 +153,54 @@
                 android:layout_height="1dp"
                 android:background="@color/blue_n"/>
         </LinearLayout>
-        <LinearLayout
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-            <com.hhkj.gas.www.widget.PullToRefreshView
-                android:id="@+id/pull_to_refresh_list"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:orientation="vertical"
-                android:focusableInTouchMode="true"
                 android:layout_height="match_parent">
-                <ListView
-                    android:id="@+id/gas_list"
+                <com.hhkj.gas.www.widget.PullToRefreshView
+                    android:id="@+id/pull_to_refresh_list"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginTop="15dp"
-                    android:layout_marginBottom="15dp"
-                    android:layout_marginRight="10dp"
-                    android:layout_marginLeft="10dp"
-                    android:listSelector="@color/no_color"
-                    android:divider="@color/no_color"
-                    android:dividerHeight="6dp"
-                    android:background="@color/no_color"
-                    android:cacheColorHint="@color/no_color"/>
-            </com.hhkj.gas.www.widget.PullToRefreshView>
+                    android:orientation="vertical"
+                    android:focusableInTouchMode="true"
+                    android:layout_height="match_parent">
+                    <ListView
+                        android:id="@+id/gas_list"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="15dp"
+                        android:layout_marginBottom="15dp"
+                        android:layout_marginRight="10dp"
+                        android:layout_marginLeft="10dp"
+                        android:listSelector="@color/no_color"
+                        android:divider="@color/no_color"
+                        android:dividerHeight="6dp"
+                        android:background="@color/no_color"
+                        android:cacheColorHint="@color/no_color"/>
+                </com.hhkj.gas.www.widget.PullToRefreshView>
 
-        </LinearLayout>
+            </LinearLayout>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <TextView
+                    android:id="@+id/head_btn"
+                    android:tag="0"
+                    android:layout_width="100dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:text="指派\n任务"
+                    android:textSize="18sp"
+                    android:textColor="@color/font_normal"
+                    android:gravity="center"
+                    android:background="@drawable/head_act"
+                    android:layout_height="100dp" />
+            </RelativeLayout>
+        </FrameLayout>
+
 
     </LinearLayout>
 </LinearLayout>

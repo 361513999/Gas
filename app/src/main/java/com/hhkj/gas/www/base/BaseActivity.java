@@ -3,6 +3,7 @@ package com.hhkj.gas.www.base;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.WindowManager;
@@ -45,6 +46,12 @@ public abstract class BaseActivity extends Activity{
      */
     public void reLogin(){
         CommonLogin login = new CommonLogin(this,sharedUtils);
+
+        login.showSheet();
+    }
+    public void reLogin(Handler handler){
+        CommonLogin login = new CommonLogin(this,sharedUtils);
+        login.setResult(handler);
         login.showSheet();
     }
     @Override

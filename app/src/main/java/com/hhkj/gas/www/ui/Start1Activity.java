@@ -8,6 +8,8 @@ import android.support.annotation.IdRes;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
@@ -32,6 +34,7 @@ import com.hhkj.gas.www.common.FileUtils;
 import com.hhkj.gas.www.common.P;
 import com.hhkj.gas.www.common.U;
 import com.hhkj.gas.www.db.DB;
+import com.hhkj.gas.www.widget.HeadChildsList;
 import com.hhkj.gas.www.widget.LoadView;
 import com.hhkj.gas.www.widget.NewToast;
 import com.hhkj.gas.www.widget.NoTips;
@@ -255,11 +258,20 @@ public class Start1Activity extends BaseActivity {
     private RadioButton market_group_item0,market_group_item1,market_group_item2,market_group_item3;
     private View drop;
     private TextView search;
-
+    private TextView head_btn;
+    private LinearLayout get_layout;
+    private CheckBox get_all;
+    private TextView get_sure,get_cancel;
     @Override
     public void init() {
         search = (TextView) findViewById(R.id.search);
         drop = findViewById(R.id.drop);
+        get_layout = (LinearLayout) findViewById(R.id.get_layout);
+        get_all = (CheckBox) findViewById(R.id.get_all);
+        get_sure = (TextView) findViewById(R.id.get_sure);
+        get_cancel = (TextView) findViewById(R.id.get_cancel);
+
+        head_btn = (TextView) findViewById(R.id.head_btn);
         pull_to_refresh_list = (PullToRefreshView) findViewById(R.id.pull_to_refresh_list);
         pull_to_refresh_list.setOnHeaderRefreshListener(listHeadListener);
         pull_to_refresh_list.setOnFooterRefreshListener(listFootListener);
@@ -289,12 +301,69 @@ public class Start1Activity extends BaseActivity {
                 AppManager.getAppManager().finishActivity(Start1Activity.this);
             }
         });
+        head_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //进行任务指派操作
+                market_group.clearCheck();
+                get_layout.setVisibility(View.VISIBLE);
+                get_sure.setText("指派");
+                start1Adapter.changeItem(true);
+
+                if (head_btn.getTag().toString().equals("0")) {
+                    head_btn.setTag("1");
+
+                    //开启指派模式
+                }/*else{
+                    market_group.clearCheck();
+                    get_layout.setVisibility(View.GONE);
+                    start1Adapter.changeItem(false);
+                    head_btn.setTag("0");//重置指派模式
+                    get_all.setChecked(false);
+                }*/
+
+            }
+        });
+        get_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                market_group.clearCheck();
+                get_layout.setVisibility(View.GONE);
+                start1Adapter.changeItem(false);
+                head_btn.setTag("0");//重置指派模式
+                get_all.setChecked(false);
+            }
+        });
+        get_sure.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View view) {
+                                            if (head_btn.getTag().toString().equals("1")) {
+                                                HeadChildsList childsList = new HeadChildsList(Start1Activity.this, sharedUtils, ribs, startHandler,-5);
+                                                childsList.showSheet();
+
+                                            }
+                                        }
+                                    });
+                get_all.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                for (int i = 0; i < ribs.size(); i++) {
+                    ReserItemBean rtb = ribs.get(i);
+                       if(rtb.getOrderStatus()==3){
+                           rtb.setOpen(b);
+                       }
+                }
+                start1Adapter.notifyDataSetChanged();
+//                startHandler.sendEmptyMessage(1);
+            }
+        });
         nav_grp.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, @IdRes int i) {
                 initListReq(Common.SHOW_NUM,null,null,null,null,null,null,null);
                 loadList();
 
+                get_all.setChecked(false);
                 market_group.clearCheck();
                switch (i){
                     case R.id.nav_0:
@@ -318,7 +387,10 @@ public class Start1Activity extends BaseActivity {
             @Override
             public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
 
-
+                get_layout.setVisibility(View.GONE);
+                start1Adapter.changeItem(false);
+                head_btn.setTag("0");//重置指派模式
+                get_all.setChecked(false);
                 switch (checkedId){
                     case R.id.market_group_item0:
                         if(market_group_item0.isChecked()){
@@ -858,7 +930,14 @@ private void sortPop(){
                         break;
                     case 4:
                         //用户未登录处理
-                        reLogin();
+                        reLogin(startHandler);
+                        break;
+                    case -5:
+                        head_btn.setTag("0");//重置指派模式
+                        get_all.setChecked(false);
+                        market_group.clearCheck();
+                        start1Adapter.updata(ribs);
+                        NewToast.makeText(Start1Activity.this, "成功指派", Common.TTIME).show();
                         break;
                     case 5:
                         //装载数据
@@ -963,6 +1042,12 @@ private void sortPop(){
     @Override
     protected void onResume() {
         super.onResume();
+        if(sharedUtils.getBooleanValue("head")){
+            head_btn.setVisibility(View.VISIBLE);
+        }else {
+            head_btn.setVisibility(View.GONE);
+        }
+
         start1Adapter.updata(ribs);
     }
 

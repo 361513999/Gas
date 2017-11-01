@@ -335,7 +335,7 @@ public class HomeActivity extends BaseActivity {
                         }else{
                             //进行查询
                             Map<String,String> map = DB.getInstance().linePrint(bean);
-                            if(!map.get("send").equals("3")){
+                            if((map.get("staffOtherLine")!=null&&!map.get("send").equals("4"))||(map.get("staffOtherLine")==null&&!map.get("send").equals("3"))){
                                 sendImage(map,bean);
 
                             }else{
@@ -360,7 +360,7 @@ public class HomeActivity extends BaseActivity {
                         }else{
                             //进行查询
                             Map<String,String> map = DB.getInstance().ProLinePrint(bean11);
-                            if(!map.get("send").equals("3")){
+                            if((map.get("staffOtherLine")!=null&&!map.get("send").equals("4"))||(map.get("staffOtherLine")==null&&!map.get("send").equals("3"))){
                                 sendProblemImage(map,bean11);
 
                             }else{
@@ -469,6 +469,11 @@ public class HomeActivity extends BaseActivity {
                     String path  =map.get("personPhoto").toString();
                     changeText(getFile(path));
                     jsonObject.put("base64", Bitmap2StrByBase64(BitmapFactory.decodeFile(path)));
+                }else if(map.get("send").equals("3")){
+                    jsonObject.put("type", 3);
+                    String path  =map.get("staffOtherLine").toString();
+                    jsonObject.put("base64", Bitmap2StrByBase64(BitmapFactory.decodeFile(path)));
+                    changeText(getFile(path));
                 }
 
             }
@@ -705,6 +710,12 @@ private boolean isCan(ArrayList<StaffTxtItem> txtItems){
                     String path  =map.get("personPhoto").toString();
                     changeText(getFile(path));
                     jsonObject.put("base64", Bitmap2StrByBase64(BitmapFactory.decodeFile(path)));
+                }else  if (map.get("send").equals("3")) {
+                    //提交
+                    jsonObject.put("type", 3);
+                    String path  =map.get("staffOtherLine").toString();
+                    jsonObject.put("base64", Bitmap2StrByBase64(BitmapFactory.decodeFile(path)));
+                    changeText(getFile(path));
                 }
 
             }

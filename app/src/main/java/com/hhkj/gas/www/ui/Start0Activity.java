@@ -139,8 +139,19 @@ public class Start0Activity extends BaseActivity {
     private TextView get_sure, search;
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        if (sharedUtils.getBooleanValue("head")) {
+            head_btn.setVisibility(View.VISIBLE);
+        } else {
+            head_btn.setVisibility(View.GONE);
+        }
+    }
+    private TextView get_cancel;
+    @Override
     public void init() {
         drop = findViewById(R.id.drop);
+        get_cancel = (TextView) findViewById(R.id.get_cancel);
         get_layout = (LinearLayout) findViewById(R.id.get_layout);
         get_all = (CheckBox) findViewById(R.id.get_all);
         get_sure = (TextView) findViewById(R.id.get_sure);
@@ -175,11 +186,7 @@ public class Start0Activity extends BaseActivity {
             }
         });
 
-        if (sharedUtils.getBooleanValue("head")) {
-            head_btn.setVisibility(View.VISIBLE);
-        } else {
-            head_btn.setVisibility(View.GONE);
-        }
+
         head_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -192,7 +199,25 @@ public class Start0Activity extends BaseActivity {
                     head_btn.setTag("1");
                     //开启指派模式
                 }
+                  /*  else{
+                        market_group.clearCheck();
+                        get_layout.setVisibility(View.GONE);
+                        start0Adapter.changeItem(false);
+                        head_btn.setTag("0");//重置指派模式
+                        get_all.setChecked(false);
+                    }*/
 
+
+            }
+        });
+        get_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                market_group.clearCheck();
+                get_layout.setVisibility(View.GONE);
+                start0Adapter.changeItem(false);
+                head_btn.setTag("0");//重置指派模式
+                get_all.setChecked(false);
             }
         });
 
@@ -277,7 +302,7 @@ public class Start0Activity extends BaseActivity {
             @Override
             public void onClick(View view) {
                 if (head_btn.getTag().toString().equals("1")) {
-                    HeadChildsList childsList = new HeadChildsList(Start0Activity.this, sharedUtils, ribs, startHandler);
+                    HeadChildsList childsList = new HeadChildsList(Start0Activity.this, sharedUtils, ribs, startHandler,5);
                     childsList.showSheet();
 
                 } else {
@@ -389,13 +414,7 @@ public class Start0Activity extends BaseActivity {
             jsonObject.put("method", type == 0 ? "GetSelfOrder" : "GetCommonOrder");
             JSONObject pms = new JSONObject();
             //0 自己和下属的，还包括未领取的，1自己和下属的，2未领取的
-            if(sharedUtils.getBooleanValue("head")){
-                pms.put("OrderStatus", "1,2,3");
-            }else {
-                pms.put("OrderStatus", "1,2");
-            }
-
-
+            pms.put("OrderStatus", "1,2");
             if (type == 0) {
                 pms.put("OrderType", type);
             }
@@ -781,7 +800,7 @@ public class Start0Activity extends BaseActivity {
                         break;
                     case 4:
                         //用户未登录处理
-                        reLogin();
+                        reLogin(startHandler);
                         break;
                     case 5:
 

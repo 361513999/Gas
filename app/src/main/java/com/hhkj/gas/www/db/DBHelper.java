@@ -50,9 +50,9 @@ public class DBHelper extends SQLiteOpenHelper{
 		db.execSQL("create table staff_stand_tab(i integer primary key autoincrement,id varchar,standId varchar,staffId varchar,type varchar,value varchar,chk boolean)");
 		//燃气具
 		db.execSQL("create table staff_stand_qj(i integer primary key autoincrement,id varchar,standId varchar,staffId varchar,name varchar,position varchar,chk boolean)");
-		db.execSQL("CREATE TABLE staff_stand_line(i integer primary key autoincrement,standId varchar,staffId varchar,staffLine varchar,personLine varchar,personPhoto varchar,send int)");
+		db.execSQL("CREATE TABLE staff_stand_line(i integer primary key autoincrement,standId varchar,staffId varchar,staffLine varchar,staffOtherLine varchar,personLine varchar,personPhoto varchar,send int)");
 		//安检单信息
-		db.execSQL("CREATE TABLE staff_stand_pr_s(i integer primary key autoincrement,proNo varchar,startTime varchar,endTime varchar,standId varchar,staffId varchar,staffLine varchar,personLine varchar,personPhoto varchar,send int,bis boolean);");
+		db.execSQL("CREATE TABLE staff_stand_pr_s(i integer primary key autoincrement,proNo varchar,startTime varchar,endTime varchar,standId varchar,staffId varchar,staffLine varchar,staffOtherLine varchar,personLine varchar,personPhoto varchar,send int,bis boolean);");
   		//安检单列表
 		db.execSQL("CREATE TABLE staff_stand_pr_l(i integer primary key autoincrement,standId varchar,staffId varchar,txtNo varchar,txtView varchar)");
 		db.execSQL("CREATE TABLE staff_stand_pr_l_values(i integer primary key autoincrement,standId varchar,staffId varchar,txtNo varchar,path varchar,send boolean)");
