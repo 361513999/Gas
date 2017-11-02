@@ -84,7 +84,7 @@ public class Start1Activity extends BaseActivity {
                 @Override
                 public void run() {
                     pull_to_refresh_list.onHeaderRefreshComplete();
-                    initListReq(ribs.size()==0?SHOWNUM:ribs.size(),null,null,null,null,null,null,null);
+                    initListReq(ribs.size()==0?SHOWNUM:ribs.size(),null,null,null,null,null,null,null,false);
                     loadList();
                 }
             },runTime);
@@ -95,7 +95,8 @@ public class Start1Activity extends BaseActivity {
      * @param num
      */
     private String Search = null;
-    private void initListReq(int num,String AreaId,String beginDate,String endDate,String OrderStatus,String SORT,String problem,String Search){
+
+    private void initListReq(int num,String AreaId,String beginDate,String endDate,String OrderStatus,String SORT,String problem,String Search,boolean IS_ZP){
         isMore = true;
         CURRENT_PAGE = 1;
         SHOWNUM = num;
@@ -106,6 +107,7 @@ public class Start1Activity extends BaseActivity {
         this.problem = problem;
         this.EndDate = endDate;
         this.Search = Search;
+        this.IS_ZP = IS_ZP;
         ribs.clear();
     }
     private PullToRefreshView.OnFooterRefreshListener listFootListener = new PullToRefreshView.OnFooterRefreshListener() {
@@ -305,13 +307,12 @@ public class Start1Activity extends BaseActivity {
             @Override
             public void onClick(View view) {
                 //进行任务指派操作
-                market_group.clearCheck();
-                get_layout.setVisibility(View.VISIBLE);
-                get_sure.setText("指派");
-                start1Adapter.changeItem(true);
 
                 if (head_btn.getTag().toString().equals("0")) {
-                    head_btn.setTag("1");
+
+
+                    initListReq(Common.SHOW_NUM,null,null,null,null,null,null,null,true);
+                    loadList();
 
                     //开启指派模式
                 }/*else{
@@ -332,6 +333,8 @@ public class Start1Activity extends BaseActivity {
                 start1Adapter.changeItem(false);
                 head_btn.setTag("0");//重置指派模式
                 get_all.setChecked(false);
+                initListReq(Common.SHOW_NUM,null,null,null,null,null,null,null,false);
+                loadList();
             }
         });
         get_sure.setOnClickListener(new View.OnClickListener() {
@@ -360,7 +363,7 @@ public class Start1Activity extends BaseActivity {
         nav_grp.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, @IdRes int i) {
-                initListReq(Common.SHOW_NUM,null,null,null,null,null,null,null);
+                initListReq(Common.SHOW_NUM,null,null,null,null,null,null,null,false);
                 loadList();
 
                 get_all.setChecked(false);
@@ -435,6 +438,7 @@ public class Start1Activity extends BaseActivity {
     private String problem = null;
     private String AreaId = Common.COMMON_DEFAULT;
     private int SHOWNUM = Common.SHOW_NUM;
+    private  boolean IS_ZP = false;
     private   ArrayList<ReserItemBean> ribs = new ArrayList<>();
     private int CURRENT_PAGE = 1;
     private RequestCall requestCall;
@@ -453,7 +457,12 @@ public class Start1Activity extends BaseActivity {
             jsonObject.put("method","GetSelfOrder");
             JSONObject pms = new JSONObject();
             //0 自己和下属的，还包括未领取的，1自己和下属的，2未领取的
-            pms.put("OrderStatus","3,4,6,7,8,9");
+            if(IS_ZP){
+                pms.put("OrderStatus","3");
+            }else {
+                pms.put("OrderStatus","3,4,6,7,8,9");
+            }
+
             pms.put("OrderType",type);
             pms.put("AreaId",AreaId);
             if(Search!=null){
@@ -599,7 +608,7 @@ private void add(ArrayList<AreaBean> rbs,String name,String id){
         problemList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                initListReq(Common.SHOW_NUM,null,null,null,null,null,rbs.get(i).getId(),null);
+                initListReq(Common.SHOW_NUM,null,null,null,null,null,rbs.get(i).getId(),null,false);
                 loadList();
                 disDataPop(problemPopupWindow,problemPop,null);
             }
@@ -644,7 +653,7 @@ private void statusPop(){
     statusList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-            initListReq(Common.SHOW_NUM,null,null,null,rbs.get(i).getId(),null,null,null);
+            initListReq(Common.SHOW_NUM,null,null,null,rbs.get(i).getId(),null,null,null,false);
             loadList();
             disDataPop(statusPopupWindow,statusPop,null);
         }
@@ -687,7 +696,7 @@ private void sortPop(){
         sortList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                initListReq(Common.SHOW_NUM,null,null,null,null,rbs.get(i).getId(),null,null);
+                initListReq(Common.SHOW_NUM,null,null,null,null,rbs.get(i).getId(),null,null,false);
                 loadList();
                 disDataPop(sortPopupWindow,sortPop,null);
             }
@@ -726,7 +735,7 @@ private void sortPop(){
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
-                initListReq(Common.SHOW_NUM, rbs.get(i).getId(),null,null,null,null,null,null);
+                initListReq(Common.SHOW_NUM, rbs.get(i).getId(),null,null,null,null,null,null,false);
                 loadList();
                 disDataPop(areaPopupWindow,areaPop,new Object[]{area_list,areasAdapter});
             }
@@ -852,7 +861,7 @@ private void sortPop(){
                     return;
                 }
                 //时间筛选
-                initListReq(Common.SHOW_NUM,null,begin,end,null,null,null,null);
+                initListReq(Common.SHOW_NUM,null,begin,end,null,null,null,null,false);
                 loadList();
                 disDataPop(dataPopupWindow,dataPop,null);
 
@@ -915,11 +924,18 @@ private void sortPop(){
             if (mLeakActivityRef.get() != null) {
                 switch (msg.what){
                     case -8:
-                        initListReq(Common.SHOW_NUM, null,null,null,null,null,null,(String)msg.obj);
+                        initListReq(Common.SHOW_NUM, null,null,null,null,null,null,(String)msg.obj,false);
 
                         loadList();
                         break;
                     case 1:
+                        if(IS_ZP){
+                            market_group.clearCheck();
+                            get_layout.setVisibility(View.VISIBLE);
+                            get_sure.setText("指派");
+                            start1Adapter.changeItem(true);
+                            head_btn.setTag("1");
+                        }
                         start1Adapter.updata(ribs);
                         break;
                     case 2:
@@ -938,6 +954,12 @@ private void sortPop(){
                         market_group.clearCheck();
                         start1Adapter.updata(ribs);
                         NewToast.makeText(Start1Activity.this, "成功指派", Common.TTIME).show();
+                        this.sendEmptyMessage(-4);
+                        break;
+                    case -4:
+                        initListReq(Common.SHOW_NUM, null,null,null,null,null,null,null,false);
+
+                        loadList();
                         break;
                     case 5:
                         //装载数据
@@ -1027,7 +1049,7 @@ private void sortPop(){
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode==100&&resultCode==1000){
-            initListReq(ribs.size()==0?SHOWNUM:ribs.size(),null,null,null,null,null,null,null);
+            initListReq(ribs.size()==0?SHOWNUM:ribs.size(),null,null,null,null,null,null,null,false);
             loadList();
         }
     }

@@ -811,6 +811,11 @@ public class Start0Activity extends BaseActivity {
                         market_group.clearCheck();
                         start0Adapter.updata(ribs);
                         NewToast.makeText(Start0Activity.this, "成功指派", Common.TTIME).show();
+                        this.sendEmptyMessage(-4);
+                        break;
+                    case -4:
+                        initListReq(Common.SHOW_NUM, null, null, null, null,null);
+                        loadList();
                         break;
                 }
             }
