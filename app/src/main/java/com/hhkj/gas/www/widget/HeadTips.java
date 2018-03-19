@@ -71,7 +71,7 @@ public class HeadTips {
                 if(staffImageItems==null){
                     //是隐患单
                     if(DB.getInstance().canProStand(bean)){
-                        handler.sendEmptyMessage(10);
+                        handler.sendEmptyMessage(101);
                         cancle();
                     }else {
                         NewToast.makeText(context,"请签名及确定整改日期",Common.TTIME).show();
@@ -84,7 +84,7 @@ public class HeadTips {
                             if( DB.getInstance().getCanSend()){
                                 P.c("可以发送");
                                 if(DB.getInstance().canLinePrint(bean)){
-                                    handler.sendEmptyMessage(10);
+                                    handler.sendEmptyMessage(101);
                                     cancle();
                                 }else{
                                     NewToast.makeText(context,"请签名",Common.TTIME).show();

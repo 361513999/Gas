@@ -8,7 +8,7 @@ import com.hhkj.gas.www.utils.RegExpValidatorUtils;
 
 public class U {
 
-    public static  String BASEIP = "106.14.212.85:8001";
+    public static  String BASEIP = "101.132.66.37:8001";
     public static final String BASE_URL = "/DataService.svc/";
     public static final String LOGIN = "StaffLogin";
     public static final String LIST = "Post";

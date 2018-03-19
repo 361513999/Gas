@@ -511,6 +511,20 @@ public class DetailActivity extends TakePhotoActivity {
                         //打开对话框
                         CommonPhotoPop.showSheet(DetailActivity.this,photoSelect,position);
                         break;
+                    case 101:
+                        new Thread(){
+                            @Override
+                            public void run() {
+                                super.run();
+                                //保存燃气具
+                                DB.getInstance().updateQjs(staffQjs,bean);
+                                P.c("燃气比"+staffBs.get(0).getValue());
+                                DB.getInstance().updateTab(staffBs,bean);
+                                detailHandler.sendEmptyMessage(10);
+                            }
+
+                        }.start();
+                        break;
                     case 10:
                         //提交数据到服务器
                         if(uploadTips==null){
