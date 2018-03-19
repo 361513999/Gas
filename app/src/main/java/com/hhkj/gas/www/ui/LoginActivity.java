@@ -159,6 +159,7 @@ public class LoginActivity extends BaseActivity{
         try {
             object.put("id",userValue);
             object.put("pwd",passValue);
+            object.put("login",true);
         } catch (JSONException e) {
             e.printStackTrace();
         }

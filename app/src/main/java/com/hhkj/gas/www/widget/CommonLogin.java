@@ -94,6 +94,7 @@ public class CommonLogin {
                 try {
                     object.put("id",userValue);
                     object.put("pwd",passValue);
+                    object.put("login",falg);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -101,9 +102,7 @@ public class CommonLogin {
                     @Override
                     public void onError(Call call, Exception e, int id) {
                         P.c("错误了"+e.getLocalizedMessage());
-
                     }
-
                     @Override
                     public void onResponse(String response, int id) {
 

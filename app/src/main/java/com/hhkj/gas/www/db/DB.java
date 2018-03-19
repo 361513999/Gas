@@ -484,12 +484,16 @@ public class DB {
      * @param bean
      */
     public void updateQjs(ArrayList<StaffQj> qjs,ReserItemBean bean){
-        for(int i=0;i<qjs.size();i++){
+        int len = qjs.size();
+
+        for(int i=0;i<len;i++){
             StaffQj qj = qjs.get(i);
             if(qj.getI()!=-1){
                 //证明是有i值的，那么执行更新操作
+
                 db.execSQL("update staff_stand_qj set name=?,position=?,chk=? where i=?",new Object[]{qj.getName(),qj.getPosition(),qj.isCheck(),qj.getI()});
             }else{
+
                 //无i值，执行插入操作
                 db.execSQL("insert into staff_stand_qj(standId,staffId,name,position,chk) values(?,?,?,?,?)",new Object[]{bean.getId(),bean.getNo(),qj.getName(),qj.getPosition(),qj.isCheck()});
             }
@@ -502,9 +506,13 @@ public class DB {
      */
     public void updateTab(ArrayList<StaffB> sf,ReserItemBean bean){
         P.c("燃气表数量"+sf.size());
-        for(int i=0;i<sf.size();i++){
+        int len  = sf.size();
+        if(len>2){
+            len=2;
+        }
+        for(int i=0;i<len;i++){
             StaffB qj = sf.get(i);
-            P.c(qj.getName()+"qj"+qj.isCheck());
+            P.c(qj.getName()+"qj"+qj.isCheck()+"--"+qj.getValue());
             if(qj.getI()!=-1){
                 //证明是有i值的，那么执行更新操作
                 db.execSQL("update staff_stand_tab set type=?,value=?,chk=? where i=?",new Object[]{qj.getName(),qj.getValue(),qj.isCheck(),qj.getI()});

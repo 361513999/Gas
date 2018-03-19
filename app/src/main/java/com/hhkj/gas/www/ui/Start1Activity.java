@@ -231,7 +231,7 @@ public class Start1Activity extends BaseActivity {
                         for(int i=0;i<jen;i++){
                             JSONObject obj = values.getJSONObject(i);
                             StaffB staffB = new StaffB();
-                            staffB.setId(obj.getString("TabId"));
+                            staffB.setId(obj.getString("Id"));
                             staffB.setName(obj.getString("TabCode"));
                             staffB.setValue(obj.getString("TabQty"));
                             staffBs.add(staffB);

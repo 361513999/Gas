@@ -520,6 +520,7 @@ public class DetailActivity extends TakePhotoActivity {
                                 DB.getInstance().updateQjs(staffQjs,bean);
                                 P.c("燃气比"+staffBs.get(0).getValue());
                                 DB.getInstance().updateTab(staffBs,bean);
+
                                 detailHandler.sendEmptyMessage(10);
                             }
 
@@ -734,6 +735,7 @@ public class DetailActivity extends TakePhotoActivity {
                 }
             }
             //燃气具
+
             for(int i=0;i<staffQjs.size();i++){
                 JSONObject obj = new JSONObject();
                 StaffQj sf = staffQjs.get(i);
@@ -746,8 +748,19 @@ public class DetailActivity extends TakePhotoActivity {
             }
             //---燃气表
               JSONArray array1 = new JSONArray();
-            for(int i=0;i< staffBs.size();i++){
+            int len = staffBs.size();
+            if(len>2){
+                len = 2;
+            }
+            for(int i=0;i< len;i++){
+                if(len==2){
+                    if(staffBs.get(0).getName().equals(staffBs.get(1).getName())&&i==1){
+                        //处理单一的时候异常问题
+                        continue;
+                    }
+                }
                 StaffB sb  = staffBs.get(i);
+
                 if(sb.getName()!=null&&sb.getValue()!=null){
                     JSONObject obj = new JSONObject();
                     obj.put("Id",sb.getId()==null?Common.COMMON_DEFAULT:sb.getId());
