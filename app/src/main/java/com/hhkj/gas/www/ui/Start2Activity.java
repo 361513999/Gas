@@ -1,5 +1,7 @@
 package com.hhkj.gas.www.ui;
 
+import android.graphics.Rect;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -586,7 +588,16 @@ public class Start2Activity extends BaseActivity {
 
             view.getLocationOnScreen(location);
 
-            popupWindow.showAsDropDown(view);
+            if (Build.VERSION.SDK_INT < Common.SDK_VERSON_7) {
+                popupWindow.showAsDropDown(view);
+            } else {
+                Rect visibleFrame = new Rect();
+                view.getGlobalVisibleRect(visibleFrame);
+                int height = view.getResources().getDisplayMetrics().heightPixels - visibleFrame.bottom;
+                popupWindow.setHeight(height);
+                popupWindow.showAsDropDown(view);
+
+            }
         }
     }
 

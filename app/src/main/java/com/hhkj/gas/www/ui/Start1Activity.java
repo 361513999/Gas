@@ -1,10 +1,13 @@
 package com.hhkj.gas.www.ui;
 
 import android.content.Intent;
+import android.graphics.Rect;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.IdRes;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -74,6 +77,7 @@ public class Start1Activity extends BaseActivity {
     private RadioButton nav_0,nav_1;
     private ListView gas_list;
     private TextView back;
+    private View main_layout;
     private Start1Adapter start1Adapter;
     private PullToRefreshView pull_to_refresh_list;
     private PullToRefreshView.OnHeaderRefreshListener listHeadListener = new PullToRefreshView.OnHeaderRefreshListener(){
@@ -266,6 +270,7 @@ public class Start1Activity extends BaseActivity {
     private TextView get_sure,get_cancel;
     @Override
     public void init() {
+        main_layout = findViewById(R.id.main_layout);
         search = (TextView) findViewById(R.id.search);
         drop = findViewById(R.id.drop);
         get_layout = (LinearLayout) findViewById(R.id.get_layout);
@@ -906,7 +911,18 @@ private void sortPop(){
 
             view.getLocationOnScreen(location);
 
-            popupWindow.showAsDropDown(view);
+            if (Build.VERSION.SDK_INT < Common.SDK_VERSON_7) {
+                popupWindow.showAsDropDown(view);
+            } else {
+                Rect visibleFrame = new Rect();
+                view.getGlobalVisibleRect(visibleFrame);
+                int height = view.getResources().getDisplayMetrics().heightPixels - visibleFrame.bottom;
+                popupWindow.setHeight(height);
+                popupWindow.showAsDropDown(view);
+
+            }
+
+
         }
     }
 

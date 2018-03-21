@@ -11,6 +11,7 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
  */
 
 public class Common {
+    public static final int SDK_VERSON_7 = 24;
     public static final int TTIME = 500;
     public static final String config = "CONFIG";
     public static String BASE_DIR = Environment
