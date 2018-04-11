@@ -153,6 +153,13 @@ public class DetailProblemActivity extends TakePhotoActivity {
                 AppManager.getAppManager().finishActivity(DetailProblemActivity.this);
             }
         });
+        vid = (LinearLayout) findViewById(R.id.vid);
+        vid.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AppManager.getAppManager().finishActivity(DetailProblemActivity.this);
+            }
+        });
         itme7 = (TextView) findViewById(R.id.itme7);
         itme8 = (TextView) findViewById(R.id.itme8);
         item0 = (TextView) findViewById(R.id.item0);
@@ -717,7 +724,7 @@ public class DetailProblemActivity extends TakePhotoActivity {
         super.onStart();
         init();
     }
-
+    private LinearLayout vid;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
