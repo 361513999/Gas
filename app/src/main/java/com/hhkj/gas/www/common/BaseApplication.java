@@ -92,7 +92,7 @@ public class BaseApplication extends Application {
             .showImageOnFail(R.mipmap.no_img) // resource or
             // drawable
             .resetViewBeforeLoading(false) // default
-            .delayBeforeLoading(1000).cacheInMemory(false) // default
+            .delayBeforeLoading(100).cacheInMemory(false) // default
             .cacheOnDisk(false) // default
             .considerExifParams(false) // default
             .imageScaleType(ImageScaleType.IN_SAMPLE_POWER_OF_2) // default
